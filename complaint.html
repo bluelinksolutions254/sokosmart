@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>File a complaint – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>window.SOKO_NO_ADS=1</script>
+<script src="soko.js?v=19"></script>
+<style>
+.cm-hero{display:flex;gap:14px;align-items:center;background:var(--g);color:#fff;border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.cm-hero svg{color:var(--o);flex:none}.cm-hero h2{margin:0;color:#fff}.cm-hero p{margin:2px 0 0;opacity:.85;font-size:14px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.tk{display:inline-block;background:var(--ot);color:var(--od);border:1.5px dashed var(--o);border-radius:10px;padding:8px 16px;font-size:22px;font-weight:800;letter-spacing:.08em}
+.mine{display:grid;gap:10px}.mc{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;display:grid;gap:4px}
+.mc .rp{background:var(--gt);border-left:4px solid var(--g);border-radius:8px;padding:8px 10px;font-size:14px;white-space:pre-wrap}
+.mc .rh{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.pill.rv{background:#e8f0fb;color:#1d4f91}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main><section class="alt"><div class="w" style="max-width:760px">
+<div class="cm-hero"><span id="ci"></span><div><h2>File a complaint</h2><p>Tell us what went wrong. A real person on the SOKO Smart team reads every complaint.</p></div></div>
+
+<div class="fm" id="ok" hidden>
+ <h3 style="margin:0">Complaint received</h3>
+ <p style="margin:0">Thank you for telling us. Your reference number is:</p>
+ <p style="margin:0"><span class="tk" id="tkt"></span></p>
+ <p class="m" style="margin:0" id="okn"></p>
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn p" href="index.html">Back to home</a><button class="btn" id="again" type="button">File another complaint</button></div>
+</div>
+
+<form class="fm" id="cf" novalidate>
+ <h3 style="margin:0">What is this about?</h3>
+ <label>Type of problem<select name="category" required></select></label>
+ <label>Link or name of the listing, shop or person <span class="m">(optional)</span><input name="reference" maxlength="300" placeholder="Paste the link or type the shop name"></label>
+ <label>Subject<input name="subject" required maxlength="120" placeholder="Short summary, e.g. Seller took my deposit and stopped replying"></label>
+ <label>Tell us what happened<textarea name="message" rows="6" required maxlength="2000" minlength="20" placeholder="Include dates, amounts, what the seller said and anything else that helps us investigate."></textarea></label>
+ <label id="shotL" hidden>Screenshot or photo (optional, under 3 MB)<input name="shot" type="file" accept="image/*"></label>
+ <h3 style="margin:8px 0 0">Your details</h3>
+ <label>Full name<input name="full_name" required maxlength="80" autocomplete="name"></label>
+ <div class="two"><label>Email<input name="email" type="email" required maxlength="120" autocomplete="email"></label>
+ <label>Phone <span class="m">(optional)</span><input name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="0712 345 678"></label></div>
+ <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+ <p class="m" style="margin:0" id="who"></p>
+ <button class="btn p" style="padding:12px" id="go">Submit complaint</button>
+</form>
+
+<div id="mineW" hidden style="margin-top:22px"><h2 style="margin-bottom:10px">My complaints</h2><div class="mine" id="mine"></div></div>
+</div></section></main>
+<div id="ft"></div>
+<script>
+shell("complaint.html");
+$("#ci").innerHTML=ic("flag",34);
+const CATSX=["Seller or shop behaviour","Fake, wrong or misleading listing","Order, payment or delivery problem","Job post or employer","Account or login problem","Website bug or suggestion","Something else"];
+const f=$("#cf");f.category.innerHTML='<option value="">Choose one</option>'+CATSX.map(c=>`<option>${esc(c)}</option>`).join("");
+const qs=new URLSearchParams(location.search);
+if(qs.get("ref"))f.reference.value=qs.get("ref").slice(0,300);
+if(qs.get("type")==="listing")f.category.value=CATSX[1];
+const STX={open:["Received",""],in_review:["Being looked at","rv"],resolved:["Resolved","approved"],dismissed:["Closed","rejected"]};
+let U=null;
+const ticket=id=>"SC-"+String(id).replace(/-/g,"").slice(0,6).toUpperCase();
+async function mine(){
+ if(!sb||!U){$("#mineW").hidden=true;return}
+ const {data,error}=await sb.from("complaints").select("*").eq("user_id",U.id).order("created_at",{ascending:false}).limit(30);
+ if(error||!(data||[]).length){$("#mineW").hidden=true;return}
+ $("#mineW").hidden=false;
+ $("#mine").innerHTML=data.map(c=>{const s=STX[c.status]||STX.open;
+  return `<div class="mc"><div class="rh"><b>${esc(c.subject)}</b><span class="pill ${s[1]}">${s[0]}</span></div><div class="m">${esc(c.ticket||ticket(c.id))} · ${esc(c.category)} · ${new Date(c.created_at).toLocaleDateString("en-KE",{day:"numeric",month:"short",year:"numeric"})}</div>${c.admin_reply?`<div class="rp"><b>SOKO Smart team:</b><br>${esc(c.admin_reply)}</div>`:'<div class="m">No reply yet. We will notify you here as soon as we respond.</div>'}</div>`}).join("")}
+async function setup(){
+ U=await user();
+ if(U){f.email.value=U.email||"";f.full_name.value=U.user_metadata?.full_name||"";f.phone.value=U.user_metadata?.phone||"";$("#shotL").hidden=false;
+  $("#who").textContent="You are logged in, so updates will also arrive in your notifications and Messages."}
+ else $("#who").textContent="Log in before sending if you want updates in your notifications and Messages. Guests are contacted by email.";
+ mine()}
+setup();if(sb)sb.auth.onAuthStateChange(()=>setTimeout(setup,0));
+$("#again").onclick=()=>{$("#ok").hidden=true;f.hidden=false;f.subject.value="";f.message.value="";f.reference.value="";f.category.value="";scrollTo({top:0,behavior:"smooth"})};
+f.addEventListener("submit",async e=>{e.preventDefault();
+ if(!sb){toast("Connect Supabase (CFG in soko.js) to submit");return}
+ if(f.website.value)return; /* honeypot */
+ const v=n=>f[n].value.trim();
+ if(!v("category")){toast("Please choose the type of problem");return}
+ if(v("subject").length<5){toast("Please add a short subject");return}
+ if(v("message").length<20){toast("Please tell us a bit more (at least 20 characters)");return}
+ if(!v("full_name")||!/^\S+@\S+\.\S+$/.test(v("email"))){toast("Please enter your name and a valid email");return}
+ try{const t=+localStorage.sokoCmpT||0;if(Date.now()-t<60000){toast("Please wait a minute before sending another complaint");return}}catch(x){}
+ const btn=$("#go");btn.disabled=true;
+ const id=crypto.randomUUID();let ev=null;
+ if(U&&f.shot.files[0]){const fl=f.shot.files[0];
+  if(!/^image\//.test(fl.type)||fl.size>3e6){toast("The screenshot must be an image under 3 MB");btn.disabled=false;return}
+  const ext=(fl.name.split(".").pop()||"png").toLowerCase().replace(/[^a-z0-9]/g,"")||"png",p=`${U.id}/complaint-${Date.now()}.${ext}`;
+  const up=await sb.storage.from("listing-images").upload(p,fl,{contentType:fl.type});
+  if(!up.error)ev=sb.storage.from("listing-images").getPublicUrl(p).data.publicUrl}
+ const {error}=await sb.from("complaints").insert({id,user_id:U?U.id:null,full_name:v("full_name"),email:v("email"),phone:v("phone")||null,category:v("category"),reference:v("reference")||null,subject:v("subject"),message:v("message"),evidence_url:ev});
+ btn.disabled=false;
+ if(error){toast(/relation .*complaints|schema cache/i.test(error.message)?"Complaints are not set up yet. Run supabase-complaints-ads.sql in Supabase.":error.message,"error");return}
+ try{localStorage.sokoCmpT=Date.now()}catch(x){}
+ $("#tkt").textContent=ticket(id);
+ $("#okn").textContent=U?"We will reply in your notifications and Messages. You can also follow it below under My complaints.":"We will reply to "+v("email")+". Keep your reference number handy.";
+ f.hidden=true;$("#ok").hidden=false;scrollTo({top:0,behavior:"smooth"});mine()});
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shop Manager – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>window.SOKO_NO_ADS=1</script>
+<script src="soko.js?v=20"></script>
+<style>
+.bar2{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.bar2 label{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--tx);font-size:15px}
+.bar2 select{border:2px solid var(--o);border-radius:10px;padding:9px 12px;font:inherit;font-weight:700;background:var(--bg);color:var(--tx);min-width:200px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.st{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:12px 14px}.st b{display:block;font-size:24px;color:var(--od)}.st span{font-size:13px;color:var(--mut)}
+.two2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}@media(max-width:860px){.two2{grid-template-columns:1fr}}
+.pan{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:16px}.pan h3{margin:0 0 10px;font-size:16px}
+.wrap{background:var(--bg);border:1px solid var(--bd);border-radius:12px;overflow-x:auto;margin-bottom:12px}
+table{border-collapse:collapse;width:100%;min-width:640px}th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--bd);vertical-align:middle}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);background:var(--bg2)}
+.th{width:42px;height:42px;border-radius:8px;object-fit:cover;background:var(--ot)}
+.bar{height:8px;border-radius:4px;background:var(--o);margin-top:3px}.low{color:var(--r);font-weight:700}
+.sm{border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font:inherit;background:var(--bg);color:var(--tx)}.qty{width:90px}
+.tabs i{font-style:normal;background:var(--r);color:#fff;border-radius:10px;font-size:11px;padding:0 6px;margin-left:6px}
+.ln{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)}
+.adh{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.pill.rv{background:#e8f0fb;color:#1d4f91}.pill.pz{background:#eee;color:#555}
+.adst{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0}.adst div{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:14px}.adst b{display:block;font-size:20px;color:var(--g)}.adst span{font-size:13px;color:var(--mut)}
+.adpb{height:6px;border-radius:3px;background:var(--bd);overflow:hidden;margin-top:4px;min-width:90px}.adpb i{display:block;height:100%;background:var(--o)}
+.adth{width:56px;height:42px;border-radius:8px;object-fit:cover;display:block}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main><section class="alt"><div class="w"><h2>Shop Manager <a href="profile.html#shops">My profile</a></h2><div id="app"></div></div></section></main>
+<div id="ft"></div>
+<script>
+shell("");
+const STS=["pending","confirmed","shipped","delivered","cancelled"],TABS={overview:"Overview",orders:"Orders",products:"Products",stock:"Stock",ads:"Ads"};
+const K=n=>Number(n||0).toLocaleString("en-KE"),pc=s=>s==="delivered"?"approved":s==="cancelled"?"rejected":"",low=p=>(+p.stock||0)<=(+p.low_stock_at||5);
+const sid=o=>String(o.id).slice(0,6),when=d=>new Date(d).toLocaleDateString("en-KE",{day:"numeric",month:"short",year:"numeric"});
+let U,SH=[],shop,tab=TABS[location.hash.slice(1)]?location.hash.slice(1):"overview",R=30,OF="",P=[],O=[],L=[],CAT=[],AD=[],ADERR="";
+const gate=(m,x="")=>{$("#app").innerHTML=`<div class="msg">${m}${x}</div>`};
+
+/* ----- category forms (defined by admin) ----- */
+const fieldsOf=id=>{const c=CAT.find(x=>String(x.id)===String(id));return Array.isArray(c&&c.fields)?c.fields:[]};
+async function catQ(){let r=await sb.from("categories").select("id,name,fields").eq("section","products").order("sort_order");if(r.error)r=await sb.from("categories").select("id,name").eq("section","products").order("sort_order");return r}
+function attrHTML(fs,vals={}){return fs.map(f=>{const n="a_"+f.key,v=vals[f.key]??"",rq=f.required?"required":"",L=esc(f.label)+(f.required?" *":"");
+ if(f.type==="textarea")return `<label style="grid-column:1/-1">${L}<textarea name="${n}" rows="3" ${rq}>${esc(v)}</textarea></label>`;
+ if(f.type==="select"||f.type==="yesno"){const o=f.type==="yesno"?["Yes","No"]:(f.options||[]);return `<label>${L}<select name="${n}" ${rq}><option value="">Choose</option>${o.map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("")}</select></label>`}
+ return `<label>${L}<input name="${n}" type="${f.type==="number"?"number":f.type==="date"?"date":"text"}" ${f.type==="number"?'min="0" step="any"':'maxlength="200"'} value="${esc(v)}" ${rq}></label>`}).join("")}
+const attrBox=(fs,vals)=>fs.length?`<div style="border-top:1px dashed var(--bd);padding-top:10px"><b>Details for this category</b><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px">${attrHTML(fs,vals)}</div></div>`:"";
+function readAttrs(f,fs){const o={};fs.forEach(x=>{const el=f.elements["a_"+x.key];if(!el)return;const v=el.value.trim();if(v==="")return;o[x.key]=x.type==="number"?+v:v});return o}
+const editAttrs=(p,f)=>{const fs=fieldsOf(p.category_id),o={...(p.attributes||{})};fs.forEach(x=>delete o[x.key]);return{...o,...readAttrs(f,fs)}};
+
+async function init(){
+ if(!sb)return gate("Connect Supabase (CFG in soko.js) to use the Shop Manager.");
+ U=await user();if(!U){gate("Please log in first, or create an account, to manage your shop.",'<br><br><button class="btn p" id="gl">Login</button> <button class="btn" id="gs">Create an account</button>');$("#gl").onclick=logView;$("#gs").onclick=signView;return}
+ const r=await sb.from("shops").select("*").eq("owner_id",U.id).order("created_at");
+ if(r.error)return gate(esc(r.error.message));SH=r.data||[];
+ if(!SH.length)return gate("You don't have a shop yet.",'<br><br><a class="btn p" href="openshop.html">Open a Shop</a>');
+ let s="";try{s=localStorage.sokoShop||""}catch(e){}
+ shop=SH.find(x=>String(x.id)===s)||SH[0];frame();load()}
+function frame(){const pend=O.filter(o=>o.status==="pending").length,lows=P.filter(low).length,bd={orders:pend,stock:lows};
+ $("#app").innerHTML=`<div class="bar2"><label>Shop <select id="shopSel" aria-label="Choose shop">${SH.map(s=>`<option value="${esc(s.id)}" ${s.id===shop.id?"selected":""}>${esc(s.name)}${s.status!=="approved"?" ("+esc(s.status)+")":""}</option>`).join("")}</select></label><span class="pill ${shop.status==="approved"?"approved":""}">${esc(shop.status)}</span><span style="flex:1"></span><a class="btn s" target="_blank" href="product.html?s=shops&id=${encodeURIComponent(shop.id)}">View shop page</a></div>
+ <div class="tabs">${Object.entries(TABS).map(([k,v])=>`<button data-tab="${k}" class="${k===tab?"on":""}">${v}${bd[k]?`<i>${bd[k]}</i>`:""}</button>`).join("")}</div><div id="pn"></div>`}
+async function load(){$("#pn").innerHTML='<div class="msg">Loading…</div>';const f=shop.id;
+ const [p,o,l,c,ad]=await Promise.all([sb.from("products").select("*").eq("shop_id",f).order("created_at",{ascending:false}),
+  sb.from("orders").select("*,order_items(*)").eq("shop_id",f).order("created_at",{ascending:false}).limit(500),
+  sb.from("stock_log").select("*").eq("shop_id",f).order("created_at",{ascending:false}).limit(15),
+  CAT.length?Promise.resolve({data:CAT}):catQ(),sb.from("ads").select("*").eq("shop_id",String(f)).order("created_at",{ascending:false})]);
+ const e=p.error||o.error||l.error;if(e){$("#pn").innerHTML=`<div class="msg">${esc(e.message)}<br>Run the latest supabase-setup.sql in Supabase.</div>`;return}
+ P=p.data||[];O=o.data||[];L=l.data||[];AD=ad.error?[]:(ad.data||[]);ADERR=ad.error?ad.error.message:"";if(c.data)CAT=c.data;frame();draw()}
+function draw(){({overview,orders,products,stock,ads})[tab]()}
+
+function overview(){const since=Date.now()-R*864e5,os=O.filter(o=>new Date(o.created_at)>=since),live=os.filter(o=>o.status!=="cancelled"),rev=live.reduce((a,o)=>a+ +o.total,0);
+ const day=d=>new Date(d).toLocaleDateString("en-CA"),by={};live.forEach(o=>{const k=day(o.created_at);by[k]=(by[k]||0)+ +o.total});
+ const days=[...Array(R)].map((_,i)=>day(Date.now()-(R-1-i)*864e5)),vals=days.map(d=>by[d]||0),mx=Math.max(1,...vals),W=640,H=170,bw=W/R;
+ const svg=`<svg viewBox="0 0 ${W} ${H+22}" width="100%" role="img" aria-label="Revenue per day">${vals.map((v,i)=>`<rect x="${i*bw+2}" y="${H-v/mx*H}" width="${Math.max(bw-4,2)}" height="${v/mx*H}" rx="3" fill="var(--o)"><title>${days[i]}: ${fmt(v)}</title></rect>`).join("")}<text x="0" y="${H+16}" font-size="11" fill="var(--mut)">${days[0]}</text><text x="${W}" y="${H+16}" font-size="11" text-anchor="end" fill="var(--mut)">${days[R-1]}</text></svg>`;
+ const tp={};live.forEach(o=>(o.order_items||[]).forEach(i=>{const t=tp[i.title]||(tp[i.title]={q:0,r:0});t.q+=i.qty;t.r+=i.qty*i.price}));
+ const top=Object.entries(tp).sort((a,b)=>b[1].q-a[1].q).slice(0,5),tm=Math.max(1,...top.map(t=>t[1].q)),lows=P.filter(low);
+ const cards=[["Revenue",fmt(rev)],["Orders",live.length],["Pending orders",O.filter(o=>o.status==="pending").length],["Products",P.length],["Low stock",lows.length],["Product views",K(P.reduce((a,p)=>a+(+p.views||0),0))],["Stock value",fmt(P.reduce((a,p)=>a+(+p.price||0)*(+p.stock||0),0))]];
+ $("#pn").innerHTML=`<div class="tb"><b>Performance</b><select id="rng" class="sm"><option value="7" ${R===7?"selected":""}>Last 7 days</option><option value="30" ${R===30?"selected":""}>Last 30 days</option></select></div>
+ <div class="stats">${cards.map(c=>`<div class="st"><b>${c[1]}</b><span>${c[0]}</span></div>`).join("")}</div>
+ <div class="two2"><div class="pan"><h3>Revenue per day</h3>${svg}</div><div class="pan"><h3>Orders by status</h3>${STS.map(s=>`<div class="ln"><span class="pill ${pc(s)}">${s}</span><b>${os.filter(o=>o.status===s).length}</b></div>`).join("")}</div></div>
+ <div class="two2"><div class="pan"><h3>Top selling products</h3>${top.map(t=>`<div style="margin-bottom:10px"><div class="ln" style="border:0;padding:0"><span>${esc(t[0])}</span><b>${t[1].q} sold · ${fmt(t[1].r)}</b></div><div class="bar" style="width:${t[1].q/tm*100}%"></div></div>`).join("")||'<div class="empty">No sales in this period yet.</div>'}</div>
+ <div class="pan"><h3>Needs restocking</h3>${lows.slice(0,6).map(p=>`<div class="ln"><span>${esc(p.title)}</span><b class="low">${+p.stock||0} left</b></div>`).join("")||'<div class="empty">All products are well stocked.</div>'}${lows.length?'<p style="margin:10px 0 0"><button class="lnk" data-tab="stock">Add stock</button></p>':""}</div></div>`}
+
+const PAYB={held:["Held in escrow","pz"],released:["Paid to you","approved"],refunded:["Refunded to buyer","rejected"]};
+const payBadge=o=>{const p=PAYB[o.pay_status];return p?`<span class="pill ${p[1]}">${p[0]}</span>`:'<span class="m">Not paid online</span>'};
+function orders(){const list=O.filter(o=>!OF||o.status===OF),held=O.filter(o=>o.pay_status==="held").reduce((a,o)=>a+ +(o.escrow_amount||o.total),0);
+ $("#pn").innerHTML=`<div class="pan" style="display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap"><div><b>Buyers pay to the SOKO Smart Wallet</b><div class="m">Their money is held safely. When the buyer confirms the order and releases the funds, it lands in your shop wallet.</div></div><div style="text-align:right"><div class="m">Held for you now</div><b style="font-size:20px;color:var(--od)">${fmt(held)}</b><div><a href="profile.html#wallet">Open wallet</a></div></div></div><div class="tb"><select id="of" class="sm" aria-label="Filter orders"><option value="">All orders</option>${STS.map(s=>`<option ${s===OF?"selected":""}>${s}</option>`).join("")}</select><button class="btn p" id="no">+ New order</button></div>
+ <div class="wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Date</th><th>Status</th></tr></thead><tbody>${list.map(o=>`<tr><td>#${esc(sid(o))}</td><td><b>${esc(o.buyer_name||"Customer")}</b><div class="m">${esc(o.buyer_phone||"")}</div></td><td>${(o.order_items||[]).map(i=>esc(i.title)+" × "+i.qty).join("<br>")}</td><td>${fmt(o.total)}</td><td>${payBadge(o)}</td><td class="m">${when(o.created_at)}</td><td><select class="sm" data-os="${esc(o.id)}" aria-label="Order status">${STS.map(s=>`<option ${s===o.status?"selected":""}>${s}</option>`).join("")}</select></td></tr>`).join("")||'<tr><td colspan="7" class="empty">No orders yet. Online orders appear here; use New order for walk-in or WhatsApp sales.</td></tr>'}</tbody></table></div>`}
+async function setStock(p,n,ch,note){const {error}=await sb.from("products").update({stock:n}).eq("id",p.id);if(error){toast(error.message,"error");return false}
+ await sb.from("stock_log").insert({shop_id:shop.id,product_id:String(p.id),change:ch,note});p.stock=n;return true}
+async function setStatus(id,ns){const o=O.find(x=>x.id===id);if(!o||o.status===ns)return;
+ if(ns==="cancelled"&&!await askConfirm({title:"Cancel this order?",msg:"The items go back into your stock. If the buyer already paid, the money held for this order is refunded to their wallet.",ok:"Yes, cancel order",cancel:"Keep order"})){orders();return}
+ let error;if(ns==="cancelled"&&o.pay_status==="held"){error=(await sb.rpc("escrow_refund",{p_order:id})).error}else{error=(await sb.from("orders").update({status:ns}).eq("id",id)).error}
+ if(error){toast(error.message,"error");orders();return}
+ const was=o.status,skipStock=o.pay_status==="held"&&ns==="cancelled";if(!skipStock&&(ns==="cancelled"||was==="cancelled")){const sg=ns==="cancelled"?1:-1;
+  for(const i of o.order_items||[]){const p=P.find(x=>String(x.id)===String(i.product_id));if(p)await setStock(p,Math.max(0,(+p.stock||0)+sg*i.qty),sg*i.qty,`Order #${sid(o)} ${ns==="cancelled"?"cancelled":"reopened"}`)}}
+ toast("Order marked "+ns);load()}
+function newOrder(){const ps=P.filter(p=>(+p.stock||0)>0);if(!ps.length){toast("Add stock to a product first");return}
+ openD(`<h3>New order</h3><form id="no2"><label>Customer name<input name="n" required></label><label>Phone<input name="ph" type="tel"></label><label>Product<select name="p" required>${ps.map(p=>`<option value="${esc(p.id)}">${esc(p.title)} (${+p.stock} in stock)</option>`).join("")}</select></label><label>Quantity<input name="q" type="number" min="1" value="1" required></label><button class="btn p">Create order</button></form>`)}
+
+function products(){$("#pn").innerHTML=`<div class="tb"><b>${P.length} ${P.length===1?"product":"products"}</b><button class="btn p" id="ap">+ Add product</button></div>
+ <form class="fm" id="pf" hidden><label>Product name<input name="title" required></label>
+ <div class="two"><label>Category<select name="cat" required><option value="">Choose</option>${CAT.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></label>${sel("Condition (optional)","condition",["New","Used","Refurbished"],"","")}</div>
+ <div id="af"></div>
+ <div class="two"><label>Price (KSh)<input name="price" type="number" min="0" required></label><label>Opening stock<input name="stock" type="number" min="0" value="1" required></label></div>
+ <label>Image link (optional)<input name="img" type="url" placeholder="https://…"></label><label>Description<textarea name="d" rows="3"></textarea></label><button class="btn p">Save product</button></form>
+ <div class="wrap"><table><thead><tr><th></th><th>Product</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>${P.map(p=>`<tr><td>${p.cover_url?`<img class="th" alt="" src="${esc(p.cover_url)}">`:'<div class="th"></div>'}</td><td><b>${esc(p.title)}</b><div class="m">${esc([p.condition,...Object.values(p.attributes||{})].filter(x=>x!==""&&x!=null).slice(0,4).join(" · "))}</div></td><td>${p.price!=null?fmt(p.price):"—"}</td><td class="${low(p)?"low":""}">${+p.stock||0}</td><td><span class="pill ${p.status==="approved"?"approved":p.status==="rejected"?"rejected":""}">${esc(p.status)}</span></td><td style="white-space:nowrap"><button class="btn s" data-ed="${esc(p.id)}">Edit</button> <button class="btn s d" data-dp="${esc(p.id)}">Delete</button></td></tr>`).join("")||'<tr><td colspan="6" class="empty">No products yet. Add your first one.</td></tr>'}</tbody></table></div><p class="m">New products go live on the marketplace after admin review.</p>`}
+
+function stock(){const name=id=>(P.find(p=>String(p.id)===String(id))||{}).title||"Removed product";
+ $("#pn").innerHTML=`<p class="m" style="margin-top:0">Type a number and press Add. Use a negative number to remove stock (damaged, sold elsewhere).</p>
+ <div class="wrap"><table><thead><tr><th>Product</th><th>In stock</th><th>Alert at</th><th>Change stock</th></tr></thead><tbody>${[...P].sort((a,b)=>low(b)-low(a)).map(p=>`<tr><td><b>${esc(p.title)}</b></td><td class="${low(p)?"low":""}">${+p.stock||0}${low(p)?" · low":""}</td><td><input class="sm qty" type="number" min="0" value="${+p.low_stock_at||5}" data-th="${esc(p.id)}" aria-label="Low stock alert level"></td><td style="white-space:nowrap"><input class="sm qty" type="number" data-q="${esc(p.id)}" placeholder="+10" aria-label="Quantity to add"> <button class="btn s p" data-add="${esc(p.id)}">Add</button></td></tr>`).join("")||'<tr><td colspan="4" class="empty">Add a product first.</td></tr>'}</tbody></table></div>
+ <div class="pan"><h3>Recent stock changes</h3>${L.map(l=>`<div class="ln"><span>${esc(name(l.product_id))} <span class="m">· ${esc(l.note||"")}</span></span><b class="${l.change<0?"low":""}">${l.change>0?"+":""}${l.change} <span class="m">${when(l.created_at)}</span></b></div>`).join("")||'<div class="empty">No changes yet.</div>'}</div>`}
+
+document.addEventListener("click",async e=>{const g=s=>e.target.closest(s);let b;
+ if(b=g("[data-tab]")){tab=b.dataset.tab;history.replaceState(null,"","#"+tab);frame();draw()}
+ else if(g("#ap"))$("#pf").hidden=!$("#pf").hidden;else if(g("#no"))newOrder();
+ else if(b=g("[data-ed]")){const p=P.find(x=>String(x.id)===b.dataset.ed);
+  openD(`<h3>Edit product</h3><form id="ep" data-id="${esc(p.id)}"><label>Name<input name="title" required value="${esc(p.title)}"></label><div class="two"><label>Price (KSh)<input name="price" type="number" min="0" value="${esc(p.price??"")}"></label><label>Stock<input name="stock" type="number" min="0" value="${+p.stock||0}"></label></div><label>Image link<input name="img" type="url" value="${esc(p.cover_url||"")}"></label><label>Description<textarea name="d" rows="3">${esc(p.description||"")}</textarea></label>${attrBox(fieldsOf(p.category_id),p.attributes||{})}<button class="btn p">Save</button></form>`)}
+ else if(b=g("[data-dp]")){if(!await askConfirm({title:"Delete this product?",msg:"It is removed from your shop and the marketplace. This cannot be undone.",ok:"Yes, delete"}))return;const {error}=await sb.from("products").delete().eq("id",b.dataset.dp);error?toast(error.message,"error"):(toast("Product deleted"),load())}
+ else if(b=g("[data-add]")){const id=b.dataset.add,p=P.find(x=>String(x.id)===id),q=parseInt(document.querySelector(`[data-q="${id}"]`).value,10);
+  if(!q){toast("Enter a quantity");return}if(await setStock(p,Math.max(0,(+p.stock||0)+q),q,q>0?"Stock added":"Stock removed")){toast("Stock updated");load()}}});
+document.addEventListener("change",async e=>{const t=e.target;
+ if(t.name==="cat"&&t.form&&t.form.id==="pf"){$("#af").innerHTML=attrBox(fieldsOf(t.value),{});return}
+ if(t.id==="shopSel"){shop=SH.find(s=>String(s.id)===t.value);try{localStorage.sokoShop=shop.id}catch(x){}P=[];O=[];L=[];AD=[];frame();load()}
+ else if(t.id==="rng"){R=+t.value;overview()}else if(t.id==="of"){OF=t.value;orders()}
+ else if(t.dataset.os)setStatus(t.dataset.os,t.value);
+ else if(t.dataset.th){const {error}=await sb.from("products").update({low_stock_at:Math.max(0,+t.value||0)}).eq("id",t.dataset.th);error?toast(error.message,"error"):(toast("Alert level saved"),load())}});
+document.addEventListener("submit",async e=>{const f=e.target,v=n=>f[n].value.trim();
+ if(f.id==="pf"){e.preventDefault();const {error}=await sb.from("products").insert({shop_id:String(shop.id),owner_id:U.id,title:v("title"),category_id:+f.cat.value,condition:v("condition")||null,attributes:readAttrs(f,fieldsOf(f.cat.value)),price:+v("price"),stock:+v("stock"),cover_url:v("img")||null,description:v("d"),county:shop.county,town:shop.town,neighbourhood:shop.neighbourhood,status:"pending"});
+  if(error){toast(error.message,"error");return}toast("Product added. It goes live after review.");load()}
+ if(f.id==="ep"){e.preventDefault();const p=P.find(x=>String(x.id)===f.dataset.id),ns=Math.max(0,+v("stock")||0);
+  const {error}=await sb.from("products").update({title:v("title"),price:v("price")===""?null:+v("price"),stock:ns,cover_url:v("img")||null,description:v("d"),attributes:editAttrs(p,f)}).eq("id",p.id);if(error){toast(error.message,"error");return}
+  if(ns!==(+p.stock||0))await sb.from("stock_log").insert({shop_id:String(shop.id),product_id:String(p.id),change:ns-(+p.stock||0),note:"Edited"});$("#dlg").close();toast("Saved");load()}
+ if(f.id==="no2"){e.preventDefault();const p=P.find(x=>String(x.id)===f.p.value),q=parseInt(v("q"),10);if(q>(+p.stock||0)){toast("Only "+p.stock+" in stock");return}
+  const {data:o,error}=await sb.from("orders").insert({shop_id:String(shop.id),buyer_id:null,buyer_name:v("n"),buyer_phone:v("ph"),status:"confirmed",total:(+p.price||0)*q}).select().single();if(error){toast(error.message,"error");return}
+  const e2=(await sb.from("order_items").insert({order_id:o.id,product_id:String(p.id),title:p.title,qty:q,price:+p.price||0})).error;if(e2){toast(e2.message,"error");return}
+  await setStock(p,(+p.stock||0)-q,-q,"Sold: order #"+sid(o));$("#dlg").close();toast("Order created");load()}});
+
+
+/* ----- Ads Manager (Meta-style campaign list + builder in ads.js) ----- */
+const ADST={draft:["Draft",""],pending:["In review","rv"],active:["Active","approved"],paused:["Paused","pz"],rejected:["Not approved","rejected"],completed:["Completed","pz"]};
+const adCol=a=>(SokoAds.THEMES[a.theme]||SokoAds.THEMES.green)[1];
+function ads(){
+ const tot=AD.reduce((a,x)=>({s:a.s+ +x.spend,i:a.i+ +x.impressions,c:a.c+ +x.clicks}),{s:0,i:0,c:0}),run=AD.filter(x=>x.status==="active").length,ctr=tot.i?(tot.c/tot.i*100).toFixed(1)+"%":"—",ok=shop.status==="approved";
+ const cards=[["Amount spent",fmt(Math.round(tot.s))],["Views",K(tot.i)],["Taps on your ads",K(tot.c)],["Tap rate",ctr],["Running now",run]];
+ const rows=AD.map(x=>{const st=ADST[x.status]||ADST.draft,pc=x.budget_total?Math.min(100,Math.round(+x.spend/+x.budget_total*100)):0,live=["active"].includes(x.status),canResume=x.status==="paused"&&x.approved_at;
+  return `<tr><td>${x.image_url&&!SokoAds.isVideo(x.image_url)?`<img class="adth" alt="" src="${esc(x.image_url)}">`:`<div class="adth" style="background:${adCol(x)};display:grid;place-items:center;color:#fff">${x.image_url?"▶":""}</div>`}</td>
+  <td><b>${esc(x.name)}</b><div class="m">${esc((SokoAds.FORMATS[x.format]||{}).n||"")} · ${esc(x.start_date||"")}${x.end_date?" → "+esc(x.end_date):""}</div></td>
+  <td><span class="pill ${st[1]}">${st[0]}</span>${x.status==="rejected"&&x.reject_reason?`<div class="m low" style="max-width:220px">${esc(x.reject_reason)}</div>`:""}${x.status==="pending"?'<div class="m">Waiting for review</div>':""}</td>
+  <td>${x.budget_total!=null?`${fmt(Math.round(+x.spend))} of ${fmt(+x.budget_total)}<div class="adpb"><i style="width:${pc}%"></i></div>`:"—"}</td>
+  <td>${K(x.impressions)} views<div class="m">${K(x.clicks)} taps${+x.impressions?" · "+(x.clicks/x.impressions*100).toFixed(1)+"%":""}</div></td>
+  <td style="white-space:nowrap">${live?`<button class="btn s" data-adtog="${esc(x.id)}" data-to="paused">Pause</button> `:canResume?`<button class="btn s p" data-adtog="${esc(x.id)}" data-to="active">Resume</button> `:""}${x.status!=="completed"?`<button class="btn s" data-aded="${esc(x.id)}">Edit</button> `:""}<button class="btn s" data-addup="${esc(x.id)}">Duplicate</button> <button class="btn s d" data-addel="${esc(x.id)}">Delete</button></td></tr>`}).join("");
+ $("#pn").innerHTML=`<div class="adh"><div><b style="font-size:18px">Ads Manager</b><div class="m">Promote your shop or a product with eye-catching ads shown to shoppers across SOKO Smart.</div></div><button class="btn p" data-adnew ${ok?"":"disabled"}>+ Create ad</button></div>
+ ${ok?"":'<div class="msg">Your shop must be approved before you can run ads.</div>'}${ADERR?`<div class="msg">${esc(ADERR)}<br>Run supabase-complaints-ads.sql in Supabase to turn on ads.</div>`:""}
+ <div class="adst">${cards.map(c=>`<div><b>${c[1]}</b><span>${c[0]}</span></div>`).join("")}</div>
+ ${AD.length?`<div class="wrap"><table><thead><tr><th></th><th>Ad</th><th>Delivery</th><th>Budget used</th><th>Results</th><th></th></tr></thead><tbody>${rows}</tbody></table></div><p class="m">Every new or changed ad is reviewed by the SOKO Smart team before it goes live. You are notified here and in Messages.</p>`
+ :`<div class="pan" style="text-align:center;padding:30px 16px"><h3 style="font-size:19px">Create your first ad</h3><p class="m" style="max-width:460px;margin:0 auto 14px">Pick a goal, choose who sees it, add a picture and a headline, set a budget. We review it and then it starts appearing as a pop-up while shoppers browse.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px"><span class="pill">1 Set a goal</span><span class="pill">2 Design the ad</span><span class="pill">3 Set a budget</span><span class="pill approved">4 Go live after review</span></div>${ok?'<button class="btn p" data-adnew>+ Create ad</button>':""}</div>`}`}
+const openAd=ad=>SokoAds.wizard({ad,userId:U.id,shops:[shop],products:P.filter(p=>p.status==="approved"),onDone:()=>load()});
+document.addEventListener("click",async e=>{const g=s=>e.target.closest(s);let b;
+ if(g("[data-adnew]")){if(g("[data-adnew]").disabled)return;openAd(null)}
+ else if(b=g("[data-aded]"))openAd(AD.find(x=>String(x.id)===b.dataset.aded));
+ else if(b=g("[data-adtog]")){const {error}=await sb.from("ads").update({status:b.dataset.to}).eq("id",b.dataset.adtog);error?toast(error.message,"error"):(toast(b.dataset.to==="paused"?"Ad paused":"Ad resumed"),load())}
+ else if(b=g("[data-addup]")){const x=AD.find(a=>String(a.id)===b.dataset.addup),t=new Date().toISOString().slice(0,10),e7=new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+  const {error}=await sb.from("ads").insert({owner_id:U.id,shop_id:x.shop_id,shop_name:x.shop_name,name:x.name+" (copy)",objective:x.objective,product_id:x.product_id,anim_in:x.anim_in,anim_out:x.anim_out,product_ids:x.product_ids,format:x.format,placements:x.placements,audience:x.audience,headline:x.headline,body:x.body,image_url:x.image_url,cta_label:x.cta_label,cta_url:x.cta_url,theme:x.theme,budget_total:x.budget_total,start_date:t,end_date:e7,status:"draft"});
+  error?toast(error.message,"error"):(toast("Copy saved as a draft. Edit it to submit."),load())}
+ else if(b=g("[data-addel]")){if(!await askConfirm({title:"Delete this ad?",msg:"The ad and its results are removed. This cannot be undone.",ok:"Yes, delete"}))return;const {error}=await sb.from("ads").delete().eq("id",b.dataset.addel);error?toast(error.message,"error"):(toast("Ad deleted"),load())}});
+if(sb)sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_IN"||ev==="SIGNED_OUT")init()});
+init();
+</script>
+</body>
+</html>

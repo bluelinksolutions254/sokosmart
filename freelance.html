@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Freelance Marketplace – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="soko.js?v=19"></script>
+<style>
+#dlg{max-width:860px;max-height:92vh;overflow:auto}
+.fh{background:var(--g);color:#fff;border-radius:16px;padding:22px;margin-bottom:14px;display:grid;gap:10px}
+.fh h1{margin:0;color:#fff;font-size:26px}.fh p{margin:0;opacity:.9;font-size:14.5px}.fh .bt{display:flex;gap:8px;flex-wrap:wrap}
+.ftabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px}.ftabs button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:20px;padding:7px 18px;font-weight:700;white-space:nowrap}.ftabs .on{background:var(--g);border-color:var(--g);color:#fff}
+.fbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.fbar input,.fbar select,.ffm input,.ffm select,.ffm textarea{width:100%;box-sizing:border-box;border:1px solid var(--bd);border-radius:8px;padding:9px 10px;font:inherit;background:var(--bg);color:var(--tx)}
+.flist{display:grid;gap:10px}
+.fc{display:grid;gap:6px;border:1px solid var(--bd);background:var(--bg);border-radius:14px;padding:14px 16px;color:inherit;text-decoration:none;cursor:pointer}
+.fc:hover{border-color:var(--o)}.fc h3{margin:0;font-size:17px}.fc .row{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.fc p{margin:0;font-size:14px;color:var(--tx);opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fp{display:inline-block;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;background:#eee;color:#555}
+.fp.g{background:#dff3e8;color:#14633F}.fp.o{background:var(--ot);color:var(--od)}.fp.r{background:#fde3e0;color:#b3261e}.fp.b{background:#e8f0fb;color:#1d4f91}
+.fav{width:48px;height:48px;border-radius:50%;background:var(--o);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;flex:none}
+.ffm{display:grid;gap:10px}
+.ffm input[type=radio],.ffm input[type=checkbox]{width:auto}
+.pjw{min-width:0}.pjst{display:flex;gap:6px;list-style:none;margin:0 0 14px;padding:0}
+.pjst li{flex:1;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--ln);border-radius:10px;font-size:13px;font-weight:600;color:var(--mu);background:#fff;min-width:0}
+.pjst li i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;background:var(--pg);color:var(--mu)}
+.pjst li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pjst li.on{border-color:var(--or);color:var(--ink);background:var(--cr)}.pjst li.on i{background:var(--or);color:#fff}
+.pjst li.done i{background:var(--gn);color:#fff}
+.pjp{display:grid;gap:12px}.pjp[hidden]{display:none}
+.pjn{display:flex;justify-content:space-between;gap:8px;margin-top:4px}.pjn .btn[hidden]{display:none}
+.btg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.btg label{position:relative;border:1.5px solid var(--ln);border-radius:12px;padding:10px 12px;cursor:pointer;gap:2px;background:#fff}
+.btg label:has(input:checked){border-color:var(--or);background:var(--cr)}
+.btg input{position:absolute;opacity:0;pointer-events:none}.btg b{font-size:14px;color:var(--ink)}.btg small{font-weight:400;color:var(--mu);font-size:12px}
+.skb{display:flex;flex-wrap:wrap;gap:6px}.skb:empty{display:none}
+.skc{display:inline-flex;align-items:center;gap:6px;background:var(--gl);color:var(--gd);border-radius:20px;padding:3px 6px 3px 11px;font-size:13px;font-weight:600}
+.skc button{border:0;background:rgba(0,0,0,.08);color:inherit;border-radius:50%;width:18px;height:18px;line-height:1;cursor:pointer;padding:0}
+.pjrv{background:var(--pg);border-radius:12px;padding:12px 14px;display:grid;gap:6px;font-size:14px}.pjrv div{display:flex;justify-content:space-between;gap:12px}.pjrv span{color:var(--mu)}.pjrv b{text-align:right;color:var(--ink)}
+.pjsk{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.pjat{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}.pjat a{font-size:13px;font-weight:600;color:var(--gn)}
+@media(max-width:640px){.btg{grid-template-columns:1fr}.pjst li span{display:none}.pjst li.on span{display:inline}}.ffm label{display:grid;gap:4px;font-weight:600;font-size:13px}.ffm .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fbox{background:var(--gt);border-left:4px solid var(--g);border-radius:8px;padding:10px 12px;font-size:14px;white-space:pre-wrap}
+.fsec{margin:18px 0 8px}.fcnt{margin:0 0 6px;font-weight:800}
+.fsecw{background:#FFF8EF;border-radius:20px;padding:30px 22px 24px;margin-bottom:16px}
+.fttl{text-align:center;margin:0 0 8px;font-size:30px;font-weight:700;color:#1d1a16}.fsub{text-align:center;max-width:560px;margin:0 auto 20px;font-size:14px;line-height:1.7;color:#6b625a}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.jc{background:#fff;border-radius:14px;padding:20px 20px 16px;display:grid;gap:12px;align-content:space-between;box-shadow:0 1px 3px rgba(11,74,46,.08);color:#1d1a16;text-decoration:none;cursor:pointer;transition:box-shadow .2s,transform .2s;min-width:0}
+.jc:hover,.jc:focus-visible{box-shadow:0 8px 22px rgba(11,74,46,.16);transform:translateY(-2px);outline:0}
+.jc h3{margin:0;font-size:17px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.jc p{margin:0;font-size:14px;line-height:1.7;color:#5b534b;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.jf{display:flex;align-items:center;gap:10px;min-width:0}.jl{width:40px;height:40px;border-radius:10px;background:#FFF3E3;color:#D9740A;display:grid;place-items:center;font-weight:800;font-size:18px;flex:none}
+.jf .jn{min-width:0;display:grid}.jf b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jf small{font-size:12px;color:#8a8178;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jf .sm{margin-left:auto;font-size:12.5px;color:#5b534b;font-weight:600;white-space:nowrap;padding-left:6px}
+.fcb{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.12);border-radius:10px;padding:8px 12px;font-size:14px}.fcb b{font-size:17px}
+.fcw{display:grid;gap:8px;grid-template-columns:repeat(4,1fr)}.fcw button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:10px;padding:10px 4px;font:inherit;font-weight:700;cursor:pointer}.fcw button.on{border-color:var(--o);background:var(--ot);color:var(--od)}
+@media(max-width:900px){.fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.fbar,.ffm .two{grid-template-columns:1fr}.fgrid{grid-template-columns:minmax(0,1fr)}.fttl{font-size:24px}.fsecw{padding:22px 14px}}
+
+[hidden]{display:none!important}
+.fx{background:#E9EFEA;padding:14px 0 28px}
+.fshell{background:#F4F7F5;border-radius:22px;box-shadow:0 6px 30px rgba(11,74,46,.12)}
+.fhero{background:#0B4A2E;color:#fff;padding:18px 28px 6px;position:relative;overflow:hidden;border-radius:22px 22px 0 0}
+.fhero:before{content:"";position:absolute;right:-70px;top:-90px;width:300px;height:300px;border-radius:50%;background:rgba(245,142,32,.16)}
+.fhero:after{content:"";position:absolute;right:120px;bottom:-110px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.06)}
+.fhero>*{position:relative;z-index:1}
+.fnav{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+#ft2{display:flex;gap:4px;overflow-x:auto}#ft2 button{background:none;border:0;color:#cfe3d8;font:inherit;font-weight:600;padding:10px 14px;border-top:3px solid transparent;cursor:pointer;white-space:nowrap}
+#ft2 button.on{color:#F9B35C;border-top-color:#F58E20}#ft2 button:hover{color:#fff}
+.fact{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.fact .btn.s{padding:8px 14px}
+.fcb{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.12);border-radius:20px;padding:4px 6px 4px 14px;font-size:14px}.fcb b{font-size:16px;color:#F9B35C}.fcb .btn{padding:5px 12px}
+.fhero h1{margin:0 0 6px;font-size:34px;font-weight:600;color:#fff;display:flex;gap:12px;align-items:center;flex-wrap:wrap;line-height:1.2}
+.fhero p{margin:0 0 6px;color:#cfe3d8;font-size:14.5px;max-width:640px}
+.fsrch{display:flex;align-items:center;background:#fff;border-radius:999px;padding:7px 7px 7px 22px;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.fsrch label{display:flex;align-items:center;gap:10px;color:#8a8178;min-width:0}.fsrch .fs1{flex:3}.fsrch .fs2{flex:2;border-left:1px solid #e4dccf;padding-left:18px}
+.fsrch input,.fsrch select{border:0;outline:0;background:transparent;font:inherit;font-size:15px;color:#1d1a16;width:100%;min-width:0;padding:10px 0}
+.fsrch .btn{border-radius:999px;padding:13px 34px;background:#F58E20;border-color:#F58E20;color:#fff;font-weight:700}.fsrch .btn:hover{background:#D9740A}
+.fbody{padding:26px 28px 30px;border-radius:0 0 22px 22px}
+.fbh{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.fbh h2{margin:0;font-size:25px;font-weight:600;color:#1d1a16}.fbh h2 small{font-size:14px;color:#6b625a;font-weight:500;margin-left:8px}
+.fbr{display:flex;gap:8px;align-items:center}.fbr select{border:1px solid #cfc6b8;border-radius:999px;padding:9px 16px;background:#fff;font:inherit;font-size:14px;color:#1d1a16}.fbr .btn{display:none}
+.flay{display:grid;grid-template-columns:230px minmax(0,1fr);gap:26px;align-items:start}
+.fside{display:grid;gap:22px}.fsh{display:flex;justify-content:space-between;align-items:center}.fsh b{font-size:15px}.fsh .clr{border:0;background:none;color:#e0483c;font-weight:600;font-size:13px;cursor:pointer}
+.fsg h4{margin:0 0 10px;font-size:14px;font-weight:600}.fsg .ck{display:flex;gap:10px;align-items:center;font-size:13.5px;color:#4b443d;padding:4px 0;cursor:pointer}
+.fsg .ck input{width:17px;height:17px;accent-color:#0B4A2E;margin:0}
+.fsg .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fsg input[type=number],.fsg input[type=text],.fsg select{width:100%;box-sizing:border-box;border:1px solid #d7cfc2;border-radius:8px;padding:8px 10px;font:inherit;font-size:13.5px;background:#fff}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.pc{background:#fff;border-radius:14px;padding:18px 18px 14px;display:grid;gap:12px;align-content:start;box-shadow:0 1px 3px rgba(11,74,46,.07);cursor:pointer;transition:box-shadow .2s,transform .2s;min-width:0;color:#1d1a16}
+.pc:hover,.pc:focus-visible{box-shadow:0 10px 24px rgba(11,74,46,.16);transform:translateY(-2px);outline:0}
+.pch{display:flex;gap:12px;align-items:flex-start}.pl{width:44px;height:44px;border-radius:10px;background:#FFF3E3;color:#D9740A;display:grid;place-items:center;font-weight:800;font-size:19px;flex:none}
+.pt{min-width:0;flex:1}.pt h3{margin:0;font-size:16px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}.pt small{display:block;font-size:12px;color:#8a8178;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phr{border:0;background:none;color:#a39a8f;padding:2px;cursor:pointer;flex:none;display:grid}.phr:hover{color:#e0483c}.phr.on{color:#e0483c}.phr.on svg{fill:#e0483c}
+.ptg{display:flex;gap:6px;flex-wrap:wrap}.ptg span{border-radius:7px;padding:3px 10px;font-size:12px;font-weight:600}
+.ptg .t1{background:#EFE8FF;color:#5B3CC4}.ptg .t2{background:#E2F6E9;color:#14633F}.ptg .t3{background:#FFEBD9;color:#B45F06}
+.pc p{margin:0;font-size:13.5px;line-height:1.6;color:#6b625a;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:43px}
+.pf{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #eee7dc;padding-top:12px;flex-wrap:wrap}
+.pf b{font-size:16px;font-weight:700;color:#1d1a16}.pf b small{font-size:12px;color:#8a8178;font-weight:500}.pf .pp{display:flex;gap:5px;align-items:center;font-size:12px;color:#8a8178}
+.fmore{text-align:center;margin-top:20px}
+.fmine{padding:0}
+@media(max-width:1000px){.flay{grid-template-columns:1fr}.fside{display:none;background:#fff;border-radius:14px;padding:16px}.fside.open{display:grid}.fbr .btn{display:inline-flex}}
+@media(max-width:700px){.fhero{padding:14px 16px 22px}.fhero h1{font-size:26px}.fbody{padding:18px 14px 24px}.fsrch{border-radius:18px;flex-direction:column;align-items:stretch;padding:12px;gap:4px}.fsrch .fs1,.fsrch .fs2{flex:none;border-left:0;padding-left:0;border-bottom:1px solid #eee7dc}.fsrch .btn{width:100%}.fnav{margin-bottom:16px}.pgrid{grid-template-columns:minmax(0,1fr)}}
+
+.fstick{position:sticky;top:var(--st,0px);z-index:30;background:#0B4A2E;padding:16px 28px 20px;transition:box-shadow .2s,padding .2s}
+.fstick.stuck{box-shadow:0 8px 22px rgba(0,0,0,.28);padding:10px 28px 12px}.fstick[hidden]{display:none!important}
+.fsrch .fs2[hidden]{display:none}
+.fcat{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:8px;font:inherit;font-size:13.5px;color:#4b443d;cursor:pointer}
+.fcat:hover{background:#eaf1ec}.fcat.on{background:#0B4A2E;color:#fff;font-weight:600}.fcat small{opacity:.7}.fcat.sub{padding-left:24px;font-size:13px}
+.av{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none;background:#F58E20;color:#fff;display:grid;place-items:center;font-weight:800;font-size:19px;overflow:hidden}.av img{width:100%;height:100%;object-fit:cover}
+.avl{width:84px;height:84px;font-size:34px}
+.vb{display:inline-flex;gap:3px;align-items:center;background:#E3F1FF;color:#1b6ec2;border-radius:20px;padding:1px 8px;font-size:11.5px;font-weight:700;vertical-align:middle}
+.vbd{display:inline-flex;vertical-align:middle;flex:none;margin-left:1px}.vbd svg{width:1em;height:1em;min-width:15px;min-height:15px}
+.cdd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 12px}.cdd span{font-size:13px;font-weight:700;color:var(--ink)}.cdd select{min-width:230px;max-width:100%;border:1px solid var(--ln);border-radius:10px;background:#fff;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer}.cdd select:focus-visible{outline:3px solid rgba(15,92,52,.25);border-color:var(--gn)}
+.nw{display:inline-flex;background:#FFF3E3;color:#B45F06;border-radius:20px;padding:1px 8px;font-size:11.5px;font-weight:700}
+.pkg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:8px 0}
+.pk{border:2px solid #e6dccd;border-radius:12px;padding:12px;display:grid;gap:6px;align-content:start;background:#fff;cursor:pointer;text-align:left}.pk.on{border-color:#F58E20;background:#FFF8EF}
+.pk b{font-size:15px}.pk .pp2{font-size:20px;font-weight:800;color:#0B4A2E}.pk ul{margin:0;padding-left:18px;font-size:13px;color:#4b443d}.pk p{margin:0;font-size:12.5px;color:#6b625a}
+.cmp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:#fff;border:1px solid #eadfce;border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.cmp .cn{display:grid;gap:2px;min-width:0}.cmp .cn small{color:#6b625a;font-size:12.5px}.cmp .ca{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.cmp.off{opacity:.65}
+.pfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:8px 0}
+.pfg a,.pfg div.pi{display:block;border-radius:10px;overflow:hidden;background:#eee;aspect-ratio:4/3;position:relative}.pfg img,.pfg video{width:100%;height:100%;object-fit:cover;display:block}
+.pfg .vt{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;border-radius:6px;padding:2px 6px}
+.pfg .st{position:absolute;right:6px;top:6px}.pfg .dl{position:absolute;left:6px;top:6px;border:0;background:rgba(0,0,0,.65);color:#fff;border-radius:6px;font-size:11px;padding:3px 7px;cursor:pointer}
+.rbox{margin-top:12px;padding:12px;border:1px solid #eee7dc;border-radius:12px;background:#fffaf0}.rbox form{display:grid;gap:8px}.rbox textarea{border:1px solid #e0d8c8;border-radius:8px;padding:8px 10px;font:inherit;resize:vertical}.stp{display:flex;gap:4px}.stp button{background:none;border:0;font-size:32px;line-height:1;color:#d6d0c4;cursor:pointer;padding:2px 4px;transition:transform .1s,color .1s}.stp button.on{color:#E5A51A}.stp button:hover{transform:scale(1.15)}.rv{border-top:1px solid #eee7dc;padding:10px 0}.rv b{font-size:13.5px}.rv .m{font-size:12.5px}
+.chk{display:grid;gap:6px;max-height:230px;overflow:auto;border:1px solid var(--bd);border-radius:10px;padding:10px;background:#fff}.chk .gh{font-weight:800;font-size:12.5px;color:#0B4A2E;margin-top:4px}
+.chk label{display:flex!important;gap:8px;align-items:center;font-weight:500!important}.chk input{width:auto!important}
+.sum{background:#F4F7F5;border-radius:10px;padding:12px 14px;display:grid;gap:4px;font-size:14px}.sum .tt{display:flex;justify-content:space-between;font-weight:800;font-size:17px;border-top:1px solid #dfe6e0;padding-top:6px;margin-top:4px}
+@media(max-width:700px){.fstick{padding:10px 14px 12px}.fstick .fsrch{flex-direction:row;align-items:center;border-radius:999px;padding:5px 5px 5px 14px}.fstick .fsrch .fs1{border-bottom:0;flex:1}.fstick .fsrch .fs2{display:none}.fstick .fsrch .btn{width:auto;padding:10px 18px}.pkg{grid-template-columns:1fr}.cmp{grid-template-columns:auto minmax(0,1fr)}.cmp .ca{grid-column:1/-1;justify-content:flex-start}}
+
+/* ===== SOKO brown & gold freelance theme ===== */
+.fx{background:#E9EFEA}.fshell{background:#F4F7F5;box-shadow:0 8px 32px rgba(11,74,46,.14)}
+.fhero{background:linear-gradient(105deg,#0B4A2E 0%,#0F5C39 60%,#14633F 100%);padding:18px 28px 26px}
+.fhero:before{background:rgba(245,142,32,.16)}
+#ft2 button{color:#cfe3d8}#ft2 button.on{color:#F9B35C;border-top-color:#F58E20}
+.fhero h1{font-size:38px;font-weight:800;display:block}.fhero h1 .g{color:#F9B35C}.fhero p{color:#cfe3d8;font-size:16px;max-width:520px}
+.fbn{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.fex{background:#F58E20!important;border-color:#F58E20!important;color:#fff!important;font-weight:800;margin-top:10px;border-radius:10px}
+.fpts{list-style:none;margin:0;padding:0;display:none;gap:14px;font-weight:700;font-size:15px}.fhero[data-t=services] .fpts,.fhero[data-t=talent] .fpts{display:grid}
+.fpts li{display:flex;align-items:center;gap:12px}.fpts i{font-style:normal;width:34px;height:34px;border-radius:50%;background:#F9B35C;color:#0B4A2E;display:grid;place-items:center;font-weight:800}
+.fhero[data-t=orders] .fex,.fhero[data-t=hub] .fex{display:none}
+.fstick{background:#0B4A2E}.fstick.stuck{box-shadow:0 8px 22px rgba(0,0,0,.4)}
+.fsrch .btn,.fsrch .btn:hover{background:#0B4A2E;border-color:#0B4A2E;color:#fff}
+.fbh h2{font-weight:800;color:#1d1a16}.fbr select{border-color:#cfc6b8;border-radius:10px}
+.flay{grid-template-columns:260px minmax(0,1fr)}.fl2{display:grid;gap:18px}
+.fcc,.fside{background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(11,74,46,.1);overflow:hidden}.fside{padding:16px;gap:16px}
+.fcc h4{margin:0;background:#0B4A2E;color:#fff;padding:14px 16px;font-size:15px}
+.fcc button{display:flex;justify-content:space-between;width:100%;border:0;border-bottom:1px solid #eee7dc;background:none;padding:12px 16px;font:inherit;font-size:14px;color:#4b443d;cursor:pointer;text-align:left}
+.fcc button:hover{background:#FFF8EF}.fcc button.on{background:#FFF3E3;color:#0B4A2E;font-weight:700}.fcc button:after{content:"›";color:#8a8178}
+.fsh b{font-size:16px}.fside .clr{display:block;width:100%;background:#0B4A2E;color:#fff;border-radius:10px;padding:11px;font-size:14px;font-weight:700}
+.fsg .ck input{accent-color:#0B4A2E}.fcat.on{background:#0B4A2E}.fcat:hover{background:#FFF8EF}
+.pk .pp2,.chk .gh{color:#0B4A2E}.pk.on,.fcw button.on{border-color:#F58E20;background:#FFF8EF}
+.pl,.jl{background:#FFF3E3;color:#D9740A}.pf b{color:#0B4A2E}
+.fg4{grid-template-columns:repeat(auto-fill,minmax(235px,1fr))}
+.fcd{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(11,74,46,.12);cursor:pointer;transition:.2s;display:flex;flex-direction:column;min-width:0}
+.fcd:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(11,74,46,.2)}
+.fcv{height:128px;background:linear-gradient(135deg,#0B4A2E,#D9740A) center/cover;position:relative}
+.fvf{position:absolute;right:8px;top:8px;background:#0B4A2E;color:#fff;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700}
+.fcb2{padding:0 14px 14px;display:grid;gap:8px;flex:1;align-content:start}
+.fid{display:flex;gap:10px;align-items:flex-end;margin-top:-30px}.fid .av{width:62px;height:62px;border:3px solid #fff;background:#D9740A}
+.fid div{min-width:0;padding-bottom:2px}.fid b{display:block;font-size:15px;color:#1d1a16;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fid small{font-size:12px;color:#6b625a}
+.fcd h4{margin:2px 0 0;font-size:15px;color:#1d1a16}.fcd p{margin:0;font-size:13px;color:#6b625a;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fth{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.fth img,.fth i{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;background:#eee7dc;display:block}
+.fpr{background:#FFF3E3;border-radius:8px;text-align:center;padding:9px;font-weight:800;font-size:17px;color:#1d1a16}
+.fhire{border:0;background:#0B4A2E;color:#fff;border-radius:8px;padding:11px;font:inherit;font-weight:700;cursor:pointer}.fhire:hover{background:#14633F}
+.fcta{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;background:#FFF3E3;border-radius:14px;margin:0 28px 28px;padding:14px 22px;font-size:17px;color:#1d1a16}
+.fcta u{color:#D9740A}.fcta .btn{background:#0B4A2E;border-color:#0B4A2E;color:#fff;font-weight:700}.fcta[hidden]{display:none}
+@media(max-width:1000px){.fcc{display:none}.flay{grid-template-columns:1fr}}
+@media(max-width:700px){.fcta{margin:0 14px 20px}.fhero h1{font-size:28px}}
+
+.fmo{display:grid;gap:3px;height:100%;background:#E9EFEA}.fmo img{width:100%;height:100%;object-fit:cover;display:block;min-height:0}
+.fmo.n1{grid-template-columns:1fr}.fmo.n2{grid-template-columns:1fr 1fr}.fmo.n3{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr}.fmo.n3 img:first-child{grid-row:span 2}
+.fmo.n0{background:linear-gradient(135deg,#0B4A2E,#14633F);place-content:center;text-align:center;color:#fff}.fmo.n0 span{font-size:46px;font-weight:800;color:#F9B35C;line-height:1}.fmo.n0 small{font-size:12px;opacity:.8}
+.fcv2{height:150px;position:relative;overflow:hidden}.fav2{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.6);color:#fff;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700}.fav2.on{background:#14633F}.fav2:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#bbb;margin-right:6px}.fav2.on:before{background:#7CF2A8}
+.fcd .fid{margin-top:-28px}.fid small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fchip{display:inline-block;background:#FFF3E3;color:#B45F06;border:1px solid #F9B35C;border-radius:20px;padding:3px 12px;font-size:13px;font-weight:700}
+.fst{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;gap:6px;font-size:12.5px;color:#6b625a;border-top:1px solid #eee7dc;border-bottom:1px solid #eee7dc;padding:8px 0}.fst b{color:#1d1a16}
+.floc{display:flex;gap:5px;align-items:center;font-size:12.5px;color:#6b625a}
+.fpr{background:#F4F7F5;border-radius:10px;padding:8px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:18px;font-weight:800;color:#0B4A2E}.fpr small{font-size:11.5px;font-weight:500;color:#6b625a}
+.fbt{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fhire.w{background:#fff;color:#0B4A2E;border:1.5px solid #0B4A2E}.fhire.w:hover{background:#F4F7F5}
+.tvh{background:linear-gradient(105deg,#0B4A2E,#14633F);margin:-4px -4px 0;border-radius:14px 14px 0 0;padding:20px}.tvb{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.tvb .av{border:3px solid #fff}
+.tvs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.tvs div{background:#F4F7F5;border-radius:12px;padding:12px;text-align:center}.tvs b{font-size:20px;display:block;color:#0B4A2E}.tvs small{color:#6b625a;font-size:12px}
+.tvsp{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#FFF8EF;border:1px solid #F9B35C;border-radius:14px;padding:14px 16px;margin-bottom:6px}
+.pfg{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}.pfg a img{transition:transform .2s}.pfg a:hover img{transform:scale(1.05)}
+.pc{border:1px solid #eee7dc}.pc:hover{border-color:#F58E20}
+@media(max-width:600px){.tvs{grid-template-columns:1fr 1fr 1fr}.tvb{gap:10px}}
+
+/* layout fix: nothing overlaps the cover any more */
+.fcd .fid{margin-top:0;align-items:center;padding-top:12px}.fcd .fid .av{width:52px;height:52px;font-size:21px;border:2px solid #fff;box-shadow:0 0 0 1px #eee7dc}
+.fcd .fid div{padding:0}.fcd .fid b{font-size:15px}.fcv2{z-index:0}.fcb2{position:relative;z-index:1;background:#fff;padding:0 14px 14px;gap:10px}
+.fcd .fst{grid-template-columns:repeat(3,minmax(0,1fr));text-align:center}.fcd .fst span:first-child{text-align:left}.fcd .fst span:last-child{text-align:right}
+.fcd .fpr{flex-wrap:wrap}.fcd .fpr b{font-size:18px}.fcd .fbt .fhire{padding:10px 6px;min-width:0;white-space:nowrap}
+.fg4{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}.fsh,.fside{min-width:0}.flay>*{min-width:0}
+
+.gls{display:grid;gap:14px}.gp2{background:#fff;border-radius:14px;padding:18px;display:grid;gap:10px;box-shadow:0 1px 4px rgba(11,74,46,.1);border:1px solid #eee7dc}.gp2:hover{border-color:#F58E20}
+.gph{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start}.gp2 h3{margin:8px 0 2px;font-size:18px;color:#1d1a16}.gp2 p{margin:0;font-size:14px;line-height:1.6;color:#4b443d;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gpf{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;border-top:1px solid #eee7dc;padding-top:10px}
+
+/* ===================== SOKO Smart Freelance – green & orange (marketplace layout) ===================== */
+:root{--gn:#0F5C34;--gd:#0B4A2E;--gl:#E7F2DD;--or:#F58E20;--or2:#F5A12E;--od2:#D9740A;--cr:#FFF3E3;--pg:#F2F4EF;--ln:#E4E8DE;--ink:#17261D;--mu:#66746A}
+.fx{background:var(--pg);padding:16px 0 34px}
+.fapp{display:grid;grid-template-columns:248px minmax(0,1fr);gap:20px;align-items:start}
+.fmain{min-width:0;display:grid;gap:16px}
+/* left navigation */
+.fnavside{position:sticky;top:calc(var(--st,0px) + 14px);background:#fff;border:1px solid var(--ln);border-radius:20px;padding:12px;display:grid;gap:14px;box-shadow:0 2px 10px rgba(11,74,46,.06)}
+#ft2{display:grid;gap:4px;overflow:visible}
+#ft2 button{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:none;border:0;border-radius:14px;padding:12px 14px;color:var(--ink);font:inherit;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+#ft2 button svg{flex:none;color:var(--gn)}
+#ft2 button:hover{background:#F3F7EE;color:var(--ink)}
+#ft2 button.on{background:var(--gl);color:var(--gd);font-weight:700;box-shadow:inset 4px 0 0 var(--gn)}
+#ft2 button:focus-visible,.ct:focus-visible,.fopen:focus-visible,.vtog button:focus-visible,.sg:focus-visible,.tc2:focus-visible{outline:3px solid rgba(245,142,32,.6);outline-offset:2px}
+.fnavside .fcta{display:grid;justify-items:center;text-align:center;gap:6px;margin:0;padding:18px 14px;background:linear-gradient(180deg,#F1F7E8,#E7F2DD);border:0;border-radius:18px;font-size:14px;color:var(--ink)}
+.fnavside .fcta[hidden]{display:none}
+.fnavside .fcta svg{color:var(--gn)}
+.fnavside .fcta h3{margin:2px 0 0;font-size:18px;line-height:1.2;font-weight:800;color:var(--ink)}
+.fnavside .fcta p{margin:0 0 6px;color:#3d4d43;font-size:13.5px;line-height:1.45}
+.fnavside .fcta .btn{background:var(--or);border-color:var(--or);color:#fff;font-weight:700;border-radius:999px;padding:10px 18px}
+.fnavside .fcta .btn:hover{background:var(--od2);border-color:var(--od2)}
+/* top bar */
+.fstick{position:sticky;top:var(--st,0px);z-index:30;display:flex;gap:12px;align-items:center;background:rgba(242,244,239,.94);backdrop-filter:blur(8px);padding:6px 0;margin:0}
+.fstick.stuck{box-shadow:0 8px 18px -10px rgba(11,74,46,.35);padding:8px 0}
+.fsrch{flex:1;min-width:0;background:#fff;border:1px solid var(--ln);box-shadow:none;border-radius:999px;padding:4px 4px 4px 18px}
+.fsrch:focus-within{border-color:var(--gn);box-shadow:0 0 0 3px rgba(15,92,52,.14)}
+.fsrch .btn,.fsrch .btn:hover{background:var(--gn);border-color:var(--gn);color:#fff;font-weight:700;border-radius:999px;padding:11px 26px}
+.fsrch .btn:hover{background:var(--gd)}
+.ftop{display:flex;gap:10px;align-items:center;flex:none}
+.ftop .btn{display:inline-flex;align-items:center;gap:8px;border-radius:14px;font-weight:700;padding:11px 18px;white-space:nowrap}
+#fpost{background:var(--gn);border-color:var(--gn);color:#fff}#fpost:hover{background:var(--gd);border-color:var(--gd)}
+#beF{background:#fff;border:1.5px solid var(--gn);color:var(--gn)!important}#beF:hover{background:var(--gl)}
+/* hero banner */
+.fhero{position:relative;overflow:hidden;border-radius:22px;padding:30px 34px;min-height:150px;display:grid;align-items:center;color:#fff;background:linear-gradient(105deg,#0B4A2E 0%,#10613A 60%,#17703F 100%)}
+.fhero:before{content:"";position:absolute;right:-30px;top:0;bottom:0;width:44%;background:linear-gradient(135deg,#F5A12E,#F58E20);clip-path:polygon(32% 0,100% 0,100% 100%,0 100%);border-radius:0;z-index:0}
+.fhero:after{content:"";position:absolute;right:38%;top:22px;width:46px;height:46px;border-radius:0;background:none;border-top:5px solid #F5A12E;border-left:5px solid #F5A12E;transform:rotate(-8deg) scaleX(.0);opacity:0}
+.fhero>.fpic{position:absolute;right:0;top:0;bottom:0;width:40%;z-index:1;background:var(--fimg,none) center/cover no-repeat;-webkit-mask-image:linear-gradient(90deg,transparent,#000 28%);mask-image:linear-gradient(90deg,transparent,#000 28%)}
+.fhero>.fbn{position:relative;z-index:2;display:block;max-width:60%}
+.fhero h1{margin:0 0 8px;font-size:40px;line-height:1.1;font-weight:800;letter-spacing:-.01em;color:#fff;display:block}
+.fhero h1 .g{color:#F5A12E}
+.fhero p{margin:0 0 14px;color:#DDEBE1;font-size:17px;line-height:1.5;max-width:520px}
+.fpts{display:none;flex-wrap:wrap;gap:8px 10px;margin:0;padding:0;list-style:none}
+.fhero[data-t=services] .fpts,.fhero[data-t=talent] .fpts{display:flex}
+.fpts li{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 14px 5px 6px;font-size:13.5px;font-weight:600;color:#fff}
+.fpts i{width:24px;height:24px;font-size:12px;background:var(--or);color:#fff}
+.fhero .fex{display:none;margin-top:6px;background:var(--or)!important;border-color:var(--or)!important;color:#fff!important;font-weight:800;border-radius:12px;padding:11px 22px}
+.fhero[data-t=orders] .fex,.fhero[data-t=hub] .fex{display:none}
+.fhero[data-t=orders],.fhero[data-t=hub]{min-height:120px;padding:24px 34px}
+/* body + category tiles */
+.fbody{padding:0;background:none;border-radius:0;display:grid;gap:14px;align-content:start;min-width:0}
+.ctiles{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin;scrollbar-color:#cdd8c8 transparent}
+.ct{flex:0 0 112px;display:grid;justify-items:center;align-content:center;gap:8px;min-height:92px;padding:12px 8px;border:1px solid var(--ln);border-radius:16px;background:#fff;color:var(--ink);font:inherit;font-size:13px;font-weight:600;line-height:1.2;text-align:center;cursor:pointer;box-shadow:0 1px 3px rgba(11,74,46,.06);transition:border-color .15s,background .15s}
+.ct svg{width:28px;height:28px;color:var(--gn)}
+.ct:hover{border-color:var(--or)}
+.ct.on{background:var(--gl);border-color:var(--gn);color:var(--gd)}
+/* toolbar */
+.fbh{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0}
+.fbl{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-width:0}
+.fbh h2{margin:0;font-size:18px;font-weight:700;color:var(--ink);display:flex;align-items:baseline;gap:8px}
+.fbh h2 small{font-size:13.5px;color:var(--mu);font-weight:500;margin:0}
+.fopen{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:9px 14px;font:inherit;font-weight:700;color:var(--ink);cursor:pointer}
+.fopen svg{color:var(--gn)}.fopen .cv{transition:transform .2s}.fopen.on{border-color:var(--gn);background:var(--gl)}.fopen.on .cv{transform:rotate(180deg)}
+.fbr{display:flex;gap:12px;align-items:center}
+.srt{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--ink)}
+.srt select{border:1px solid var(--ln);border-radius:12px;padding:9px 14px;background:#fff;font:inherit;font-weight:600;color:var(--ink)}
+.vtog{display:inline-flex;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:3px;gap:2px}
+.vtog button{width:40px;height:34px;border:0;border-radius:9px;background:none;color:#4a5a50;display:grid;place-items:center;cursor:pointer}
+.vtog button.on{background:var(--gn);color:#fff}
+/* filter panel */
+.flay{display:block}.flay>*{min-width:0}
+.fside{display:none;background:#fff;border:1px solid var(--ln);border-radius:16px;padding:18px;box-shadow:none;overflow:visible}
+.fside.open{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px 18px;align-items:end}
+.fside>.fsh,.fside>p.m,.fside>.fsg.wide{grid-column:1/-1}
+.fsh b{font-size:15px;color:var(--ink)}
+.fsg h4{margin:0 0 8px;font-size:13px;font-weight:700;color:var(--ink)}
+.fsg select,.fsg input[type=number],.fsg input[type=text]{border:1px solid var(--ln);border-radius:10px;background:#fff;padding:10px 12px;font:inherit;font-size:14px}
+.fsg select:focus-visible,.fsg input:focus-visible{outline:3px solid rgba(15,92,52,.25);border-color:var(--gn)}
+.fsg .ck input{accent-color:var(--gn)}
+.fside .clr{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--gn);color:#fff;border-radius:10px;padding:11px 16px;font-size:14px;font-weight:700;border:0;cursor:pointer}
+.fside .clr:hover{background:var(--gd)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips .fcat{width:auto;border:1px solid var(--ln);border-radius:999px;padding:6px 14px;background:#fff;color:var(--ink)}
+.chips .fcat.on{background:var(--gn);border-color:var(--gn);color:#fff}
+/* grid + list */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;min-width:0}
+.vgrid.list{grid-template-columns:1fr}
+/* service cards */
+.sg{background:#fff;border:1px solid var(--ln);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0;cursor:pointer;box-shadow:0 2px 8px rgba(11,74,46,.07);transition:box-shadow .18s,transform .18s,border-color .18s}
+.sg:hover{box-shadow:0 12px 26px rgba(11,74,46,.16);transform:translateY(-3px);border-color:#F9C27D}
+.sgc{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;min-height:132px;padding:16px;color:#fff;background:linear-gradient(135deg,var(--c1),var(--c2));background-size:cover;background-position:center}
+.sgc:before{content:"";position:absolute;right:-34px;top:-34px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.1)}
+.sgc b{position:relative;font-size:21px;line-height:1.08;font-weight:800;text-transform:uppercase;letter-spacing:.005em;text-shadow:0 2px 8px rgba(0,0,0,.28);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sgc small{position:relative;font-size:12px;opacity:.92;font-weight:600}
+.sgh{position:absolute;right:10px;top:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:0;background:#fff;color:#7b8a80;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.sgh:hover{color:#e0483c}.sgh.on{color:#e0483c}.sgh.on svg{fill:#e0483c}
+.sgb{display:grid;gap:10px;padding:14px 14px 16px;flex:1;align-content:start}
+.sgs{display:flex;align-items:center;gap:9px;min-width:0}
+.sgs .av{width:30px;height:30px;font-size:13px}
+.sgs div{min-width:0;display:grid;line-height:1.25}
+.sgs b{font-size:13.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sgs b i{font-style:normal;color:var(--gn)}
+.sgs small{font-size:12px;color:var(--mu)}.sgs small em{font-style:normal;color:var(--od2);font-weight:700}
+.sgb p{margin:0;font-size:15px;line-height:1.4;color:var(--ink);font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:42px}
+.sgm{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--mu)}
+.sgm span{display:inline-flex;align-items:center;gap:6px}
+.sgm b{font-size:18px;font-weight:800;color:var(--gd);white-space:nowrap}
+.sgo{border:0;border-radius:11px;background:var(--gn);color:#fff;padding:11px;font:inherit;font-weight:700;cursor:pointer;transition:background .15s}
+.sg:hover .sgo,.sgo:hover{background:var(--gd)}
+.pjb{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pjb .sgo,.pjb .pjv{padding:10px 8px;font-size:14px}.pjb.one{grid-template-columns:1fr}
+.pjv{border:1px solid var(--ln);border-radius:11px;background:#fff;color:var(--ink);font:inherit;font-weight:700;cursor:pointer;transition:border-color .15s}.pjv:hover{border-color:var(--or)}
+.pjc .sgb p{font-weight:500;font-size:14px;color:#4b443d;min-height:40px}.pjc .sgs small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.psv.on{color:#e0483c;border-color:#e0483c}.psv.on svg{fill:#e0483c}.psv svg{vertical-align:-4px;margin-right:4px}
+.pjd{display:grid;gap:6px;margin:10px 0;font-size:14px;color:#4b443d}.pjd div{display:flex;gap:8px;justify-content:space-between;border-bottom:1px dashed #e6dccd;padding:5px 0}.pjd b{color:var(--ink);text-align:right}
+.vgrid.list .sg{display:grid;grid-template-columns:240px minmax(0,1fr)}
+.vgrid.list .sgc{min-height:100%}
+/* freelancer cards */
+.tc2{background:#fff;border:1px solid var(--ln);border-radius:18px;padding:18px;display:grid;gap:12px;align-content:start;min-width:0;cursor:pointer;box-shadow:0 2px 8px rgba(11,74,46,.07);transition:box-shadow .18s,transform .18s,border-color .18s}
+.tc2:hover{box-shadow:0 12px 26px rgba(11,74,46,.16);transform:translateY(-3px);border-color:#F9C27D}
+.tlh{display:flex;gap:14px;align-items:center;min-width:0}
+.tla{position:relative;flex:none}
+.tla .av{width:76px;height:76px;font-size:30px;background:var(--or);color:#fff;border:3px solid #FFE3C0}
+.tla .dot{position:absolute;right:2px;bottom:4px;width:15px;height:15px;border-radius:50%;background:#a7b0a9;border:2.5px solid #fff}
+.tla .dot.on{background:#1FA45B}
+.tli{min-width:0;display:grid;gap:3px}
+.tli b{font-size:18px;font-weight:800;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tli b i{font-style:normal;color:#1FA45B;font-size:15px}
+.tli small{display:flex;gap:5px;align-items:center;font-size:13.5px;color:var(--mu)}
+.stars{display:inline-block;letter-spacing:1px;line-height:1;background:linear-gradient(90deg,#E5A51A var(--p,0%),var(--e,#d6d0c4) var(--p,0%));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;vertical-align:-1px}
+.tvb .stars{--e:#6e8f7e;font-size:16px}
+.rsum{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:#FFF8EF;border:1px solid #F9B35C;border-radius:14px;padding:12px 16px;margin-bottom:6px}
+.rbig{display:grid;gap:2px;justify-items:center;min-width:90px}.rbig b{font-size:34px;line-height:1;color:#4A240B}.rbig .stars{font-size:18px}.rbig small{color:var(--mu)}
+.rdist{flex:1;min-width:200px;display:grid;gap:4px}.rdist div{display:grid;grid-template-columns:28px 1fr 28px;gap:8px;align-items:center;font-size:12.5px}.rdist em{font-style:normal;text-align:right;color:var(--mu)}.rbar{height:8px;border-radius:6px;background:#eadfce;overflow:hidden}.rbar u{display:block;height:100%;background:#E5A51A}
+.tli .rt{font-size:13.5px;color:var(--mu)}.tli .rt b{display:inline;font-size:13.5px;color:var(--od2);font-weight:700}
+.tlv{justify-self:start;border-radius:999px;padding:3px 14px;font-size:12.5px;font-weight:700;background:#1FA45B;color:#fff}
+.tlv.busy{background:#ECEFEA;color:#5b675f}
+.tc2>p{margin:0;font-size:14px;line-height:1.55;color:#33433a;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:44px}
+.tcs{display:flex;gap:6px;flex-wrap:wrap}
+.tcs span{background:var(--cr);color:#9A5408;border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:700}
+.tcm{display:grid;grid-template-columns:1fr 1fr;align-items:center;font-size:13.5px;font-weight:600;color:var(--ink);padding:8px 0 2px}
+.tcm span{display:flex;align-items:center;gap:8px;justify-content:center}
+.tcm span+span{border-left:1px solid var(--ln)}
+.tcm svg{color:var(--mu)}
+.tcb{display:flex;gap:8px}
+.tcb button{flex:1;border-radius:12px;padding:12px;font:inherit;font-weight:700;cursor:pointer;border:1.5px solid var(--gn);transition:background .15s}
+.tcb .pr{background:#fff;color:var(--gn)}.tcb .pr:hover{background:var(--gl)}
+.tcb .hi{flex:1.6;background:var(--gn);color:#fff}.tcb .hi:hover{background:var(--gd)}
+.tcb button:disabled{opacity:.5;cursor:default;background:#eee;color:#555;border-color:#ddd}
+.vgrid.list .tc2{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px}
+/* shared recolour of legacy parts (dialogs, orders, hub) */
+.pl,.jl{background:var(--cr);color:var(--od2)}
+.pf b,.pk .pp2,.chk .gh,.tvs b{color:var(--gd)}
+.pc{border:1px solid var(--ln);border-radius:16px}.pc:hover{border-color:var(--or)}
+.fp.o{background:var(--cr);color:#9A5408}
+.btn.p,#dlg .btn.p{background:var(--gn);border-color:var(--gn);color:#fff}.btn.p:hover,#dlg .btn.p:hover{background:var(--gd);border-color:var(--gd)}
+.tvh{background:linear-gradient(105deg,#0B4A2E,#17703F);border-radius:14px}
+.tvsp{background:#FFF8EF;border-color:#F5B972}
+.sum{background:#F2F6EE}
+.fbox{background:#F2F6EE;border-left-color:var(--gn)}
+.pk.on{border-color:var(--or);background:#FFF8EF;box-shadow:0 0 0 3px rgba(245,142,32,.18)}
+.gp2{border-radius:16px;border:1px solid var(--ln)}.gp2:hover{border-color:var(--or)}
+.fchip{background:var(--cr);color:#9A5408;border:1px solid #F5B972}
+.ftabs button{border-radius:999px}.ftabs .on{background:var(--gn);border-color:var(--gn)}
+.fmore .btn{border-radius:12px;padding:11px 28px}
+.msg{grid-column:1/-1}
+/* responsive */
+@media(max-width:1000px){.fhero>.fbn{max-width:70%}.fhero h1{font-size:34px}}
+@media(max-width:900px){
+ .fapp{grid-template-columns:minmax(0,1fr);gap:12px}
+ .fnavside{position:static;padding:8px;border-radius:16px}
+ #ft2{display:flex;overflow-x:auto;gap:6px;scrollbar-width:none}
+ #ft2 button{flex:none;width:auto;padding:10px 14px;gap:10px}
+ #ft2 button.on{box-shadow:none}
+ .fnavside .fcta{display:none}
+ .fstick{flex-wrap:wrap}.ftop{width:100%}.ftop .btn{flex:1;justify-content:center}
+}
+@media(max-width:700px){
+ .fhero{padding:22px 20px 30px}.fhero:before{top:auto;right:0;left:0;width:auto;height:10px;clip-path:none}.fhero>.fbn{max-width:100%}.fhero h1{font-size:28px}.fhero p{font-size:15px}
+ .srt span{display:none}.fbr{width:100%;justify-content:space-between}
+ .vgrid,.vgrid.list{grid-template-columns:minmax(0,1fr)}
+ .vgrid.list .sg{display:flex}
+ .fsrch{flex-direction:row;align-items:center;border-radius:999px;padding:4px 4px 4px 14px}.fsrch .fs1{flex:1;border-bottom:0}.fsrch .fs2{display:none}.fsrch .btn{width:auto;padding:10px 18px}
+ .fbh h2{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){.sg,.tc2,.fopen .cv{transition:none}.sg:hover,.tc2:hover{transform:none}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main><section class="fx"><div class="w" style="max-width:1280px"><div class="fapp">
+<aside class="fnavside" aria-label="Freelance menu">
+<nav id="ft2" aria-label="Freelance sections"><button data-t="services"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span>Services / Gigs</span></button><button data-t="talent"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Freelancers</span></button><button data-t="gigs"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Projects</span></button><button data-t="orders"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg><span>My Orders</span></button><button data-t="hub"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/><path d="M16 5l1.5 1.5L20 4"/></svg><span>Freelancer Hub</span></button></nav>
+<div class="fcta" id="fcta"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/></svg><h3>Post Your Service or Gig</h3><p>Offer your skills, reach more customers.</p><button class="btn" id="fbe2" type="button">Become a Freelancer</button></div>
+</aside>
+<div class="fmain">
+<div class="fstick" id="fstick"><form class="fsrch" id="fsf" role="search"><label class="fs1"><span id="hqi"></span><input id="hq" type="search" aria-label="Search"></label><label class="fs2" id="hcw"><span id="hci"></span><select id="hc" aria-label="County"></select></label><button class="btn">Search</button></form>
+<div class="ftop"><button class="btn" id="fpost" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Post a Project</button><button class="btn" id="beF" type="button">Become a freelancer</button></div></div>
+<div class="fhero" data-t="services"><div class="fpic"></div><div class="fbn"><h1 id="fhd"></h1><p id="fsb"></p><ul class="fpts"><li><i>✓</i>Trusted Professionals</li><li><i>★</i>Fixed Prices</li><li><i>◆</i>Secure Payments</li></ul><button class="btn fex" id="fex" type="button">Explore Services</button></div></div>
+<div class="fbody" id="fpan"></div>
+</div></div></div></section></main>
+<div id="ft"></div>
+<script>
+shell("freelance.html");
+(()=>{
+const kes=n=>"KSh "+Number(n||0).toLocaleString("en-KE");
+const opts=(a,v)=>a.map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("");
+const clean=v=>String(v||"").replace(/[%,()*\\_]/g," ").trim().slice(0,60);
+const split=v=>String(v||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,15);
+const tags=a=>(a||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join(" ");
+const SK='<div class="sk"></div>'.repeat(3);
+const ERR={fl_bad_budget:"The pay must be inside the range SOKO Smart set for this service.",freelance_rate_freelancer:"Ratings are not set up yet. Run supabase-freelance-rating.sql in Supabase.",fl_rate_self:"You cannot rate yourself.",fl_rate_bad:"Choose a rating from 1 to 5 stars.",not_logged_in:"Please log in to rate freelancers.",fl_not_specialty:"This project needs a different specialty from yours.",fl_not_approved:"Only approved freelancers can apply.",fl_project_closed:"This project is no longer open.",fl_own_project:"You cannot apply to your own project.",fl_one_specialty:"You can only have one specialty. Choose a single service.",fl_self:"You cannot order your own service.",fl_service_off:"This service is no longer available.",fl_freelancer_off:"This freelancer is not available.",fl_unavailable:"This freelancer is not taking new orders right now.",fl_not_offered:"This freelancer does not offer that service.",fl_bad_addon:"One of the add-ons is not available.",fl_bad_package:"Please choose a package.",fl_bad_requirements:"Tell the freelancer what you need (at least 10 characters).",fl_not_yours:"You cannot do this on this order.",fl_bad_state:"This order has already moved on. Refresh and try again.",fl_locked:"That change is not allowed.",no_revisions:"No revisions are left on this order.",freelancer_wallet_missing:"This freelancer has not activated their wallet yet. Please try again later.",wallet_missing:"Open your wallet first so it can be created.",card_expired:"That wallet card has expired. Renew it first.",insufficient_funds:"That wallet balance is too low. Top up your wallet first."};
+const errT=e=>{const m=String(e&&e.message||e),k=Object.keys(ERR).find(x=>m.includes(x));return k?ERR[k]:/row-level security|violates.*policy|permission denied/i.test(m)?"Your account is not allowed to save this yet. The Supabase permissions for freelancers are missing. Run supabase-freelance-v2.sql. ("+m+")":/function|schema cache|relation|does not exist/i.test(m)?"Freelance is not set up yet. Run supabase-freelance-v2.sql in Supabase.":m};
+const HASHMAP={work:"services",mine:"orders"};
+let U=null,ME=null,CAT=[],SV=[],CNT={},TOPF={},COMM=10,CATERR="",TAB=(HASHMAP[(location.hash||"").slice(1)]||(location.hash||"#services").slice(1));
+const isU=v=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v||""));let tm;const debounce=(f,ms)=>{clearTimeout(tm);tm=setTimeout(f,ms||350)};
+const sv5=a=>`<span class="stars" style="--p:${Math.max(0,Math.min(5,+a||0))/5*100}%" aria-hidden="true">★★★★★</span>`;
+const star=f=>f.rating_count?`${sv5(f.rating_avg)} <b>${Number(f.rating_avg).toFixed(1)}</b> · ${f.rating_count} review${f.rating_count===1?"":"s"}`:'<span class="nw">★ New freelancer</span>';
+/* Instagram-style blue tick, earned automatically: account 2+ months old, rating 4.3+ and over 20 completed projects */
+const VSVG='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="#3897F0" d="M12 1.8l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3-3.2-.1L12 22.2l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3 3.2.1z"/><path d="M8 12.2l2.6 2.6L16 9.4" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const isVer=f=>{if(!f||!f.created_at)return false;const lim=new Date();lim.setMonth(lim.getMonth()-2);const d=new Date(f.created_at);return !isNaN(d)&&d<=lim&&(+f.rating_avg||0)>=4.3&&(+f.jobs_done||0)>20};
+const vb=f=>isVer(f)?`<i class="vbd" title="Verified freelancer" aria-label="Verified freelancer">${VSVG}</i>`:"";
+const av=(f,c)=>`<span class="av ${c||""}">${f.avatar_url?`<img alt="" src="${esc(f.avatar_url)}">`:esc((f.name||"?")[0].toUpperCase())}</span>`;
+const yrs=f=>f.years_experience==null?"":f.years_experience+" year"+(+f.years_experience===1?"":"s")+" experience";
+const place=f=>[f.town,f.county].filter(Boolean).join(", ")||"Kenya";
+const cname=id=>(CAT.find(x=>x.id===id)||{}).name||"";
+const path=s=>[cname(s.category_id),cname(s.subcategory_id)].filter(Boolean).join(" › ");
+const pkgs=s=>Array.isArray(s.packages)?s.packages:[],addons=s=>Array.isArray(s.addons)?s.addons:[];
+const minDays=s=>{const d=pkgs(s).map(p=>+p.delivery_days).filter(Boolean);return d.length?Math.min(...d):null};
+const payRange=s=>{const a=[+s.base_price,+s.max_price,...pkgs(s).map(p=>+p.price)].filter(n=>n>0);return a.length?{min:Math.min(...a),max:Math.max(...a)}:{min:0,max:0}};
+const rangeTxt=r=>r.min===r.max?kes(r.min):kes(r.min)+" – "+kes(r.max);
+const fromPrice=s=>+s.base_price||Math.min(...pkgs(s).map(p=>+p.price||0).filter(Boolean),Infinity);
+const plural=(n,w)=>n+" "+w+(+n===1?"":"s");
+
+/* ---------- sticky search bar ---------- */
+const onScroll=()=>{const e=$("#fstick");if(!e)return;const st=parseInt(document.documentElement.style.getPropertyValue("--st"))||0;e.classList.toggle("stuck",e.getBoundingClientRect().top<=st+1&&scrollY>60)};
+function stickTop(){let t=0;document.querySelectorAll("#hd, #hd *").forEach(e=>{const p=getComputedStyle(e).position;if(p==="sticky"||p==="fixed"){const h=e.getBoundingClientRect().height;if(h>t&&h<260)t=h}});document.documentElement.style.setProperty("--st",Math.round(t)+"px");onScroll()}
+addEventListener("scroll",onScroll,{passive:true});addEventListener("resize",stickTop);addEventListener("load",stickTop);setTimeout(stickTop,300);
+
+/* ---------- data ---------- */
+async function loadCat(){if(!sb)return;
+ const [c,s,fs,fp,st]=await Promise.all([sb.from("freelance_categories").select("*").eq("active",true).order("sort_order").order("name"),sb.from("freelance_services").select("*").eq("active",true).order("sort_order").order("title"),
+  sb.from("freelancer_services").select("service_id,freelancer_id"),sb.from("freelancer_profiles").select("user_id,name,avatar_url,rating_avg,rating_count,jobs_done,created_at").eq("status","approved"),sb.from("freelance_settings").select("commission_percent").eq("id",1).maybeSingle()]);
+ const bad=[c,s].find(x=>x.error);CATERR=bad?errT(bad.error):"";CAT=c.data||[];SV=s.data||[];
+ const ok=new Set((fp.data||[]).map(x=>x.user_id));CNT={};(fs.data||[]).forEach(r=>{if(ok.has(r.freelancer_id))CNT[r.service_id]=(CNT[r.service_id]||0)+1});TOPF={};const PM={};(fp.data||[]).forEach(p=>PM[p.user_id]=p);(fs.data||[]).forEach(r=>{const p=PM[r.freelancer_id];if(!p)return;const c=TOPF[r.service_id],pa=+p.rating_avg||0,ca=c?+c.rating_avg||0:-1;if(!c||pa>ca||(pa===ca&&(+p.rating_count||0)>(+c.rating_count||0)))TOPF[r.service_id]=p});if(st.data)COMM=+st.data.commission_percent}
+async function loadMe(){if(!sb||!U){ME=null;return}try{const r=await sb.from("freelancer_profiles").select("*").eq("user_id",U.id).maybeSingle();ME=r.data||null}catch(e){ME=null}}
+async function up(file,tag,kind){if(!file)return null;const img=/^image\//.test(file.type),vid=/^video\//.test(file.type);
+ if(kind==="image"&&!img)throw new Error("Please choose an image file");if(!img&&!vid)throw new Error(file.name+": portfolio files must be images or videos");
+ if(img&&file.size>3e6)throw new Error(file.name+": images must be under 3 MB");if(vid&&file.size>30e6)throw new Error(file.name+": videos must be under 30 MB (paste a video link instead)");
+ const ext=(file.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"")||"bin",p=`${U.id}/${tag}-${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`;
+ const r=await sb.storage.from("listing-images").upload(p,file,{contentType:file.type});if(r.error)throw r.error;return {url:sb.storage.from("listing-images").getPublicUrl(p).data.publicUrl,type:vid?"video":"image"}}
+async function myWallets(){const L=[];try{const w=await sb.rpc("wallet_ensure",{p_shop_id:null});if(!w.error&&w.data)L.push({id:w.data.id,name:"Personal wallet",bal:+w.data.balance});
+ const sh=await sb.from("shops").select("id,name").eq("owner_id",U.id);if((sh.data||[]).length){const ws=await sb.from("wallets").select("id,shop_id,balance").in("shop_id",sh.data.map(x=>String(x.id)));(ws.data||[]).forEach(x=>L.push({id:x.id,name:"Shop wallet: "+((sh.data.find(y=>String(y.id)===String(x.shop_id))||{}).name||"Shop"),bal:+x.balance}))}}catch(e){}return L}
+const chat=(uid,msg)=>{if(window.SokoChat)SokoChat.chatWith(uid,null,msg);else toast("Chat is still loading, please try again")};
+
+/* ---------- tabs and hero ---------- */
+const FS={q:"",cat:"",sub:"",min:"",max:"",days:"",sort:"rec"},FT={cat:"",q:"",county:"",service:"",rating:"",years:"",avail:false,sort:"top",pg:0},PAGE=12;let TOK=0;
+const SPK='<svg viewBox="0 0 24 24" width="34" height="34" fill="#E5A51A" aria-hidden="true"><path d="M12 0c.7 6.6 5.4 11.3 12 12-6.6.7-11.3 5.4-12 12-.7-6.6-5.4-11.3-12-12C6.6 11.3 11.3 6.6 12 0z"/></svg>';
+const HERO={services:["Services & Gigs","Find and buy amazing services from trusted sellers","Search services, e.g. logo design"],
+ talent:["Freelancers","Find skilled professionals to help you with your projects. Compare portfolios and hire with confidence.","Name, skill or title"],
+ gigs:["Client Projects","Clients post projects at fixed SOKO Smart prices. Freelancers who specialise in that service apply, and the client picks the best portfolio.","Search projects, e.g. logo for a bakery"],
+ orders:["My Orders","Track the services you ordered and the orders you received. Payments are held safely until the client approves the work.",""],
+ hub:["Freelancer Hub","Apply to join, choose the services you offer, build your portfolio and manage your orders.",""]};
+function tab(t){if(!HERO[t])t="services";TAB=t;history.replaceState(null,"","#"+t);document.querySelectorAll("#ft2 button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+ const H=HERO[t],S=t==="services"?FS:t==="gigs"?FG:FT;{const T=H[0],i=T.indexOf(" & ");$("#fhd").innerHTML=i>0?esc(T.slice(0,i))+' <span class="g">'+esc(T.slice(i+1))+"</span>":esc(T)}document.querySelector(".fhero").dataset.t=t;$("#fcta").hidden=!(t==="services"||t==="talent");$("#fsb").textContent=H[1];
+ const sr=t==="services"||t==="talent"||t==="gigs";$("#fex").textContent=t==="gigs"?"Post a Project →":"Explore Services →";$("#fsf").hidden=!sr;$("#hq").placeholder=H[2];$("#hq").value=S.q||"";$("#hcw").hidden=t!=="talent";
+ $("#hc").innerHTML='<option value="">All Kenya</option>'+COUNTIES.map(c=>`<option ${FT.county===c?"selected":""}>${esc(c)}</option>`).join("");
+ ({services,talent,gigs,orders,hub})[t]();setTimeout(stickTop,50)}
+$("#hqi").innerHTML=ic("search",20);$("#hci").innerHTML=ic("pin",20);
+$("#ft2").onclick=e=>{const b=e.target.closest("[data-t]");if(b)tab(b.dataset.t)};
+const cur=()=>TAB==="services"?FS:TAB==="gigs"?FG:FT,rerun=more=>TAB==="services"?runServices():TAB==="gigs"?runGigs():runTalent(more);
+$("#fsf").onsubmit=e=>{e.preventDefault();const S=cur();S.q=$("#hq").value.trim();if(TAB==="talent")FT.county=$("#hc").value;rerun()};
+$("#hq").addEventListener("input",()=>debounce(()=>{cur().q=$("#hq").value.trim();rerun()}));$("#hc").addEventListener("change",()=>{FT.county=$("#hc").value;if(TAB==="talent")rerun()});
+const sel=(k,v,o)=>`<select data-k="${k}">${o.map(x=>`<option value="${esc(x[0])}" ${String(v)===String(x[0])?"selected":""}>${esc(x[1])}</option>`).join("")}</select>`;
+const SVG=(p,s,sw)=>`<svg viewBox="0 0 24 24" width="${s||24}" height="${s||24}" fill="none" stroke="currentColor" stroke-width="${sw||1.8}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const TI={all:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+ design:'<path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/>',
+ marketing:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/>',
+ code:'<path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/>',
+ writing:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8M8 9h2"/>',
+ video:'<rect x="2" y="5" width="14" height="14" rx="2"/><path d="M22 8l-6 4 6 4z"/>',
+ photo:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+ business:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+ data:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/>',
+ other:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+ filter:'<path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+ chev:'<path d="M6 9l6 6 6-6"/>',grid:'<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
+ brief:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',wallet:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M16 15h2"/>'};
+const tKey=n=>{n=String(n||"").toLowerCase();return/photo/.test(n)?"photo":/video|anim|edit/.test(n)?"video":/design|graphic|logo|brand|art/.test(n)?"design":/market|social|seo|advert/.test(n)?"marketing":/web|dev|code|software|app|program|tech/.test(n)?"code":/writ|translat|content|copy/.test(n)?"writing":/data|excel|entry|analy|admin/.test(n)?"data":/business|consult|account|financ|legal/.test(n)?"business":"other"};
+const tIcon=n=>SVG(TI[tKey(n)],28);
+const GRAD=[["#0B4A2E","#1C7A45"],["#E8830F","#F5B02E"],["#8C1730","#D13A4B"],["#16324F","#2F78B3"],["#3A2470","#7E55CF"],["#0E5A5A","#2FA6A0"],["#2C2F2C","#5C635D"]];
+const grad=s=>{const i=Math.max(0,CAT.filter(c=>!c.parent_id).findIndex(c=>String(c.id)===String(s.category_id)));return GRAD[i%GRAD.length]};
+let VIEW=(()=>{try{return localStorage.getItem("soko_fl_view")==="list"?"list":"grid"}catch(e){return"grid"}})(),FOPEN=false;
+let FAV=new Set((()=>{try{return JSON.parse(localStorage.getItem("soko_fl_fav")||"[]")}catch(e){return[]}})());
+const heart=(id,l)=>`<button type="button" class="sgh ${FAV.has(String(id))?"on":""}" data-fav="${esc(id)}" aria-label="${l||"Save this service"}" aria-pressed="${FAV.has(String(id))}">${SVG(TI.heart,18,2)}</button>`;
+const tiles=(cur,attr,all)=>`<div class="cdd"><span>Category</span><select data-cdd="${attr==="data-tc"?"tc":"svc"}" aria-label="Filter by category"><option value="">${esc(all)}</option>${CAT.filter(c=>!c.parent_id).map(c=>`<option value="${esc(c.id)}" ${String(cur)===String(c.id)?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div>`;
+const side=h=>`<aside class="fside ${FOPEN?"open":""}" id="fside"><div class="fsh"><b>Filter ${TAB==="talent"?"freelancers":TAB==="gigs"?"projects":"services"}</b></div>${h}<button class="clr" id="fclr" type="button">↻ Reset filters</button></aside>`;
+const head2=(title,sorts,sv,vt)=>`<div class="fbh"><div class="fbl"><button class="fopen ${FOPEN?"on":""}" id="fopen" type="button" aria-expanded="${FOPEN}" aria-controls="fside">${SVG(TI.filter,20)}<span>Filters</span>${SVG(TI.chev,16,2).replace("<svg ",'<svg class="cv" ')}</button><h2>${title}<small id="cn" aria-live="polite"></small></h2></div><div class="fbr"><label class="srt"><span>Sort by:</span><select id="fsort" aria-label="Sort by">${sorts.map(x=>`<option value="${x[0]}" ${sv===x[0]?"selected":""}>${x[1]}</option>`).join("")}</select></label>${vt?`<div class="vtog" role="group" aria-label="Layout"><button type="button" data-vw="grid" class="${VIEW==="grid"?"on":""}" aria-label="Grid view" aria-pressed="${VIEW==="grid"}">${SVG(TI.grid,18,2)}</button><button type="button" data-vw="list" class="${VIEW==="list"?"on":""}" aria-label="List view" aria-pressed="${VIEW==="list"}">${SVG(TI.list,18,2)}</button></div>`:""}</div></div>`;
+
+/* ---------- services (catalogue) ---------- */
+function services(){const S=FS;if(CATERR){$("#fpan").innerHTML=`<div class="msg">${esc(CATERR)}</div>`;return}
+ const subs=S.cat?CAT.filter(x=>String(x.parent_id)===String(S.cat)):[];
+ $("#fpan").innerHTML=tiles(S.cat,"data-cat","All Services")+head2("Services",[["rec","Recommended"],["price_asc","Price: low to high"],["price_desc","Price: high to low"],["fast","Fastest delivery"],["pop","Most freelancers"]],S.sort,true)+side(`
+ ${subs.length?`<div class="fsg wide"><h4>Sub-category</h4><div class="chips">${subs.map(x=>`<button type="button" class="fcat sub ${String(S.sub)===String(x.id)?"on":""}" data-sub="${esc(x.id)}">${esc(x.name)}</button>`).join("")}</div></div>`:""}
+ <div class="fsg"><h4>Price (KSh)</h4><div class="r2"><input data-k="min" type="number" min="0" placeholder="Min" value="${esc(S.min)}" aria-label="Minimum price"><input data-k="max" type="number" min="0" placeholder="Max" value="${esc(S.max)}" aria-label="Maximum price"></div></div>
+ <div class="fsg"><h4>Delivery time</h4>${sel("days",S.days,[["","Any"],["3","Up to 3 days"],["7","Up to 7 days"],["14","Up to 14 days"]])}</div>
+ <p class="m" style="margin:0">Prices are fixed by SOKO Smart and are the same for every freelancer.</p>`)+`<div class="pgrid vgrid ${VIEW==="list"?"list":""}" id="wl">${SK}</div>`;runServices()}
+function runServices(){const S=FS,q=S.q.toLowerCase();let L=SV.filter(s=>{
+  if(S.cat&&String(s.category_id)!==String(S.cat))return false;if(S.sub&&String(s.subcategory_id)!==String(S.sub))return false;
+  const p=fromPrice(s);if(S.min!==""&&p<+S.min)return false;if(S.max!==""&&p>+S.max)return false;const d=minDays(s);if(S.days&&(d==null||d>+S.days))return false;
+  if(q&&!(s.title+" "+(s.description||"")+" "+path(s)).toLowerCase().includes(q))return false;return true});
+ const o={rec:()=>0,price_asc:(a,b)=>fromPrice(a)-fromPrice(b),price_desc:(a,b)=>fromPrice(b)-fromPrice(a),fast:(a,b)=>(minDays(a)||99)-(minDays(b)||99),pop:(a,b)=>(CNT[b.id]||0)-(CNT[a.id]||0)};L=L.slice().sort(o[S.sort]||o.rec);
+ $("#cn").textContent=plural(L.length,"service");
+ $("#wl").innerHTML=L.map(s=>{const n=CNT[s.id]||0,d=minDays(s),t=TOPF[s.id],g=grad(s),img=s.image_url||s.cover_url||s.cover_image||s.thumbnail_url||"";
+  const cover=img?`background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.62)),url('${esc(safeUrl(img))}')`:"";
+  const seller=t?`<div class="sgs">${av(t)}<div><b>${esc(t.name||"Freelancer")} ${vb(t)}</b><small>${t.rating_count?`<em>★ ${Number(t.rating_avg).toFixed(1)}</em> (${t.rating_count} reviews)`:"New freelancer"}${n>1?` · ${n} freelancers`:""}</small></div></div>`:`<div class="sgs"><div><small>No freelancers yet · be the first</small></div></div>`;
+  return `<article class="sg" data-sv="${esc(s.id)}" tabindex="0" aria-label="${esc(s.title)}"><div class="sgc" style="--c1:${g[0]};--c2:${g[1]};${cover}">${heart(s.id)}<b>${esc(s.title)}</b><small>${esc(path(s))}</small></div>
+  <div class="sgb">${seller}<p>${esc(s.description||s.title)}</p><div class="sgm"><span>${SVG(TI.clock,16,2)}${d?plural(d,"Day")+" Delivery":"Flexible delivery"}</span><b>${kes(fromPrice(s))}</b></div><button type="button" class="sgo">Order Now →</button></div></article>`}).join("")||'<div class="msg">No services match these filters.</div>'}
+
+/* ---------- service page: packages and freelancer comparison ---------- */
+const cmpRow=(s,f)=>`<div class="cmp ${f.available?"":"off"}">${av(f)}<div class="cn"><b>${esc(f.name)} ${vb(f)}</b><small>${esc(place(f))}${f.years_experience!=null?" · "+esc(yrs(f)):""}</small><small>${star(f)} · ${plural(f.jobs_done||0,"project")} completed</small></div>
+ <div class="ca"><button class="btn s" data-fl="${esc(f.user_id)}">Portfolio</button>${f.available?`<button class="btn p s" data-ord="${esc(s.id)}|${esc(f.user_id)}">Order · ${kes(fromPrice(s))}</button>`:'<span class="fp">Not taking orders</span>'}</div></div>`;
+async function serviceView(id,sort){const s=SV.find(x=>x.id===id);if(!s){toast("Service not found");return}
+ const {data:rows}=await sb.from("freelancer_services").select("freelancer_id").eq("service_id",id),ids=(rows||[]).map(r=>r.freelancer_id);let fps=[];
+ if(ids.length){const r=await sb.from("freelancer_profiles").select("*").in("user_id",ids).eq("status","approved");fps=(r.data||[]).map(f=>(isU(f.user_id)||!isU(f.id))?f:{...f,user_id:f.id})}
+ const so=sort||"top",ord={top:(a,b)=>b.rating_avg-a.rating_avg||b.rating_count-a.rating_count||b.jobs_done-a.jobs_done,exp:(a,b)=>(b.years_experience||0)-(a.years_experience||0),jobs:(a,b)=>b.jobs_done-a.jobs_done,avail:(a,b)=>Number(b.available)-Number(a.available)||b.rating_avg-a.rating_avg};fps.sort(ord[so]);
+ const P=pkgs(s),A=addons(s);
+ openD(`<h3 style="margin:0">${esc(s.title)}</h3><p class="m" style="margin:2px 0 10px">${esc(path(s))}</p>
+ <div class="fbox" style="border-color:#E5A51A;background:#FFF4DE"><b>Standard platform price</b> · the same for every freelancer. Choose by portfolio, experience and reviews, not by price.</div>
+ <p style="white-space:pre-wrap">${esc(s.description||"")}</p>${s.requirements?`<h4 class="fsec">What the freelancer needs from you</h4><div class="fbox">${esc(s.requirements)}</div>`:""}
+ <h4 class="fsec">Packages</h4><div class="pkg">${P.map(p=>`<div class="pk" style="cursor:default"><b>${esc(p.name)}</b><div class="pp2">${kes(p.price)}</div><ul><li>${plural(p.delivery_days,"day")} delivery</li><li>${plural(p.revisions,"revision")} included</li></ul><p>${esc(p.description||"")}</p></div>`).join("")}</div>
+ ${A.length?`<h4 class="fsec">Optional add-ons</h4><div class="m">${A.map(a=>`${esc(a.name)} (+${kes(a.price)})`).join(" · ")}</div>`:""}
+ <h4 class="fsec">Freelancers offering this service (${fps.length})</h4><div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span class="m">Sort by</span><select id="csort" style="border:1px solid var(--bd);border-radius:8px;padding:7px 10px;font:inherit"><option value="top">Top rated</option><option value="exp">Most experienced</option><option value="jobs">Most projects completed</option><option value="avail">Available first</option></select></div>
+ <div>${fps.map(f=>cmpRow(s,f)).join("")||'<div class="msg">No approved freelancers offer this service yet. Check back soon.</div>'}</div>`);
+ const cs=$("#csort");cs.value=so;cs.onchange=()=>serviceView(id,cs.value)}
+
+/* ---------- freelancer directory ---------- */
+function talent(){const S=FT;
+ $("#fpan").innerHTML=tiles(S.cat,"data-tc","All Services")+head2("Freelancers",[["top","Top rated"],["exp","Most experienced"],["jobs","Most projects completed"]],S.sort,true)+side(`
+ <div class="fsg"><h4>Service</h4>${sel("service",S.service,[["","Any service"],...SV.map(s=>[s.id,s.title])])}</div>
+ <div class="fsg"><h4>County</h4>${sel("county",S.county,[["","All Kenya"],...COUNTIES.map(c=>[c,c])])}</div>
+ <div class="fsg"><h4>Minimum rating</h4>${sel("rating",S.rating,[["","Any rating"],["4.5","4.5 stars and up"],["4","4 stars and up"],["3","3 stars and up"]])}</div>
+ <div class="fsg"><h4>Experience</h4>${sel("years",S.years,[["","Any"],["1","1+ years"],["3","3+ years"],["5","5+ years"],["10","10+ years"]])}</div>
+ <div class="fsg"><label class="ck"><input type="checkbox" data-k="avail" ${S.avail?"checked":""}> Available now</label></div>`)+`<div class="pgrid vgrid fg4 ${VIEW==="list"?"list":""}" id="tl">${SK}</div><div class="fmore"><button class="btn p" id="tmore" hidden>Load more</button></div>`;runTalent()}
+async function runTalent(more){const S=FT,my=++TOK;if(!sb)return;if(!more){S.pg=0;$("#tl").innerHTML=SK}
+ let b=sb.from("freelancer_profiles").select("*",{count:"exact"}).eq("status","approved");const q=clean(S.q);
+ const SIDS=S.service?[S.service]:S.cat?SV.filter(x=>String(x.category_id)===String(S.cat)).map(x=>x.id):[];
+ if(S.service||S.cat){let ids=[];if(SIDS.length){const r=await sb.from("freelancer_services").select("freelancer_id").in("service_id",SIDS);ids=(r.data||[]).map(x=>x.freelancer_id)}b=b.in("user_id",ids.length?ids:["00000000-0000-0000-0000-000000000000"])}
+ if(q)b=b.or(`name.ilike.%${q}%,title.ilike.%${q}%,bio.ilike.%${q}%`);if(S.county)b=b.eq("county",S.county);if(S.rating)b=b.gte("rating_avg",+S.rating);if(S.years)b=b.gte("years_experience",+S.years);if(S.avail)b=b.eq("available",true);
+ b=S.sort==="exp"?b.order("years_experience",{ascending:false,nullsFirst:false}):S.sort==="jobs"?b.order("jobs_done",{ascending:false}):b.order("rating_avg",{ascending:false}).order("rating_count",{ascending:false}).order("jobs_done",{ascending:false});
+ const {data,count,error}=await b.range(S.pg*PAGE,S.pg*PAGE+PAGE-1);if(my!==TOK)return;if(error){console.error("freelancer list query failed",error,{service:S.service,cat:S.cat});$("#tl").innerHTML=`<div class="msg">${esc(errT(error))}</div>`;return}(data||[]).forEach(f=>{if(!isU(f.user_id)&&isU(f.id))f.user_id=f.id});
+ $("#cn").textContent=plural(count||0,"freelancer");
+ const fids=(data||[]).map(f=>f.user_id).filter(isU);let PF={},FSV={};
+ if(fids.length){const [a,b2]=await Promise.all([sb.from("freelancer_portfolio").select("freelancer_id,media_url,media_type").in("freelancer_id",fids).eq("status","approved").order("created_at",{ascending:false}),sb.from("freelancer_services").select("freelancer_id,service_id").in("freelancer_id",fids)]);
+  (a.data||[]).forEach(p=>{if(p.media_type!=="video")(PF[p.freelancer_id]=PF[p.freelancer_id]||[]).push(p.media_url)});(b2.data||[]).forEach(r=>{(FSV[r.freelancer_id]=FSV[r.freelancer_id]||[]).push(r.service_id)})}
+ if(my!==TOK)return;
+ const h=(data||[]).map(f=>{const mine=(FSV[f.user_id]||[]).map(i=>SV.find(x=>x.id===i)).filter(Boolean),sv=mine.find(x=>SIDS.includes(x.id))||mine[0],sk=(Array.isArray(f.skills)?f.skills:[]).filter(Boolean).slice(0,3),chips=sk.length?sk:sv?[sv.title]:[];
+  return `<article class="tc2" data-fl="${esc(f.user_id)}" tabindex="0" aria-label="${esc(f.name||"Freelancer")}">
+   <div class="tlh"><div class="tla">${av(f)}<i class="dot ${f.available?"on":""}" title="${f.available?"Available":"Busy"}"></i></div><div class="tli"><b>${esc(f.name||"Freelancer")} ${vb(f)}</b><small>${ic("pin",14)} ${esc(place(f))}</small><span class="rt">${star(f)}</span><span class="tlv ${f.available?"":"busy"}">${f.available?"Available":"Busy"}</span></div></div>
+   <p>${esc(f.bio||f.title||"Professional freelancer providing high-quality services on SOKO Smart.")}</p>
+   <div class="tcs">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>
+   <div class="tcm"><span>${SVG(TI.brief,18,1.9)}${plural(f.jobs_done||0,"Project")}</span><span>${SVG(TI.wallet,18,1.9)}${sv?kes(fromPrice(sv)):"—"}</span></div>
+   <div class="tcb"><button type="button" class="pr" data-fl="${esc(f.user_id)}">View profile</button>${sv&&f.available?`<button type="button" class="hi" data-ord="${esc(sv.id)}|${esc(f.user_id)}">Hire now</button>`:`<button type="button" class="hi" disabled>Not available</button>`}</div>
+  </article>`}).join("");
+ $("#tl").innerHTML=more?$("#tl").innerHTML+h:h||'<div class="msg">No freelancers found. Try a different search.</div>';$("#tmore").hidden=(S.pg+1)*PAGE>=(count||0)}
+
+async function talentView(id0){if(!isU(id0)){toast("This freelancer profile has no valid ID. Please contact SOKO Smart support.","error");return}
+ const q1=await sb.from("freelancer_profiles").select("*").eq("user_id",id0).maybeSingle();let f=q1.data;if(q1.error)console.error("talentView profile by user_id",id0,q1.error);
+ if(!f){const q2=await sb.from("freelancer_profiles").select("*").eq("id",id0).maybeSingle();f=q2.data;if(q2.error)console.error("talentView profile by id",id0,q2.error)}
+ if(!f){toast(q1.error?"Profile query failed: "+errT(q1.error):"Profile not found","error");return}
+ const id=isU(f.user_id)?f.user_id:id0;
+ const [sr,pf,rv,ra]=await Promise.all([sb.from("freelancer_services").select("service_id").eq("freelancer_id",id),sb.from("freelancer_portfolio").select("*").eq("freelancer_id",id).eq("status","approved").order("created_at",{ascending:false}).limit(24),
+  sb.from("freelance_reviews").select("*").eq("freelancer_id",id).order("created_at",{ascending:false}).limit(10),sb.from("freelance_reviews").select("rating").eq("freelancer_id",id).limit(5000)]);
+ const rr=((ra&&ra.data)||[]).map(x=>+x.rating).filter(x=>x>=1&&x<=5),RN=rr.length||+f.rating_count||0,RA=rr.length?rr.reduce((a,b)=>a+b,0)/rr.length:(+f.rating_avg||0),RD=[5,4,3,2,1].map(n=>rr.filter(x=>x===n).length);
+ [["freelancer_services",sr],["freelancer_portfolio",pf],["freelance_reviews",rv]].forEach(([n,r])=>{if(r.error)console.error("talentView "+n+" failed for "+id,r.error)});
+ const mine=(sr.data||[]).map(r=>SV.find(s=>s.id===r.service_id)).filter(Boolean),vid=u=>/\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(u);
+ openD(`<div class="tvh"><div class="tvb">${av(f,"avl")}<div style="min-width:0"><h3 style="margin:0;color:#fff">${esc(f.name)} ${vb(f)}</h3><div style="color:#cfe3d8">${esc(f.title||"")}</div><div style="color:#cfe3d8;font-size:13px">${esc(place(f))}</div><div style="margin-top:4px;color:#fff;font-size:14px">${RN?`${sv5(RA)} <b>${RA.toFixed(1)}</b> <span style="color:#cfe3d8">(${plural(RN,"review")})</span>`:'<span style="color:#cfe3d8">New freelancer · no ratings yet</span>'}</div></div><span class="fav2 ${f.available?"on":""}" style="position:static">${f.available?"Available for new work":"Not taking new orders"}</span></div></div>
+ <div class="tvs"><div><b>${RN?"★ "+RA.toFixed(1):"New"}</b><small>${RN?plural(RN,"review"):"No reviews yet"}</small></div><div><b>${f.jobs_done||0}</b><small>Projects completed</small></div><div><b>${f.years_experience??0}</b><small>Years experience</small></div></div>
+ ${mine.slice(0,1).map(s2=>{const P0=pkgs(s2)[0]||{};return `<div class="tvsp"><div><span class="fchip">${esc(s2.title)}</span><div class="m" style="margin-top:4px">Specialty · ${esc(path(s2))}</div></div><div class="fpr"><small>Fixed price</small><b>${kes(fromPrice(s2))}</b><small>${minDays(s2)?plural(minDays(s2),"day")+" delivery":""}${P0.revisions!=null?" · "+plural(P0.revisions,"revision"):""}</small></div>${f.available&&U?.id!==id?`<button class="btn p" data-ord="${esc(s2.id)}|${esc(id)}">Hire ${esc(f.name.split(" ")[0])}</button>`:""}</div>`}).join("")}
+ <h4 class="fsec">About</h4><p style="white-space:pre-wrap;margin:0 0 8px">${esc(f.bio||"")}</p><div>${tags(f.skills)}</div>
+ ${f.certifications?`<h4 class="fsec">Certifications</h4><div class="fbox">${esc(f.certifications)}</div>`:""}
+ <p style="margin:10px 0 0">${/^https?:\/\//i.test(f.portfolio_url||"")?`<a target="_blank" rel="noopener noreferrer" href="${esc(f.portfolio_url)}">Portfolio website</a> `:""}${/^https?:\/\//i.test(f.linkedin_url||"")?`· <a target="_blank" rel="noopener noreferrer" href="${esc(f.linkedin_url)}">LinkedIn</a>`:""}</p>
+ 
+ <h4 class="fsec">Portfolio</h4><div class="pfg">${(pf.data||[]).map(p=>p.media_type==="video"?(vid(p.media_url)?`<div class="pi"><video src="${esc(p.media_url)}" controls preload="metadata"></video></div>`:`<a target="_blank" rel="noopener noreferrer" href="${esc(p.media_url)}"><span class="vt">▶ Watch video</span></a>`):`<a target="_blank" rel="noopener noreferrer" href="${esc(p.media_url)}"><img loading="lazy" alt="${esc(p.title||"Portfolio work")}" src="${esc(p.media_url)}"></a>`).join("")||'<div class="m">No approved portfolio items yet.</div>'}</div>
+ <h4 class="fsec">Client reviews</h4>${RN?`<div class="rsum"><div class="rbig"><b>${RA.toFixed(1)}</b>${sv5(RA)}<small>${plural(RN,"rating")}</small></div><div class="rdist">${[5,4,3,2,1].map((n,i)=>`<div><span>${n}★</span><span class="rbar"><u style="width:${rr.length?RD[i]/rr.length*100:0}%"></u></span><em>${RD[i]}</em></div>`).join("")}</div></div>`:""}${(rv.data||[]).map(r=>`<div class="rv"><b>${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</b> <span class="m">${esc(r.client_name||"Client")} · ${esc(r.service_title||"")} · ${esc(ago(r.created_at))}</span><div>${esc(r.comment||"")}</div></div>`).join("")||'<div class="m">No reviews yet.</div>'}
+ ${U&&U.id===id?'<div class="m" style="margin-top:8px">You cannot rate your own profile.</div>':`<div class="rbox"><h4 class="fsec" style="margin-top:0">Rate ${esc(f.name.split(" ")[0])}</h4><form id="rtf"><div class="stp" id="stp" role="radiogroup" aria-label="Rating">${[1,2,3,4,5].map(n=>`<button type="button" data-s="${n}" role="radio" aria-checked="false" aria-label="${n} star${n>1?"s":""}">★</button>`).join("")}</div><div class="m" id="stl">Tap a star to rate</div><textarea name="c" rows="3" maxlength="1000" placeholder="Share your experience (optional)"></textarea><button class="btn p" id="rtg">Submit rating</button><div class="m">Rating again updates your previous rating.</div></form></div>`}
+ <div style="margin-top:14px"><button class="btn" id="fmsg">Message ${esc(f.name.split(" ")[0])}</button></div>`);
+ const rtf=$("#rtf");if(rtf){let val=0;const LB=["","Very poor","Poor","Okay","Good","Excellent"],paint=n=>{rtf.querySelectorAll("[data-s]").forEach(b=>{const on=+b.dataset.s<=n;b.classList.toggle("on",on);b.setAttribute("aria-checked",+b.dataset.s===n)});$("#stl").textContent=n?n+" / 5 · "+LB[n]:"Tap a star to rate"};
+  rtf.querySelector("#stp").onclick=e=>{const b=e.target.closest("[data-s]");if(!b)return;val=+b.dataset.s;paint(val)};
+  rtf.onsubmit=async e=>{e.preventDefault();const u=await needUser("Log in or create an account to rate freelancers.");if(!u)return;if(u.id===id){toast("You cannot rate yourself","error");return}if(!val){toast("Please tap a star rating first","error");return}
+   $("#rtg").disabled=true;const r=await sb.rpc("freelance_rate_freelancer",{p_freelancer:id,p_rating:val,p_review:rtf.c.value.trim()||null});
+   if(r.error){$("#rtg").disabled=false;console.error("rate failed",r.error);toast(errT(r.error),"error");return}toast("Thank you! Your rating was saved.");await talentView(id);if(TAB==="talent")runTalent()}}
+ $("#fmsg").onclick=async()=>{const u=await needUser("Log in or create an account to message freelancers.");if(!u)return;if(u.id===id){toast("This is your own profile");return}$("#dlg").close();chat(id,"Hi, I saw your freelance profile on SOKO Smart and have a question.")}}
+
+/* ---------- ordering ---------- */
+async function orderDialog(sid,fid,pname){U=await needUser("Log in or create an account to order a service.");if(!U)return;
+ const s=SV.find(x=>x.id===sid),r=await sb.from("freelancer_profiles").select("*").eq("user_id",fid).eq("status","approved").maybeSingle(),f=r.data;
+ if(!s||!f){toast("This freelancer is not available","error");return}if(fid===U.id){toast("You cannot order your own service","error");return}
+ const P=pkgs(s),A=addons(s),wl=await myWallets();let cp=P.find(p=>p.name===pname)||P[0];if(!cp){toast("This service has no packages yet","error");return}
+ openD(`<h3 style="margin:0 0 4px">Order: ${esc(s.title)}</h3><p class="m" style="margin:0 0 10px">Freelancer: <b>${esc(f.name)}</b> ${vb(f)} · ${star(f)}</p>
+ <form class="ffm" id="of"><div class="pkg" id="pkgs">${P.map(p=>`<button type="button" class="pk ${p.name===cp.name?"on":""}" data-pk="${esc(p.name)}"><b>${esc(p.name)}</b><span class="pp2">${kes(p.price)}</span><ul><li>${plural(p.delivery_days,"day")} delivery</li><li>${plural(p.revisions,"revision")}</li></ul><p>${esc(p.description||"")}</p></button>`).join("")}</div>
+ ${A.length?`<div class="fsg"><b style="font-size:13px">Add-ons</b>${A.map(a=>`<label class="ck"><input type="checkbox" name="ad" value="${esc(a.name)}"> ${esc(a.name)} (+${kes(a.price)})</label>`).join("")}</div>`:""}
+ <label>Tell the freelancer what you need *<textarea name="rq" rows="5" required minlength="10" maxlength="3000" placeholder="Describe your project, share the details and any examples you like."></textarea></label>${s.requirements?`<p class="m" style="margin:0"><b>The freelancer needs:</b> ${esc(s.requirements)}</p>`:""}
+ ${wl.length>1?`<label>Pay from<select name="w">${wl.map(x=>`<option value="${esc(x.id)}">${esc(x.name)} · ${kes(x.bal)}</option>`).join("")}</select></label>`:`<p class="m" style="margin:0">Paying from: <b>${wl[0]?esc(wl[0].name+" · "+kes(wl[0].bal)):"your wallet"}</b> · <a href="wallet.html">Top up</a></p>`}
+ <div class="sum" id="sum"></div>
+ <p class="m" style="margin:0">One standard price, no hidden fees. Your payment is held in escrow by SOKO Smart. The freelancer must accept your order first (if they decline you are refunded in full), and the money is released only when you approve the delivered work.</p>
+ <button class="btn p" id="ogo">Place order and pay</button></form>`);
+ const f2=$("#of"),total=()=>cp.price*1+[...f2.querySelectorAll('[name=ad]:checked')].reduce((a,c)=>a+(+(A.find(x=>x.name===c.value)||{}).price||0),0);
+ const paint=()=>{const ex=total()-cp.price;$("#sum").innerHTML=`<div style="display:flex;justify-content:space-between"><span>${esc(cp.name)} package</span><span>${kes(cp.price)}</span></div>${ex?`<div style="display:flex;justify-content:space-between"><span>Add-ons</span><span>${kes(ex)}</span></div>`:""}<div class="m">${plural(cp.delivery_days,"day")} delivery · ${plural(cp.revisions,"revision")} included</div><div class="tt"><span>Total</span><span>${kes(total())}</span></div>`};paint();
+ $("#pkgs").onclick=e=>{const b=e.target.closest("[data-pk]");if(!b)return;cp=P.find(p=>p.name===b.dataset.pk);document.querySelectorAll("#pkgs .pk").forEach(x=>x.classList.toggle("on",x===b));paint()};f2.addEventListener("change",paint);
+ f2.onsubmit=async e=>{e.preventDefault();const wid=f2.w?f2.w.value:(wl[0]?wl[0].id:null),w=wl.find(x=>String(x.id)===String(wid))||wl[0];
+  if(w&&w.bal<total()){toast("Your wallet balance is too low. Top up your wallet first.","error");return}
+  const ok=await askConfirm({title:"Place this order?",msg:`${kes(total())} will be taken from your wallet and held until you approve the work.`,ok:"Yes, place order"});if(!ok)return;
+  $("#ogo").disabled=true;const r2=await sb.rpc("freelance_place_order",{p_service:sid,p_freelancer:fid,p_package:cp.name,p_addons:[...f2.querySelectorAll('[name=ad]:checked')].map(c=>c.value),p_requirements:f2.rq.value.trim(),p_wallet:wid});
+  if(r2.error){$("#ogo").disabled=false;toast(errT(r2.error),"error");return}
+  toast("Order placed. The freelancer has been asked to accept it.");chat(fid,`Hi, I have placed an order for "${s.title}" (${cp.name}) on SOKO Smart. Order #${String(r2.data).slice(0,6)}.`);}}
+
+/* ---------- gigs: client projects and freelancer applications ---------- */
+const FG={q:"",service:"",county:"",sort:"new",view:"open"};let MYSV=null;
+const gv=[["open","Open Projects"],["mine","My Projects"],["applied","My Applications"],["saved","Saved"]];
+const pst=p=>p.status==="open"?"":`<span class="fp ${p.status==="hired"?"g":"r"}">${p.status==="hired"?"Hired":"Closed"}</span>`;
+async function gigs(){U=U||await user();const S=FG;
+ const tabs=`<div class="fbh"><div class="ftabs" style="padding:0">${gv.map(x=>`<button data-gv="${x[0]}" class="${S.view===x[0]?"on":""}">${x[1]}</button>`).join("")}</div><button class="btn p" data-gpost>+ Post a Project</button></div>`;
+ if(S.view!=="open"){$("#fpan").innerHTML=tabs+'<div id="gl" class="'+(S.view==="applied"?"gls":"pgrid vgrid")+'">'+SK+'</div>';runGigs();return}
+ $("#fpan").innerHTML=tabs+head2("Open Projects",[["new","Newest"],["price_desc","Highest budget"],["price_asc","Lowest budget"]],S.sort)+`<div class="flay">${side(`<div class="fsg"><h4>Service</h4>${sel("service",S.service,[["","Any service"],...SV.map(x=>[x.id,x.title])])}</div><div class="fsg"><h4>County</h4>${sel("county",S.county,[["","Anywhere in Kenya"],...COUNTIES.map(c=>[c,c])])}</div><p class="m" style="margin:0">Pay for each project must stay inside the range SOKO Smart sets for its service. Only freelancers who specialise in the service can apply.</p>`)}<div><div id="gl" class="pgrid vgrid">${SK}</div></div></div>`;runGigs()}
+const pdesc=(p,n)=>{const d=String(p.description||"").replace(/\s+/g," ").trim();return d.length>n?d.slice(0,n-3).trimEnd()+"…":d};
+const pcard=p=>{const s=SV.find(x=>x.id===p.service_id)||{},own=U&&p.client_id===U.id,g=grad(s),d=p.delivery_days||minDays(s),
+  btns=own?`<div class="pjb"><button type="button" class="pjv">View project</button><button type="button" class="sgo" data-gapp="${esc(p.id)}">Applicants (${p.applicants_count||0})</button></div>`
+  :p.status==="open"?`<div class="pjb"><button type="button" class="pjv">View project</button><button type="button" class="sgo" data-gap="${esc(p.id)}">Apply Now</button></div>`
+  :`<div class="pjb one"><button type="button" class="pjv">View project</button></div>`;
+ return `<article class="sg pjc" data-pv="${esc(p.id)}" tabindex="0" aria-label="${esc(p.title)}"><div class="sgc" style="--c1:${g[0]};--c2:${g[1]}">${heart(p.id,"Save this project")}<b>${esc(p.title)}</b><small>${esc(s.title||"Project")}${p.status!=="open"?" · "+(p.status==="hired"?"Hired":"Closed"):""}</small></div>
+  <div class="sgb"><div class="sgs">${av({name:p.client_name||"Client"})}<div><b>Posted by ${esc(p.client_name||"Client")}</b><small>${esc(ago(p.created_at))} · ${esc(p.county||"Anywhere in Kenya")}</small></div></div><p>${esc(pdesc(p,110))}</p>
+  <div class="sgm"><span>${SVG(TI.clock,16,2)}${p.duration?esc(p.duration):plural(d||1,"Day")}</span><b>${pbud(p)}</b></div>${btns}</div></article>`};
+/* full project details popup */
+const closeD=()=>{const d=document.getElementById("dlg");if(d&&d.open)d.close()};
+async function projectView(id){U=U||await user();
+ const r=await sb.from("freelance_projects").select("*").eq("id",id).maybeSingle(),p=r.data;if(r.error||!p){toast("This project could not be loaded","error");return}
+ const s=SV.find(x=>x.id===p.service_id)||{},own=U&&p.client_id===U.id,d=p.delivery_days||minDays(s),sv=FAV.has(String(p.id));
+ openD(`<span class="fchip">${esc(path(s)||s.title||"Project")}</span> ${pst(p)}<h3 style="margin:8px 0 4px">${esc(p.title)}</h3>
+ <div class="sgs" style="margin:6px 0 4px">${av({name:p.client_name||"Client"})}<div><b>Posted by ${esc(p.client_name||"Client")}</b><small>${esc(ago(p.created_at))}</small></div></div>
+ <div class="tvs"><div><b>${pbud(p)}</b><small>${p.budget_type==="hourly"?"Hourly pay":p.budget_type==="negotiable"?"Budget":"Pay"}</small></div>${p.duration?`<div><b>${esc(p.duration)}</b><small>Duration</small></div>`:`<div><b>${d||"-"}</b><small>${+d===1?"Day":"Days"} delivery</small></div>`}<div><b>${p.applicants_count||0}</b><small>Applicants</small></div></div>
+ <h4 class="fsec" style="margin-top:4px">Project details</h4><p style="white-space:pre-wrap;margin:0;line-height:1.6">${esc(p.description||"")}</p>
+ ${pjSkills(p)}<div class="pjd"><div><span>Service</span>${pjExtra(p)}<b>${esc(s.title||"-")}</b></div><div><span>Location</span><b>${esc(p.county||"Anywhere in Kenya")}</b></div>${p.deadline?`<div><span>Apply by</span><b>${esc(p.deadline)}</b></div>`:""}<div><span>Posted by</span><b>${esc(p.client_name||"Client")}</b></div>${!own&&p.budget&&(!p.budget_type||p.budget_type==="fixed")?`<div><span>You earn (after ${COMM}% platform fee)</span><b>${kes(p.budget*(100-COMM)/100)}</b></div>`:""}</div>
+ <div class="ca" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start;margin-top:6px"><button type="button" class="btn s psv ${sv?"on":""}" data-fav="${esc(p.id)}" aria-pressed="${sv}">${SVG(TI.heart,16,2)}${sv?"Saved":"Save project"}</button>
+ ${own?`<button type="button" class="btn p s" data-gapp="${esc(p.id)}">View applicants (${p.applicants_count||0})</button>${p.status!=="hired"?`<button type="button" class="btn s" data-gcl="${esc(p.id)}|${p.status==="open"?"closed":"open"}">${p.status==="open"?"Close":"Reopen"}</button>`:""}<button type="button" class="btn s" style="color:#b3261e" data-gdel="${esc(p.id)}">Delete</button>`:p.status==="open"?`<button type="button" class="btn p" data-gap="${esc(p.id)}">Apply Now</button>`:""}</div>`)}
+async function runGigs(){const S=FG,my=++TOK,L=$("#gl");if(!L||!sb)return;
+ if(S.view==="applied"){if(!U){L.innerHTML='<div class="msg">Log in to see your applications.</div>';needLogin("Log in to see your applications.");return}
+  const r=await sb.from("freelance_applications").select("*").eq("freelancer_id",U.id).order("created_at",{ascending:false});if(my!==TOK)return;if(r.error){L.innerHTML=`<div class="msg">${esc(errT(r.error))}</div>`;return}
+  L.innerHTML=(r.data||[]).map(a=>`<article class="gp2"><div class="gph"><div><h3>${esc(a.project_title||"Project")}</h3><small class="m">Applied ${esc(ago(a.created_at))} · Budget ${kes(a.project_budget)}</small></div><span class="fp ${a.status==="hired"?"g":a.status==="declined"?"r":"o"}">${a.status==="applied"?"Waiting for client":a.status==="hired"?"Selected":"Not selected"}</span></div><p>${esc(a.message)}</p>${a.status==="applied"?`<div><button class="btn s" data-gwd="${esc(a.id)}">Withdraw application</button></div>`:""}</article>`).join("")||'<div class="msg">You have not applied to any project yet. Open Projects to find work in your specialty.</div>';return}
+ if(S.view==="saved"){const ids=[...FAV].filter(isU);if(!ids.length){L.innerHTML='<div class="msg">No saved projects yet. Tap the heart on a project to keep it here.</div>';return}
+  const r=await sb.from("freelance_projects").select("*").in("id",ids).order("created_at",{ascending:false});if(my!==TOK)return;if(r.error){L.innerHTML=`<div class="msg">${esc(errT(r.error))}</div>`;return}
+  L.innerHTML=(r.data||[]).map(pcard).join("")||'<div class="msg">Your saved projects are no longer available.</div>';return}
+ if(S.view==="mine"){if(!U){L.innerHTML='<div class="msg">Log in to see your projects.</div>';needLogin("Log in to post and manage projects.");return}
+  const r=await sb.from("freelance_projects").select("*").eq("client_id",U.id).order("created_at",{ascending:false});if(my!==TOK)return;if(r.error){L.innerHTML=`<div class="msg">${esc(errT(r.error))}</div>`;return}
+  L.innerHTML=(r.data||[]).map(pcard).join("")||'<div class="msg">You have not posted a project yet. Click Post a Project to get started.</div>';return}
+ let b=sb.from("freelance_projects").select("*",{count:"exact"}).eq("status","open");const q=clean(S.q);if(q)b=b.or(`title.ilike.%${q}%,description.ilike.%${q}%`);if(S.service)b=b.eq("service_id",S.service);if(S.county)b=b.or(`county.eq."${S.county}",county.is.null`);
+ b=S.sort==="price_desc"?b.order("budget",{ascending:false}):S.sort==="price_asc"?b.order("budget",{ascending:true}):b.order("created_at",{ascending:false});
+ const {data,count,error}=await b.limit(60);if(my!==TOK)return;if(error){console.error("projects query failed",error);L.innerHTML=`<div class="msg">${esc(errT(error))}</div>`;return}
+ $("#cn").textContent=plural(count||0,"project");L.innerHTML=(data||[]).map(pcard).join("")||'<div class="msg">No open projects match. Check back soon.</div>'}
+const PJ_DUR=["Less than 1 week","1–2 weeks","2–4 weeks","1–3 months","3–6 months","More than 6 months","Ongoing"],PJ_MODE=["Remote","On-site","Hybrid"],PJ_EXP=["Entry level","Intermediate","Expert","Any experience level"],
+ PJ_BT=[["fixed","Fixed price","Pay for the entire project"],["hourly","Hourly","Pay based on hours worked"],["negotiable","Negotiable","Discuss with freelancers"]],PJ_COLS=["budget_type","budget_min","budget_max","duration","work_mode","experience_level","skills","freelancers_needed","attachments"];
+const pbud=p=>{const t=p.budget_type||"fixed",mn=+p.budget_min||0,mx=+p.budget_max||0,r=(a,b,u)=>a&&b&&a!==b?kes(a)+" – "+kes(b)+u:kes(a||b)+u;
+ return t==="hourly"?r(mn||+p.budget,mx,"/hr"):t==="negotiable"?(mn||mx?r(mn,mx,"")+" · Negotiable":"Negotiable"):kes(p.budget)};
+const pjSkills=p=>{const sk=Array.isArray(p.skills)?p.skills:[],at=Array.isArray(p.attachments)?p.attachments:[];
+ return (sk.length?`<h4 class="fsec" style="margin:8px 0 0">Skills required</h4><div class="pjsk">${sk.map(x=>`<span class="skc" style="padding:3px 11px">${esc(String(x))}</span>`).join("")}</div>`:"")
+ +(at.length?`<h4 class="fsec" style="margin:8px 0 0">Attachments</h4><div class="pjat">${at.map(x=>`<a href="${esc(x.url||"")}" target="_blank" rel="noopener">${esc(x.name||"File")}</a>`).join("")}</div>`:"")};
+const pjExtra=p=>[["Budget type",({fixed:"Fixed price",hourly:"Hourly",negotiable:"Negotiable"})[p.budget_type]||""],["Duration",p.duration],["Work arrangement",p.work_mode],["Experience level",p.experience_level],["Freelancers needed",+p.freelancers_needed>1?p.freelancers_needed:""]]
+ .filter(x=>x[1]).map(x=>`<div><span>${x[0]}</span><b>${esc(String(x[1]))}</b></div>`).join("");
+async function postDlg(){U=await needUser("Log in or create an account to post a project.");if(!U)return;
+ const ST=["Project details","Budget & timeline","Requirements & publish"],today=new Date().toISOString().slice(0,10),SK=[];let step=0,files=[];
+ openD(`<div class="pjw"><h3 style="margin:0 0 2px">Post a Project <span class="fchip">Free to post</span></h3><p class="m" style="margin:0 0 12px">Tell freelancers what you need. Be as specific as possible.</p>
+ <ol class="pjst">${ST.map((t,i)=>`<li data-i="${i}"><i>${i+1}</i><span>${t}</span></li>`).join("")}</ol>
+ <form class="ffm" id="pj" novalidate>
+  <div class="pjp" data-p="0"><label>Project category (service) *<select name="s" required><option value="">Choose a service</option>${SV.map(x=>`<option value="${esc(x.id)}">${esc(cname(x.category_id))} › ${esc(x.title)} · ${rangeTxt(payRange(x))}</option>`).join("")}</select></label>
+   <label>Project title *<input name="t" required minlength="5" maxlength="120" placeholder="e.g. Logo for my bakery in Kisumu"></label>
+   <label>Project description *<textarea name="d" rows="5" required minlength="20" maxlength="3000" placeholder="What do you need, who is it for, and any examples you like?"></textarea></label>
+   <label>Skills required<div class="skb" id="skb"></div><input id="ski" maxlength="30" placeholder="Type a skill and press Enter (e.g. Photoshop)"></label></div>
+  <div class="pjp" data-p="1" hidden><div><div style="font-weight:600;font-size:13px;margin-bottom:6px">Budget type *</div><div class="btg">${PJ_BT.map((x,i)=>`<label><input type="radio" name="bt" value="${x[0]}" ${i?"":"checked"}><b>${x[1]}</b><small>${x[2]}</small></label>`).join("")}</div></div>
+   <div id="bfx" class="pjp"><label>Project pay (KSh) *<input name="b" type="number" min="1" step="1" disabled placeholder="Choose a service first"></label><div class="sum" id="pjs"><span class="m">Choose a service in step 1 to see the allowed pay range.</span></div></div>
+   <div id="bfl" class="pjp" hidden><div class="two"><label><span id="bmnl">Minimum budget (KES)</span><input name="bmin" type="number" min="1" step="1"></label><label><span id="bmxl">Maximum budget (KES)</span><input name="bmax" type="number" min="1" step="1"></label></div></div>
+   <div class="two"><label>Project duration *<select name="du" required><option value="">Select duration</option>${PJ_DUR.map(x=>`<option>${esc(x)}</option>`).join("")}</select></label><label>Application deadline<input name="dl" type="date" min="${today}"></label></div></div>
+  <div class="pjp" data-p="2" hidden><div class="two"><label>Work arrangement<select name="wm">${PJ_MODE.map(x=>`<option>${x}</option>`).join("")}</select></label><label>Location (if applicable)<select name="c"><option value="">Anywhere in Kenya</option>${COUNTIES.map(c=>`<option>${esc(c)}</option>`).join("")}</select></label></div>
+   <div class="two"><label>Experience level<select name="ex">${PJ_EXP.map((x,i)=>`<option ${i===3?"selected":""}>${x}</option>`).join("")}</select></label><label>Number of freelancers needed<input name="n" type="number" min="1" max="50" step="1" value="1"></label></div>
+   <label>Attachments (optional)<input name="fl" type="file" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.zip"><span class="m" style="font-weight:400">PDF, DOC, PNG, JPG or ZIP · up to 3 files, 5 MB each</span></label>
+   <div class="pjrv" id="pjr"></div></div>
+  <div class="pjn"><button type="button" class="btn" id="pjb" hidden>Back</button><button type="button" class="btn p" id="pjx" style="margin-left:auto">Next</button></div></form></div>`);
+ const f=$("#pj"),bt=()=>f.bt.value,rangeOf=()=>{const x=SV.find(v=>v.id===f.s.value);return x?payRange(x):null},
+  go=n=>{step=n;f.querySelectorAll(".pjp[data-p]").forEach(p=>p.hidden=+p.dataset.p!==n);document.querySelectorAll(".pjst li").forEach((li,i)=>{li.classList.toggle("on",i===n);li.classList.toggle("done",i<n)});
+   $("#pjb").hidden=n===0;$("#pjx").textContent=n===2?"Post project":"Next";if(n===2)review();const d=document.getElementById("dlg");if(d)d.scrollTop=0},
+  chk=n=>{for(const el of f.querySelectorAll(`.pjp[data-p="${n}"] [required]:not([disabled])`)){if(!el.checkValidity()){el.reportValidity();return false}}
+   if(n===1){const rg=rangeOf(),k=bt();if(k==="fixed"){const pay=+f.b.value;if(!rg||!(pay>=rg.min&&pay<=rg.max)){toast(rg?"Pay must be between "+rangeTxt(rg):"Choose a service in step 1","error");return false}}
+    else{const mn=+f.bmin.value||0,mx=+f.bmax.value||0;if(k==="hourly"&&!mn){toast("Enter the minimum hourly rate","error");f.bmin.focus();return false}if(mn&&mx&&mn>mx){toast("Maximum budget must be higher than the minimum","error");return false}}}return true},
+  skills=()=>{$("#skb").innerHTML=SK.map((x,i)=>`<span class="skc">${esc(x)}<button type="button" data-rm="${i}" aria-label="Remove ${esc(x)}">×</button></span>`).join("")},
+  addSk=()=>{const i=$("#ski"),v=i.value.replace(/,/g," ").trim();i.value="";if(!v||SK.length>=12||SK.some(x=>x.toLowerCase()===v.toLowerCase()))return;SK.push(v);skills()},
+  review=()=>{const x=SV.find(v=>v.id===f.s.value)||{},k=bt(),row=(a,b)=>b?`<div><span>${a}</span><b>${esc(String(b))}</b></div>`:"",mn=+f.bmin.value||0,mx=+f.bmax.value||0,
+   bud=k==="fixed"?kes(+f.b.value):pbud({budget_type:k,budget_min:mn,budget_max:mx,budget:mn});
+   $("#pjr").innerHTML=row("Service",x.title)+row("Title",f.t.value.trim())+row("Skills",SK.join(", "))+row("Budget",bud+(k==="fixed"?"":" ("+(k==="hourly"?"hourly":"negotiable")+")"))+row("Duration",f.du.value)+row("Application deadline",f.dl.value)+row("Work arrangement",f.wm.value)+row("Location",f.c.value||"Anywhere in Kenya")+row("Experience",f.ex.value)+row("Freelancers needed",f.n.value)+row("Attachments",files.length?files.length+" file"+(files.length>1?"s":""):"")};
+ $("#ski").onkeydown=e=>{if(e.key==="Enter"||e.key===","){e.preventDefault();addSk()}};$("#ski").onblur=addSk;
+ $("#skb").onclick=e=>{const b=e.target.closest("[data-rm]");if(b){SK.splice(+b.dataset.rm,1);skills()}};
+ f.s.onchange=()=>{const x=SV.find(v=>v.id===f.s.value);if(!x){f.b.disabled=true;f.b.value="";$("#pjs").innerHTML='<span class="m">Choose a service in step 1 to see the allowed pay range.</span>';return}const r=payRange(x);f.b.disabled=false;f.b.min=r.min;f.b.max=r.max;f.b.placeholder=r.min+" – "+r.max;if(!f.b.value||+f.b.value<r.min||+f.b.value>r.max)f.b.value=r.min;$("#pjs").innerHTML=`<div style="display:flex;justify-content:space-between"><span>Allowed pay range</span><b>${rangeTxt(r)}</b></div><div class="m">${minDays(x)?plural(minDays(x),"day")+" delivery · ":""}Paid through SOKO Smart escrow when you hire.</div>`};
+ f.querySelectorAll('[name="bt"]').forEach(r=>r.onchange=()=>{const k=bt();$("#bfx").hidden=k!=="fixed";$("#bfl").hidden=k==="fixed";f.b.required=k==="fixed";$("#bmnl").textContent=k==="hourly"?"Minimum rate (KES per hour) *":"Minimum budget (KES)";$("#bmxl").textContent=k==="hourly"?"Maximum rate (KES per hour)":"Maximum budget (KES)"});
+ f.b.required=true;
+ f.fl.onchange=()=>{files=[...f.fl.files];if(files.length>3||files.some(x=>x.size>5e6)){toast("Choose up to 3 files, each under 5 MB","error");f.fl.value="";files=[]}};
+ $("#pjb").onclick=()=>go(step-1);
+ $("#pjx").onclick=()=>{if(!chk(step))return;if(step<2)go(step+1);else f.requestSubmit()};
+ f.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT"&&e.target.type!=="file"){e.preventDefault();if(e.target.id!=="ski")$("#pjx").click()}});
+ go(0);
+ f.onsubmit=async e=>{e.preventDefault();if(step<2){$("#pjx").click();return}for(let n=0;n<3;n++)if(!chk(n)){go(n);return}
+  const btn=$("#pjx");btn.disabled=true;
+  try{const sx=SV.find(v=>v.id===f.s.value),rg=payRange(sx),k=bt(),mn=+f.bmin.value||null,mx=+f.bmax.value||null,pay=k==="fixed"?+f.b.value:(mn||mx||rg.min),md=U.user_metadata||{},at=[];
+   for(const fl of files){const ext=(fl.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"")||"bin",path=`${U.id}/project-${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`,u=await sb.storage.from("listing-images").upload(path,fl,{contentType:fl.type||undefined});
+    if(u.error)throw new Error(fl.name+": could not be uploaded ("+u.error.message+")");at.push({name:fl.name,url:sb.storage.from("listing-images").getPublicUrl(path).data.publicUrl})}
+   const row={client_id:U.id,client_name:md.full_name||md.name||"Client",service_id:f.s.value,title:f.t.value.trim(),description:f.d.value.trim(),budget:pay,county:f.c.value||null,deadline:f.dl.value||null,
+    budget_type:k,budget_min:k==="fixed"?pay:mn,budget_max:k==="fixed"?pay:mx,duration:f.du.value,work_mode:f.wm.value,experience_level:f.ex.value,skills:SK.slice(),freelancers_needed:Math.max(1,+f.n.value||1),attachments:at};
+   let skipped=0,r=await sb.from("freelance_projects").insert(row);
+   for(let i=0;r.error&&i<PJ_COLS.length;i++){const m=String(r.error.message||"").match(/'([a-z_]+)' column|column "?([a-z_]+)"?/i),c=m&&(m[1]||m[2]);if(!c||!PJ_COLS.includes(c)||!(c in row))break;delete row[c];skipped++;r=await sb.from("freelance_projects").insert(row)}
+   if(r.error)throw r.error;
+   $("#dlg").close();toast(skipped?"Project posted, but some details were not saved. Run supabase-freelance-project-form.sql in Supabase.":"Project posted. Freelancers can now apply.",skipped?"error":undefined);FG.view="mine";tab("gigs")}
+  catch(x){btn.disabled=false;toast(errT(x),"error")}}}
+async function applyDlg(id){U=await needUser("Log in or create an account to apply.");if(!U)return;await loadMe();
+ if(!ME||ME.status!=="approved"){toast("Only approved freelancers can apply. Open the Freelancer Hub to join.","error");tab("hub");return}
+ const {data:p}=await sb.from("freelance_projects").select("*").eq("id",id).maybeSingle();if(!p||p.status!=="open"){toast("This project is no longer open","error");return}
+ const r=await sb.from("freelancer_services").select("service_id").eq("freelancer_id",U.id);MYSV=(r.data||[]).map(x=>x.service_id);const sv=SV.find(x=>x.id===p.service_id)||{};
+ if(!MYSV.includes(p.service_id)){toast(`This project needs a ${sv.title||"different"} specialist. Your specialty is ${(SV.find(x=>x.id===MYSV[0])||{}).title||"not set"}.`,"error");return}
+ openD(`<h3 style="margin:0 0 4px">Apply: ${esc(p.title)}</h3><p class="m" style="margin:0 0 10px">${esc(sv.title||"")} · ${esc(p.county||"Anywhere in Kenya")}</p><p style="white-space:pre-wrap;margin:0 0 10px">${esc(p.description)}</p>
+ <div class="sum"><div style="display:flex;justify-content:space-between"><span>Pay</span><b>${kes(p.budget)}</b></div><div style="display:flex;justify-content:space-between"><span>You earn (after ${COMM}% platform fee)</span><b>${kes(p.budget*(100-COMM)/100)}</b></div></div>
+ <form class="ffm" id="ap" style="margin-top:10px"><label>Why are you the right freelancer? *<textarea name="m" rows="5" required minlength="20" maxlength="1500" placeholder="Share your relevant experience and how you would approach this. The client will also see your portfolio and reviews."></textarea></label><button class="btn p" id="apg">Send application</button></form>`);
+ $("#ap").onsubmit=async e=>{e.preventDefault();$("#apg").disabled=true;const x=await sb.from("freelance_applications").insert({project_id:id,freelancer_id:U.id,message:e.target.m.value.trim()});
+  if(x.error){$("#apg").disabled=false;toast(x.error.code==="23505"?"You already applied to this project":errT(x.error),"error");return}$("#dlg").close();toast("Application sent. The client has been shown your profile.");FG.view="applied";tab("gigs")}}
+async function applicantsDlg(id){const {data:p}=await sb.from("freelance_projects").select("*").eq("id",id).maybeSingle();if(!p)return;
+ const r=await sb.from("freelance_applications").select("*").eq("project_id",id).order("created_at",{ascending:true});if(r.error){toast(errT(r.error),"error");return}const A=r.data||[];let F=[];
+ if(A.length){const x=await sb.from("freelancer_profiles").select("*").in("user_id",A.map(a=>a.freelancer_id));F=x.data||[]}
+ openD(`<h3 style="margin:0 0 4px">Applicants: ${esc(p.title)}</h3><p class="m" style="margin:0 0 10px">Everyone below specialises in this service and the price is the same for all. Compare portfolios, experience and reviews, then hire one.</p>
+ ${A.map(a=>{const f=F.find(z=>z.user_id===a.freelancer_id)||{name:"Freelancer"};return `<div class="cmp ${a.status==="declined"?"off":""}" style="grid-template-columns:auto minmax(0,1fr)">${av(f)}<div class="cn"><b>${esc(f.name)} ${vb(f)} ${a.status==="hired"?'<span class="fp g">Selected</span>':a.status==="declined"?'<span class="fp r">Declined</span>':""}</b><small>${esc(place(f))}${f.years_experience!=null?" · "+esc(yrs(f)):""}</small><small>${star(f)} · ${plural(f.jobs_done||0,"project")} completed</small><div style="white-space:pre-wrap;margin-top:4px">${esc(a.message)}</div>
+  <div class="ca" style="justify-content:flex-start;margin-top:6px"><button class="btn s" data-fl="${esc(a.freelancer_id)}">Portfolio</button><button class="btn s" data-gm="${esc(a.freelancer_id)}">Message</button>${p.status==="open"&&a.status==="applied"?`<button class="btn p s" data-ord="${esc(p.service_id)}|${esc(a.freelancer_id)}">Hire · ${kes(p.budget)}</button><button class="btn s" data-gst="${esc(a.id)}|declined|${esc(id)}">Decline</button>`:""}</div></div></div>`}).join("")||'<div class="msg">No applicants yet. Freelancers in this specialty can see your project now.</div>'}<p class="m">After you place the order, close the project so no one else applies.</p>`)}
+document.addEventListener("click",async e=>{const t=e.target,g=k=>t.closest("["+k+"]");let b;
+ if(b=g("data-gv")){FG.view=b.dataset.gv;gigs();return}if(g("data-gpost")){postDlg();return}if(b=g("data-gap")){applyDlg(b.dataset.gap);return}if(b=g("data-gapp")){applicantsDlg(b.dataset.gapp);return}
+ if(b=g("data-gcl")){const [i,s2]=b.dataset.gcl.split("|"),x=await sb.from("freelance_projects").update({status:s2}).eq("id",i);if(x.error)toast(errT(x.error),"error");else{toast(s2==="open"?"Project reopened":"Project closed");closeD();gigs()}return}
+ if(b=g("data-gdel")){if(await askConfirm({title:"Delete this project?",msg:"It and its applications will be removed permanently.",ok:"Yes, delete"})){const x=await sb.from("freelance_projects").delete().eq("id",b.dataset.gdel);if(x.error)toast(errT(x.error),"error");else{toast("Project deleted");closeD();gigs()}}return}
+ if(b=g("data-gwd")){if(await askConfirm({title:"Withdraw application?",msg:"The client will no longer see it.",ok:"Yes, withdraw"})){const x=await sb.from("freelance_applications").delete().eq("id",b.dataset.gwd);if(x.error)toast(errT(x.error),"error");else{toast("Application withdrawn");gigs()}}return}
+ if(b=g("data-gst")){const [i,s2,pid]=b.dataset.gst.split("|"),x=await sb.from("freelance_applications").update({status:s2}).eq("id",i);if(x.error)toast(errT(x.error),"error");else{toast("Applicant declined");applicantsDlg(pid)}return}
+ if(b=g("data-gm")){chat(b.dataset.gm,"Hi, I am the client for the project you applied to on SOKO Smart.")}});
+
+/* ---------- orders ---------- */
+const OST={pending_acceptance:["Waiting for the freelancer to accept","o"],in_progress:["In progress","b"],delivered:["Delivered · waiting for approval","b"],completed:["Completed","g"],disputed:["In dispute · admin reviewing","r"],declined:["Declined · client refunded","r"],cancelled:["Cancelled · client refunded","r"],refunded:["Refunded","r"]};
+async function orders(){U=await user();if(!U){$("#fpan").innerHTML='<div class="msg">Log in to see your orders.</div>';needLogin("Log in or create an account to see your freelance orders.");return}
+ $("#fpan").innerHTML=SK;const r=await sb.from("freelance_orders").select("*").or(`client_id.eq.${U.id},freelancer_id.eq.${U.id}`).order("created_at",{ascending:false}).limit(100);
+ if(r.error){$("#fpan").innerHTML=`<div class="msg">${esc(errT(r.error))}</div>`;return}const all=r.data||[],mine=all.filter(o=>o.client_id===U.id),got=all.filter(o=>o.freelancer_id===U.id);
+ const card=(o,fr)=>{const s=OST[o.status]||["",""];return `<article class="pc" data-oc="${esc(o.id)}" tabindex="0"><div class="pch"><span class="pl">${esc((o.service_title||"S")[0].toUpperCase())}</span><div class="pt"><h3>${esc(o.service_title||"Service")}</h3><small>${esc(o.package_name||"")} · ${fr?"Client: "+esc(o.client_name||""):"Freelancer: "+esc(o.freelancer_name||"")}</small></div></div><div class="ptg"><span class="${o.status==="completed"?"t2":o.status==="pending_acceptance"?"t3":"t1"}">${esc(s[0])}</span></div>
+  <div class="pf"><b>${fr?'<small>You earn</small> '+kes(o.payout):kes(o.total)}</b><span class="pp">${esc(ago(o.created_at))}</span></div></article>`};
+ $("#fpan").innerHTML=`<div class="fbh"><h2>Orders I received<small>${got.length}</small></h2></div><div class="pgrid">${got.map(o=>card(o,true)).join("")||'<div class="msg">No orders received yet. Complete your profile in the Freelancer Hub to start receiving orders.</div>'}</div>
+ <div class="fbh" style="margin-top:28px"><h2>Orders I placed<small>${mine.length}</small></h2></div><div class="pgrid">${mine.map(o=>card(o,false)).join("")||'<div class="msg">You have not ordered a service yet. Browse Services to hire a freelancer.</div>'}</div>`}
+async function orderView(id){U=await needUser("Log in to see your orders.");if(!U)return;
+ const {data:o,error}=await sb.from("freelance_orders").select("*").eq("id",id).maybeSingle();if(!o){toast(error?errT(error):"Order not found");return}
+ const cl=U.id===o.client_id,fr=U.id===o.freelancer_id,s=OST[o.status]||["",""],other=cl?o.freelancer_id:o.client_id,left=o.revisions_total-o.revisions_used;
+ openD(`<h3 style="margin:0 0 4px">${esc(o.service_title)} · ${esc(o.package_name)}</h3><p class="m" style="margin:0 0 10px">Order #${esc(String(o.id).slice(0,6))} · Client: ${esc(o.client_name||"")} · Freelancer: ${esc(o.freelancer_name||"")}</p>
+ <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="price" style="margin:0">${kes(o.total)}</span><span class="fp ${s[1]}">${s[0]}</span>${o.due_date&&["in_progress","delivered"].includes(o.status)?`<span class="m">Due ${esc(o.due_date)}</span>`:""}</div>
+ ${fr?`<div class="fbox" style="margin-top:10px">You earn <b>${kes(o.payout)}</b>. SOKO Smart's platform fee is ${o.fee_percent}% (${kes(o.platform_fee)}).</div>`:""}
+ <h4 class="fsec">What the client asked for</h4><div class="fbox">${esc(o.requirements||"")}</div>
+ ${(o.addons||[]).length?`<h4 class="fsec">Add-ons</h4><div class="m">${o.addons.map(a=>esc(a.name)+" (+"+kes(a.price)+")").join(" · ")}</div>`:""}
+ <p class="m" style="margin:10px 0 0">${plural(o.delivery_days||0,"day")} delivery · ${left} of ${o.revisions_total} revision${o.revisions_total===1?"":"s"} left</p>
+ ${o.revision_note&&o.status==="in_progress"?`<h4 class="fsec">Changes requested</h4><div class="fbox">${esc(o.revision_note)}</div>`:""}
+ ${o.delivery_note||o.delivery_link?`<h4 class="fsec">Delivered work</h4><div class="fbox">${esc(o.delivery_note||"")}${/^https?:\/\//i.test(o.delivery_link||"")?`\n<a target="_blank" rel="noopener noreferrer" href="${esc(o.delivery_link)}">${esc(o.delivery_link)}</a>`:""}</div>`:""}
+ ${o.dispute_reason?`<h4 class="fsec">Dispute</h4><div class="fbox">${esc(o.dispute_reason)}</div>`:""}
+ <div id="oact" style="margin-top:14px;display:grid;gap:10px"></div>`);
+ const A=$("#oact"),msg='<button class="btn" id="omsg">Message</button>',dis=["in_progress","delivered"].includes(o.status)?'<button class="btn" id="odis" type="button">Open a dispute</button>':"";
+ const run=async(fn,args,m)=>{const r=await sb.rpc(fn,args);if(r.error){toast(errT(r.error),"error");return}toast(m);orderView(id)};
+ if(fr&&o.status==="pending_acceptance")A.innerHTML=`<p class="m" style="margin:0">Accept to start the work. If you decline, the client is refunded in full.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn p" id="oacc">Accept order · earn ${kes(o.payout)}</button><button class="btn" id="odec">Decline</button>${msg}</div>`;
+ else if(fr&&o.status==="in_progress")A.innerHTML=`<form class="ffm" id="odel"><label>Message to the client *<textarea name="n" rows="4" required placeholder="Describe what you are delivering"></textarea></label><label>Link to the work (Google Drive, WeTransfer, GitHub…)<input name="l" type="url" placeholder="https://…"></label><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn p">Deliver work</button><button class="btn" type="button" id="oref">Refund client</button>${msg}${dis}</div></form>`;
+ else if(fr&&o.status==="delivered")A.innerHTML=`<p class="m" style="margin:0">Waiting for the client to approve. You will be paid ${kes(o.payout)} to your wallet.</p><div style="display:flex;gap:8px;flex-wrap:wrap">${msg}${dis}</div>`;
+ else if(cl&&o.status==="pending_acceptance")A.innerHTML=`<p class="m" style="margin:0">Waiting for the freelancer to accept. Your money is held safely.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="ocan">Cancel and get a refund</button>${msg}</div>`;
+ else if(cl&&o.status==="in_progress")A.innerHTML=`<p class="m" style="margin:0">The freelancer is working on your order. Your money is held in escrow.</p><div style="display:flex;gap:8px;flex-wrap:wrap">${msg}${dis}</div>`;
+ else if(cl&&o.status==="delivered")A.innerHTML=`<p class="m" style="margin:0">Check the work. Approve only when you are happy: the payment goes to the freelancer and cannot be taken back.</p><form class="ffm" id="ook"><label>Rate the freelancer<select name="r"><option value="5">★★★★★ Excellent</option><option value="4">★★★★ Good</option><option value="3">★★★ Okay</option><option value="2">★★ Poor</option><option value="1">★ Very poor</option></select></label><label>Review (optional)<textarea name="v" rows="3" maxlength="1000"></textarea></label><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn p">Approve and release ${kes(o.total)}</button>${left>0?'<button class="btn" type="button" id="orev">Request changes</button>':""}${msg}${dis}</div></form>`;
+ else A.innerHTML=msg;
+ const on=(i,f)=>{const e=$("#"+i);if(e)e.onclick=f};
+ on("omsg",()=>{$("#dlg").close();chat(other,`Hi, about order #${String(o.id).slice(0,6)} (${o.service_title}).`)});
+ on("oacc",()=>run("freelance_accept_order",{p_order:id},"Order accepted. You can start the work."));
+ on("odec",async()=>{if(await askConfirm({title:"Decline this order?",msg:"The client is refunded in full.",ok:"Yes, decline"}))run("freelance_decline_order",{p_order:id},"Order declined and client refunded")});
+ on("ocan",async()=>{if(await askConfirm({title:"Cancel this order?",msg:"You are refunded in full to the wallet you paid with.",ok:"Yes, cancel"}))run("freelance_cancel_order",{p_order:id},"Order cancelled and refunded")});
+ on("oref",async()=>{if(await askConfirm({title:"Refund the client?",msg:"The held money goes back to the client and the order ends.",ok:"Yes, refund"}))run("freelance_refund_order",{p_order:id},"Client refunded")});
+ on("odis",()=>{const r=prompt("Tell us what is wrong. The SOKO Smart team will review it:");if(r&&r.trim().length>=10)run("freelance_dispute_order",{p_order:id,p_reason:r.trim()},"Dispute opened. The team will review it.");else if(r!==null)toast("Please explain in at least 10 characters")});
+ on("orev",()=>{const n=prompt("What needs to change?");if(n&&n.trim())run("freelance_revision_order",{p_order:id,p_note:n.trim()},"Changes requested")});
+ const fd=$("#odel");if(fd)fd.onsubmit=e=>{e.preventDefault();run("freelance_deliver_order",{p_order:id,p_note:fd.n.value,p_link:fd.l.value},"Work delivered. The client can now review it.")};
+ const fo=$("#ook");if(fo)fo.onsubmit=async e=>{e.preventDefault();if(!await askConfirm({title:"Release the payment?",msg:`${kes(o.total)} is paid out for this order and cannot be taken back.`,ok:"Yes, release"}))return;run("freelance_complete_order",{p_order:id,p_rating:+fo.r.value,p_review:fo.v.value},"Payment released. Thank you for your review!")}}
+
+/* ---------- freelancer hub ---------- */
+const offered=()=>SV.filter(s=>s.active!==false&&CAT.some(c=>c.id===s.category_id));
+const svcGroups=(on)=>{const by={};offered().forEach(s=>{(by[cname(s.category_id)||"Other"]=by[cname(s.category_id)||"Other"]||[]).push(s)});return Object.entries(by).map(([g,a])=>`<div class="gh">${esc(g)}</div>${a.map(s=>`<label><input type="radio" name="sv" required value="${esc(s.id)}" ${on.includes(s.id)?"checked":""}> ${esc(s.title)} <span class="m">· ${kes(fromPrice(s))}</span></label>`).join("")}`).join("")};
+async function hub(){U=await user();if(!U){$("#fpan").innerHTML='<div class="msg">Log in to apply as a freelancer or manage your freelancer profile.</div>';needLogin("Log in or create an account to become a freelancer.");return}
+ $("#fpan").innerHTML=SK;await loadMe();
+ if(!ME){$("#fpan").innerHTML=`<div class="fc" style="cursor:default;background:#fff;gap:10px"><h3>Join SOKO Smart as a freelancer</h3><p style="margin:0">SOKO Smart sets standard prices for every service, so you win clients with the quality of your work, not by cutting your price.</p>
+  <ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.8"><li>Choose the ONE service you specialise in (for example Logo Design or Web Design)</li><li>Upload your portfolio (images and videos) for review</li><li>Our team approves your profile before it goes live</li><li>Get paid to your SOKO Smart Wallet when the client approves your work (SOKO Smart keeps a ${COMM}% platform fee)</li></ul><div><button class="btn p" id="apply">Apply now</button></div></div>
+  <h3 class="fsec">Pick your specialty</h3><div class="pgrid">${SV.map(s=>`<article class="pc" style="cursor:default"><div class="pch"><span class="pl">${esc((cname(s.category_id)||"S")[0])}</span><div class="pt"><h3>${esc(s.title)}</h3><small>${esc(path(s))}</small></div></div><div class="pf"><b><small>Fixed price from</small> ${kes(fromPrice(s))}</b><span class="pp">You earn ${100-COMM}%</span></div></article>`).join("")||'<div class="msg">No services yet.</div>'}</div>`;$("#apply").onclick=()=>profileForm(false);return}
+ const [sr,pf,po]=await Promise.all([sb.from("freelancer_services").select("service_id").eq("freelancer_id",U.id),sb.from("freelancer_portfolio").select("*").eq("freelancer_id",U.id).order("created_at",{ascending:false}),
+  sb.from("freelance_orders").select("id",{count:"exact",head:true}).eq("freelancer_id",U.id).eq("status","pending_acceptance")]);
+ const mine=(sr.data||[]).map(r=>r.service_id),ST={pending:["Your application is being reviewed by the SOKO Smart team. Your profile becomes visible once it is approved.","o"],approved:["Your profile is approved and visible to clients.","g"],rejected:["Your application was not approved."+(ME.status_note?" Reason: "+ME.status_note:"")+" Update your profile and portfolio, then save to resubmit.","r"],suspended:["Your profile is suspended."+(ME.status_note?" Reason: "+ME.status_note:"")+" Contact SOKO Smart support.","r"]}[ME.status]||["",""];
+ $("#fpan").innerHTML=`<div class="fc" style="cursor:default;background:#fff;margin-bottom:14px"><div class="row"><div style="display:flex;gap:12px;align-items:center">${av(ME)}<div><b>${esc(ME.name)}</b> <span class="fp ${ST[1]}">${esc(ME.status)}</span><div class="m">${esc(ME.title||"")} · ${star(ME)}</div></div></div><button class="btn p s" id="eprof">Edit profile</button></div><div class="m" style="margin-top:6px">${esc(ST[0])}</div></div>
+ ${po.count?`<div class="fc" style="cursor:default;background:#FFF8EF;border-color:#F58E20;margin-bottom:14px"><div class="row"><b>${plural(po.count,"new order")} waiting for you to accept</b><button class="btn p s" data-t2="orders">View orders</button></div></div>`:""}
+ <h3 class="fsec">My specialty</h3><p class="m" style="margin:0 0 8px">Every freelancer masters one service. Choose yours from the list created by SOKO Smart. Prices are fixed and the same for every freelancer. Your earnings: price minus SOKO Smart's ${COMM}% platform fee.</p>
+ <form id="sf"><div class="chk">${svcGroups(mine.slice(0,1))}</div><div style="margin-top:10px"><button class="btn p">Save my specialty</button></div></form>
+ <h3 class="fsec">My portfolio</h3><p class="m" style="margin:0 0 8px">Only items approved by SOKO Smart appear on your public profile.</p>
+ <div class="pfg" id="myp">${(pf.data||[]).map(p=>`<div class="pi">${p.media_type==="video"&&/\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(p.media_url)?`<video src="${esc(p.media_url)}" preload="metadata"></video>`:p.media_type==="video"?`<span class="vt">▶ Video link</span>`:`<img loading="lazy" alt="" src="${esc(p.media_url)}">`}<span class="st fp ${p.status==="approved"?"g":p.status==="rejected"?"r":"o"}">${esc(p.status)}</span><button class="dl" data-del="${esc(p.id)}" type="button">Delete</button></div>`).join("")||'<div class="m">No portfolio items yet.</div>'}</div>
+ <form class="ffm" id="paf" style="margin-top:12px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px"><b>Add portfolio work</b><div class="two"><label>Title<input name="t" maxlength="100" placeholder="e.g. Restaurant logo"></label><label>Related service<select name="s"><option value="">Choose</option>${mine.map(i=>{const s=SV.find(x=>x.id===i);return s?`<option value="${esc(s.id)}">${esc(s.title)}</option>`:""}).join("")}</select></label></div>
+ <label>Image or video file (images under 3 MB, videos under 30 MB)<input name="f" type="file" accept="image/*,video/*"></label><label>…or a video link<input name="v" type="url" placeholder="https://…"></label><div><button class="btn p">Upload for review</button></div></form>`;
+ $("#eprof").onclick=()=>profileForm(true);const t2=$("[data-t2]");if(t2)t2.onclick=()=>tab("orders");
+ $("#sf").onsubmit=async e=>{e.preventDefault();const ids=[...e.target.querySelectorAll("[name=sv]:checked")].map(c=>c.value);if(!ids.length){toast("Choose at least one service","error");return}
+  const d=await sb.from("freelancer_services").delete().eq("freelancer_id",U.id);if(d.error){toast(errT(d.error),"error");return}
+  const i=await sb.from("freelancer_services").insert(ids.map(s=>({freelancer_id:U.id,service_id:s})));if(i.error){toast(errT(i.error),"error");return}toast("Specialty saved");await loadCat();hub()};
+ $("#paf").onsubmit=async e=>{e.preventDefault();const f=e.target,file=f.f.files[0],link=f.v.value.trim();if(!file&&!link){toast("Choose a file or paste a video link","error");return}
+  const b=f.querySelector("button");b.disabled=true;try{let url=link,type="video";if(file){const u=await up(file,"pf");url=u.url;type=u.type}
+   const r=await sb.from("freelancer_portfolio").insert({freelancer_id:U.id,service_id:f.s.value||null,title:f.t.value.trim()||null,media_url:url,media_type:type,status:"pending"});if(r.error)throw r.error;toast("Uploaded. It will appear on your profile once approved.");hub()}catch(x){b.disabled=false;toast(errT(x),"error")}};
+ $("#myp").onclick=async e=>{const d=e.target.closest("[data-del]");if(!d)return;if(!await askConfirm({title:"Delete this portfolio item?",msg:"It is removed from your profile.",ok:"Yes, delete"}))return;const r=await sb.from("freelancer_portfolio").delete().eq("id",d.dataset.del);if(r.error){toast(errT(r.error),"error");return}hub()}}
+
+async function profileForm(editing){U=await needUser("Log in or create an account to become a freelancer.");if(!U)return;await loadCat();if(editing)await loadMe();const m=editing&&ME?ME:{};
+ let pv={};if(editing){try{const r=await sb.from("freelancer_private").select("*").eq("user_id",U.id).maybeSingle();pv=r.data||{}}catch(e){}}
+ let mine=[];if(editing){const r=await sb.from("freelancer_services").select("service_id").eq("freelancer_id",U.id);mine=(r.data||[]).map(x=>x.service_id)}
+ if(!offered().length){toast("SOKO Smart has not approved any services yet. Please check back soon.","error");return}
+ const gone=editing&&mine[0]&&!offered().some(x=>x.id===mine[0]);
+ const hasAv=editing&&m.avatar_url;
+ openD(`<h3 style="margin:0 0 4px">${editing?"Edit your freelancer profile":"Apply to become a freelancer"}</h3><p class="m" style="margin:0 0 10px">Fields marked * are required. Your phone number and email are private: only the SOKO Smart team can see them.</p>
+ <form class="ffm" id="pfm"><label>Full name *<input name="nm" required maxlength="80" value="${esc(m.name||U.user_metadata?.full_name||"")}"></label>
+ <label>Profile picture ${hasAv?"(leave empty to keep your current one)":"*"}<input name="av" type="file" accept="image/*" ${hasAv?"":"required"}></label>
+ <div class="two"><label>Professional title *<input name="t" required maxlength="100" value="${esc(m.title||"")}" placeholder="e.g. Graphic Designer"></label><label>Years of experience *<input name="yx" type="number" min="0" max="60" required value="${esc(m.years_experience??"")}"></label></div>
+ <label>About me / biography *<textarea name="b" rows="5" required minlength="50" maxlength="2000" placeholder="Tell clients about your experience, the work you do best and how you work.">${esc(m.bio||"")}</textarea></label>
+ <div class="two"><label>County *<select name="c" required><option value="">Choose</option>${opts(COUNTIES,m.county)}</select></label><label>Town *<input name="tw" required maxlength="60" value="${esc(m.town||"")}"></label></div>
+ <div class="two"><label>Phone number *<input name="ph" type="tel" inputmode="tel" required placeholder="0712 345 678" value="${esc(pv.phone||U.user_metadata?.phone||"")}"></label><label>Email *<input name="em" type="email" required value="${esc(pv.email||U.email||"")}"></label></div>
+ <label>Skills (separate with commas) *<input name="s" required value="${esc((m.skills||[]).join(", "))}" placeholder="Photoshop, Illustrator, Branding"></label>
+ <div><b style="font-size:13px">My specialty (choose one) *</b><p class="m" style="margin:2px 0 6px">Only services approved by SOKO Smart are listed. Every freelancer masters one service, so clients know exactly what you are best at. You cannot create services or change prices.</p>${gone?`<p class="m" style="margin:0 0 6px;color:#b3261e">The service you chose before is no longer offered. Please choose a new specialty.</p>`:""}<div class="chk">${svcGroups(mine.slice(0,1))}</div></div>
+ ${editing?"":`<label>Portfolio images / videos * <span class="m">(add at least one; images under 3 MB, videos under 30 MB)</span><input name="pf" type="file" accept="image/*,video/*" multiple required></label><label>…or a portfolio video link<input name="pvl" type="url" placeholder="https://…"></label>`}
+ <div class="two"><label>Portfolio website<input name="pw" type="url" value="${esc(m.portfolio_url||"")}" placeholder="https://…"></label><label>LinkedIn profile<input name="li" type="url" value="${esc(m.linkedin_url||"")}" placeholder="https://linkedin.com/in/…"></label></div>
+ <label>Certifications (optional)<textarea name="ce" rows="2" maxlength="600">${esc(m.certifications||"")}</textarea></label>
+ <label>Available for new work *<select name="a" required><option value="yes" ${m.available===false?"":"selected"}>Yes, I am available</option><option value="no" ${m.available===false?"selected":""}>No, not right now</option></select></label>
+ <p class="m" style="margin:0">${editing?"":"Your application is reviewed by the SOKO Smart team before your profile becomes visible to clients."}</p><button class="btn p" id="pgo">${editing?"Save profile":"Submit application"}</button></form>`);
+ $("#pfm").onsubmit=async e=>{e.preventDefault();const f=e.target,ids=[...f.querySelectorAll("[name=sv]:checked")].map(c=>c.value);if(!ids.length||!offered().some(x=>x.id===ids[0])){toast("Choose a specialty from the approved services","error");return}
+  const phn=f.ph.value.replace(/[\s\-().]/g,"").replace(/^\+/,""),b=$("#pgo");if(!/^(254|0)[17][0-9]{8}$/.test(phn)){toast("Enter a valid Kenyan phone number, e.g. 0712 345 678","error");f.ph.focus();return}b.disabled=true;
+  try{let avatar=m.avatar_url||null;if(f.av.files[0]){const u=await up(f.av.files[0],"avatar","image");avatar=u.url}
+   const row={name:f.nm.value.trim(),avatar_url:avatar,title:f.t.value.trim(),bio:f.b.value.trim(),county:f.c.value,town:f.tw.value.trim(),skills:split(f.s.value),years_experience:+f.yx.value,portfolio_url:f.pw.value.trim()||null,linkedin_url:f.li.value.trim()||null,certifications:f.ce.value.trim()||null,available:f.a.value==="yes"};
+   if(editing&&ME&&ME.status==="rejected"){row.status="pending";row.status_note=null}
+   const OPT=["portfolio_url","linkedin_url","certifications","available","years_experience","skills","town","avatar_url","status_note"],send=r0=>editing?sb.from("freelancer_profiles").update(r0).eq("user_id",U.id):sb.from("freelancer_profiles").insert({...r0,user_id:U.id,status:"pending"});
+   let r=await send(row);
+   for(let i=0;r.error&&i<9;i++){const m=String(r.error.message||"").match(/'([a-z_]+)' column|column "?([a-z_]+)"?/i),c=m&&(m[1]||m[2]);if(!c||!OPT.includes(c)||!(c in row))break;console.warn("freelancer_profiles is missing column",c);delete row[c];r=await send(row)}
+   if(r.error&&!editing&&/duplicate key|unique/i.test(r.error.message||""))r=await sb.from("freelancer_profiles").update(row).eq("user_id",U.id);
+   if(r.error)throw r.error;
+   const pr=await sb.from("freelancer_private").upsert({user_id:U.id,phone:phn,email:f.em.value.trim()});if(pr.error)throw pr.error;
+   await sb.from("freelancer_services").delete().eq("freelancer_id",U.id);const si=await sb.from("freelancer_services").insert(ids.map(s=>({freelancer_id:U.id,service_id:s})));if(si.error)throw si.error;
+   if(!editing){const files=[...f.pf.files],link=f.pvl.value.trim();for(const file of files){const u=await up(file,"pf");const pi=await sb.from("freelancer_portfolio").insert({freelancer_id:U.id,title:file.name.replace(/\.[^.]+$/,"").slice(0,80),media_url:u.url,media_type:u.type,status:"pending"});if(pi.error)throw pi.error}
+    if(link){const pi=await sb.from("freelancer_portfolio").insert({freelancer_id:U.id,title:"Video",media_url:link,media_type:"video",status:"pending"});if(pi.error)throw pi.error}}
+   try{await sb.rpc("wallet_ensure",{p_shop_id:null})}catch(x){}
+   $("#dlg").close();toast(editing?"Profile saved":"Application submitted. We will review it shortly.");await loadCat();tab("hub")}catch(x){console.error("freelancer application failed",x);b.disabled=false;toast(errT(x),"error")}}}
+
+/* ---------- sidebar, sort, load more, events ---------- */
+const fp=document.getElementById("fpan");
+fp.addEventListener("change",e=>{const t=e.target;if(t.dataset.cdd){if(t.dataset.cdd==="tc"){FT.cat=t.value;FT.service="";talent()}else{FS.cat=t.value;FS.sub="";services()}return}if(t.id==="fsort"){cur().sort=t.value;rerun();return}if(t.dataset.k){const S=cur();S[t.dataset.k]=t.type==="checkbox"?t.checked:t.value.trim();if(TAB==="talent"&&t.dataset.k==="county")$("#hc").value=t.value;if(t.tagName==="SELECT"||t.type==="checkbox")rerun()}});
+fp.addEventListener("input",e=>{const t=e.target;if(t.dataset.k&&t.type==="number"){cur()[t.dataset.k]=t.value.trim();debounce(rerun,450)}});
+fp.addEventListener("click",e=>{const t=e.target,c=t.closest("[data-cat]"),s=t.closest("[data-sub]"),tc=t.closest("[data-tc]"),vw=t.closest("[data-vw]");if(vw){VIEW=vw.dataset.vw;try{localStorage.setItem("soko_fl_view",VIEW)}catch(x){}document.querySelectorAll("[data-vw]").forEach(b=>{b.classList.toggle("on",b===vw);b.setAttribute("aria-pressed",b===vw)});document.querySelectorAll(".vgrid").forEach(g=>g.classList.toggle("list",VIEW==="list"));return}if(tc){FT.cat=tc.dataset.tc;FT.service="";talent();return}
+ if(c){FS.cat=c.dataset.cat;FS.sub="";services();return}if(s){FS.sub=FS.sub===s.dataset.sub?"":s.dataset.sub;services();return}
+ if(t.closest("#fclr")){if(TAB==="gigs")Object.assign(FG,{q:"",service:"",county:""});else if(TAB==="services")Object.assign(FS,{q:"",cat:"",sub:"",min:"",max:"",days:""});else Object.assign(FT,{cat:"",q:"",county:"",service:"",rating:"",years:"",avail:false});tab(TAB);return}
+ const fo=t.closest("#fopen");if(fo){FOPEN=!FOPEN;const sd=$("#fside");if(sd)sd.classList.toggle("open",FOPEN);fo.classList.toggle("on",FOPEN);fo.setAttribute("aria-expanded",FOPEN);return}if(t.closest("#tmore")){FT.pg++;runTalent(true)}});
+document.addEventListener("click",e=>{const t=e.target,o=t.closest("[data-ord]"),hv=t.closest("[data-fav]");if(hv){e.preventDefault();const id=hv.dataset.fav;if(FAV.has(id)){FAV.delete(id);toast("Removed from saved")}else{FAV.add(id);toast("Saved to your favourites")}try{localStorage.setItem("soko_fl_fav",JSON.stringify([...FAV]))}catch(x){}hv.classList.toggle("on",FAV.has(id));hv.setAttribute("aria-pressed",FAV.has(id));if(hv.classList.contains("psv"))hv.lastChild.textContent=FAV.has(id)?"Saved":"Save project";if(TAB==="gigs"&&FG.view==="saved"&&!FAV.has(id)){const cd=hv.closest("[data-pv]");if(cd)cd.remove()}return}
+ if(o){e.preventDefault();const [s,f]=o.dataset.ord.split("|");orderDialog(s,f);return}
+ const sv=t.closest("[data-sv]");if(sv){e.preventDefault();serviceView(sv.dataset.sv);return}
+ const pv=t.closest("[data-pv]");if(pv&&!t.closest("[data-gap],[data-gapp],[data-gcl],[data-gdel],[data-fav]")){e.preventDefault();projectView(pv.dataset.pv);return}
+ const f=t.closest("[data-fl]");if(f){e.preventDefault();e.stopPropagation();talentView(f.dataset.fl);return}
+ const c=t.closest("[data-oc]");if(c){e.preventDefault();orderView(c.dataset.oc)}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.classList&&(e.target.classList.contains("pc")||e.target.classList.contains("sg")||e.target.classList.contains("tc2"))&&!e.target.closest("#dlg"))e.target.click()});
+$("#beF").onclick=()=>tab("hub");$("#fpost").onclick=()=>postDlg();$("#fbe2").onclick=()=>tab("hub");$("#fex").onclick=()=>TAB==="gigs"?postDlg():$("#fpan").scrollIntoView({behavior:"smooth"});
+(async()=>{U=await user();await Promise.all([loadCat(),loadMe()]);tab(TAB);const q=new URLSearchParams(location.search);if(q.get("order"))orderView(q.get("order"));else if(q.get("service"))serviceView(q.get("service"));else if(isU((q.get("hire")||"").split("|")[0])&&isU((q.get("hire")||"").split("|")[1]))orderDialog(...q.get("hire").split("|"));else if(isU(q.get("f")))talentView(q.get("f"))})();
+if(sb)sb.auth.onAuthStateChange(()=>setTimeout(async()=>{U=await user();await loadMe();if(TAB==="orders"||TAB==="hub")tab(TAB)},0));
+})();
+</script>
+</body>
+</html>

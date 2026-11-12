@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Soko Smart – Admin</title>
+<link rel="stylesheet" href="chat.css?v=2">
+<script>window.SOKO_NO_FAB=1</script>
+<script src="chat.js?v=2"></script>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{--g:#0d4630;--g2:#2e8b4f;--a:#f2a626;--a2:#f7c65a;--br:#7a2d0f;--gr:#dcdce6;--bg:#fff;--bg2:#f3f4f1;--tx:#17201b;--mut:#667068;--bd:#e7e9e4;--r:#d3261e;--o:var(--a);--od:#b9770a;--ot:#fdf2d8;box-sizing:border-box}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg2);color:var(--tx);font:14px/1.5 "Inter","Segoe UI",system-ui,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+button{font:inherit;cursor:pointer}:focus-visible{outline:3px solid var(--a);outline-offset:2px}[hidden]{display:none!important}
+h1,h2,h3{margin:0}
+.btn{padding:7px 14px;border-radius:10px;font-weight:600;border:1.5px solid var(--g);background:var(--bg);color:var(--g)}
+.btn.p{background:var(--g);color:#fff}.btn.d{border-color:var(--r);color:var(--r)}.btn.s{padding:3px 9px;font-size:13px}
+.btn:hover{background:var(--g);color:#fff}.btn.d:hover{background:var(--r);color:#fff}
+input,select,textarea{border:1px solid var(--bd);border-radius:10px;padding:9px 10px;font:inherit;background:var(--bg);color:var(--tx);width:100%}
+label{display:grid;gap:4px;font-size:13px;color:var(--mut)}
+.pwf{position:relative}.pwf input{padding-right:44px}.eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--mut);padding:7px;display:grid;border-radius:8px}.eye:hover{color:var(--g)}
+.m{color:var(--mut);font-size:13px}.empty{padding:28px;text-align:center;color:var(--mut)}
+
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:16px;background:var(--g)}
+.lc{background:var(--bg);border-radius:16px;padding:28px;width:100%;max-width:380px;display:grid;gap:14px;box-shadow:0 14px 40px rgba(0,0,0,.25)}
+.lc h1{font-size:24px}.lc p{margin:0;color:var(--mut)}.err{color:var(--r);font-size:14px;min-height:20px}
+.lc .btn.p{background:var(--a);border-color:var(--a);color:var(--g);font-weight:700}
+
+/* shell */
+#app{display:grid;grid-template-columns:284px minmax(0,1fr);min-height:100vh}
+.side{background:var(--g);color:#fff;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;z-index:30}
+.brand{padding:22px 22px 18px}.brand img{display:block;width:100%;max-width:200px;max-height:84px;object-fit:contain;object-position:left center}
+#nav{flex:1;overflow-y:auto;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.nv{display:flex;align-items:center;gap:16px;width:100%;border:0;background:none;color:#fff;text-align:left;padding:11px 22px;font-size:15px;font-weight:500;position:relative}
+.nv:hover{background:rgba(255,255,255,.08)}.nv.on{background:var(--a);color:var(--g);font-weight:700}
+.nv svg{flex:none}.nv i{margin-left:auto;font-style:normal;background:var(--r);color:#fff;border-radius:12px;font-size:11px;font-weight:700;padding:1px 7px;line-height:1.5}
+.sf{border-top:1px solid rgba(255,255,255,.2);margin:6px 26px 0;padding:8px 0 14px}.sf .nv{padding:11px 0}.sf .nv:hover{background:none;text-decoration:underline}
+.scrim{display:none}
+
+.top{display:flex;gap:14px;align-items:center;padding:16px 24px;background:var(--bg2);position:sticky;top:0;z-index:20}
+.pick{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:0 12px;height:46px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.pick select{border:0;background:none;appearance:none;-webkit-appearance:none;padding:0 22px 0 0;width:auto;font-weight:500;height:100%;cursor:pointer}
+.pick .cv{position:absolute;right:10px;pointer-events:none}
+.search{flex:1;min-width:0}.search input{border:0;padding:0;background:none;height:100%;outline:none}.search:focus-within{outline:3px solid var(--a)}
+.ib{position:relative;width:46px;height:46px;border-radius:12px;background:var(--bg);border:1px solid var(--bd);display:grid;place-items:center;color:var(--tx);flex:none}
+.ib em{position:absolute;top:-6px;right:-6px;background:var(--r);color:#fff;font-style:normal;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 5px}
+.me{display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:0;color:var(--tx);flex:none}
+.av{width:48px;height:48px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;border:2px solid #fff;box-shadow:0 0 0 1px var(--bd)}
+.me b{display:block;line-height:1.2}.me small{color:var(--mut);font-size:12px}
+.menu{display:none}
+
+main{padding:4px 24px 32px}
+.hello{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
+.hello h1{font-size:30px;font-weight:700;letter-spacing:-.01em}.hello p{margin:2px 0 0;color:var(--mut);font-size:16px}
+.tag{display:flex;gap:12px;align-items:center;background:var(--a);color:var(--g);border-radius:14px;padding:12px 22px;box-shadow:0 2px 6px rgba(242,166,38,.35)}
+.tag b{display:block;font-size:16px;line-height:1.2}.tag small{font-size:12px}
+.card{background:var(--bg);border-radius:16px;padding:20px 22px;box-shadow:0 1px 3px rgba(20,40,30,.07)}
+.card>h2,.ch h2{font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.ch .ico,.card>h2 .ico{color:var(--g)}.ic-a{color:var(--a)!important}.ic-br{color:var(--br)!important}
+.va{border:0;background:none;color:var(--g);font-weight:600;font-size:13px;display:flex;align-items:center;gap:4px;padding:0}.va:hover{text-decoration:underline}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:16px}
+.kp{background:var(--bg);border-radius:16px;padding:18px 20px;display:flex;gap:16px;align-items:center;box-shadow:0 1px 3px rgba(20,40,30,.07)}
+.kp>svg{flex:none}.kp b{display:block;font-size:28px;line-height:1.15;font-weight:700}.kp span{color:var(--mut);font-size:14px}
+.kp .gw{display:block;color:#1a9a3f;font-weight:600;font-size:13px;margin-top:4px}.kp .gw.na{color:var(--mut);font-weight:500}
+
+.row2{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:16px;margin-bottom:16px}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.lg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}.lg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+#chart svg{width:100%;height:auto;display:block}
+.gl{stroke:#e6e9e4;stroke-width:1}.ax{fill:#3b453f;font-size:12px}
+.donut{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center}.donut svg{width:210px;height:210px;flex:none}
+.dl{display:grid;gap:11px;flex:1;min-width:170px;font-size:13.5px}.dl div{display:flex;align-items:center;gap:8px}.dl i{width:12px;height:12px;border-radius:50%;flex:none}.dl span{flex:1}.dl b{font-weight:600}
+.dc{font-weight:700;fill:var(--tx)}.dcs{fill:var(--mut);font-size:11px}
+
+.tc{display:grid;gap:12px}.tc div{display:grid;grid-template-columns:34px minmax(90px,1.1fr) 1.5fr 48px;gap:10px;align-items:center;font-size:14px}
+.tc .ti{width:34px;height:34px;border-radius:9px;background:var(--ot);color:var(--od);display:grid;place-items:center}
+.bar{height:9px;border-radius:6px;background:#ececec;overflow:hidden}.bar u{display:block;height:100%;border-radius:6px}.tc em{font-style:normal;font-weight:600;text-align:right;font-size:13px}
+.ra{display:grid;gap:12px}.ra button{display:flex;gap:12px;align-items:center;text-align:left;border:0;background:none;padding:0;color:var(--tx)}
+.ra .dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}.ra b{display:block;font-weight:600;font-size:14px;line-height:1.3}.ra small{color:var(--mut);font-size:13px}
+.qa{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.qb{position:relative;border:0;border-radius:12px;color:#fff;font-weight:600;font-size:14px;min-height:86px;display:grid;place-content:center;justify-items:center;gap:8px;padding:10px}
+.qb i{position:absolute;top:-8px;right:-6px;background:var(--r);color:#fff;font-style:normal;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:11px;display:grid;place-items:center;padding:0 6px}
+.qb.a{background:var(--a);color:var(--g)}.qb.g{background:var(--g)}.qb.b{background:var(--br)}.qb.g2{background:var(--g2)}
+
+/* section pages */
+.ph{margin:6px 0 14px}.ph h1{font-size:26px;font-weight:700}.ph p{margin:2px 0 0;color:var(--mut)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px}.tabs button{border:1px solid var(--bd);background:var(--bg);border-radius:20px;padding:6px 14px;white-space:nowrap}
+.tabs .on{background:var(--g);border-color:var(--g);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:6px 0 16px}
+.st{background:var(--bg);border-radius:14px;padding:14px 16px;box-shadow:0 1px 3px rgba(20,40,30,.07)}.st b{display:block;font-size:26px;color:var(--g)}.st span{font-size:13px;color:var(--mut)}
+.tb{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.tb input{flex:1;min-width:200px;width:auto}.tb select{width:auto}
+.wrap{background:var(--bg);border-radius:14px;overflow-x:auto;box-shadow:0 1px 3px rgba(20,40,30,.07)}
+table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--bd);vertical-align:middle}
+th{font-size:12px;color:var(--mut);background:#fafaf8;font-weight:600}
+.th{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--ot)}
+.pill{font-size:12px;border-radius:12px;padding:2px 9px;font-weight:600;background:var(--ot);color:var(--od)}.pill.approved{background:#e3f4ea;color:var(--g)}.pill.rejected{background:#fde8e6;color:var(--r)}
+.acts{display:flex;gap:4px;flex-wrap:wrap}
+body[data-sec=applications] :is([data-a=feat],[data-a=ver],[data-a=edit],.vw){display:none!important}
+.cat{display:flex;gap:8px;margin-bottom:12px}.cat input{flex:1}
+.soon{background:var(--bg);border-radius:16px;padding:48px 24px;text-align:center;display:grid;gap:8px;justify-items:center;color:var(--mut);box-shadow:0 1px 3px rgba(20,40,30,.07)}.soon h2{color:var(--tx)}.soon svg{color:var(--a)}.soon p{margin:0;max-width:46ch}
+dialog{border:0;border-radius:14px;padding:22px;max-width:560px;max-height:92vh;overflow-y:auto;width:calc(100% - 32px)}dialog form>*{min-width:0}dialog textarea{resize:vertical}dialog input:focus,dialog select:focus,dialog textarea:focus{outline:0;border-color:var(--g2);box-shadow:0 0 0 3px rgba(46,139,79,.18)}dialog::backdrop{background:rgba(0,0,0,.45)}dialog form{display:grid;gap:10px}dialog h3{margin:0 0 10px}
+.pl{display:grid;gap:8px;margin-bottom:12px}.pl button{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);background:var(--bg);border-radius:10px;padding:9px 12px;color:var(--tx)}.pl button:hover{border-color:var(--g)}.pl i{font-style:normal;background:var(--r);color:#fff;border-radius:12px;font-size:12px;font-weight:700;padding:0 8px}
+
+#dlg.wide{max-width:720px}
+.fr{border:1px solid var(--bd);border-radius:12px;padding:10px;display:grid;gap:8px;margin-bottom:10px;background:var(--bg2)}
+.fr1{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px}
+.fr2{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.fr .ck{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tx)}.fr .ck input{width:auto}
+.fr .btn:disabled{opacity:.35;pointer-events:none}
+.nvg{display:flex;align-items:center;gap:16px;width:100%;border:0;background:none;color:#fff;text-align:left;padding:11px 22px;font-size:15px;font-weight:500}
+.nvg:hover{background:rgba(255,255,255,.08)}.nvg.on{font-weight:700}.nvg .cv2{margin-left:auto;transition:transform .2s}.nvg[aria-expanded=true] .cv2{transform:rotate(180deg)}
+.sub{display:none;background:rgba(0,0,0,.16);padding:4px 0}.sub.open{display:block}
+.sub .nv{padding:8px 22px 8px 62px;font-size:14px}.sub .nv.on{background:var(--a);color:var(--g)}
+.subtabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}.subtabs button{border:1.5px solid var(--g);background:var(--bg);color:var(--g);border-radius:10px;padding:8px 16px;font-weight:600}
+.subtabs button.on{background:var(--g);color:#fff}.subtabs i{font-style:normal;background:var(--r);color:#fff;border-radius:10px;font-size:11px;padding:0 7px;margin-left:6px}
+.mailb{position:relative}.mailb em{background:var(--a);color:var(--g)}
+.ana{display:grid;gap:16px}.an2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.hb{display:grid;gap:10px}.hb div{display:grid;grid-template-columns:minmax(80px,1fr) 2fr 44px;gap:10px;align-items:center;font-size:13.5px}
+.ovg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.ovc{border:0;text-align:left;background:var(--bg);border-radius:16px;padding:16px 18px;box-shadow:0 1px 3px rgba(20,40,30,.07);display:grid;gap:6px;color:var(--tx)}
+.ovc:hover{box-shadow:0 0 0 2px var(--a)}.ovc b{font-size:26px;color:var(--g)}.ovc span{color:var(--mut);font-size:13px}.ovc strong{display:flex;gap:8px;align-items:center}
+.unr{background:#fff4e0;border:1px solid var(--a);color:var(--g);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-weight:600;display:flex;gap:10px;align-items:center}
+select.ost{width:auto;padding:4px 8px;font-size:13px}
+@media(max-width:1180px){.row2,.row3{grid-template-columns:1fr}.row3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}}
+@media(max-width:900px){
+ #app{grid-template-columns:1fr}
+ .side{position:fixed;left:0;top:0;width:284px;transform:translateX(-100%);transition:transform .2s;box-shadow:6px 0 30px rgba(0,0,0,.3)}
+ body.nav-open .side{transform:none}
+ body.nav-open .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:25}
+ .menu{display:grid}.top{flex-wrap:wrap;padding:12px 16px}.search{order:9;flex-basis:100%}.me div{display:none}main{padding:4px 16px 28px}
+ .hello h1{font-size:24px}
+}
+@media(prefers-reduced-motion:reduce){.side{transition:none}}
+/* layout polish */
+.btn{white-space:nowrap}
+.ibn{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border:1.5px solid var(--g);background:var(--bg);color:var(--g);border-radius:9px;cursor:pointer;text-decoration:none}.ibn:hover{background:var(--g);color:#fff}.ibn.d{border-color:var(--r);color:var(--r)}.ibn.d:hover{background:var(--r);color:#fff}.ibn svg{display:block}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand img{min-width:0;flex:1}
+.sbt{flex:none;width:34px;height:34px;padding:0;border-radius:10px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;display:grid;place-items:center}
+.sbt:hover{background:rgba(255,255,255,.2)}.sbt svg{transition:transform .2s}
+#app{transition:grid-template-columns .2s ease}
+#sbtip{position:fixed;z-index:60;background:#17201b;color:#fff;padding:7px 12px;border-radius:8px;font-size:13px;font-weight:600;pointer-events:none;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+@media(min-width:901px){
+ body.side-min #app{grid-template-columns:76px minmax(0,1fr)}
+ body.side-min .brand{padding:18px 0 14px;justify-content:center}
+ body.side-min .brand img{display:none}
+ body.side-min .sbt svg{transform:rotate(180deg)}
+ body.side-min .nv{justify-content:center;padding:12px 0;gap:0}
+ body.side-min .nv .lb,body.side-min .sub{display:none!important}
+ body.side-min .nv i{position:absolute;top:4px;right:11px;margin:0;font-size:10px;padding:0 5px}
+ body.side-min .sf{margin:6px 12px 0}
+ body.side-min #nav{overflow-x:hidden}
+}
+@media(max-width:900px){.sbt{display:none}}
+@media(prefers-reduced-motion:reduce){#app{transition:none}.sbt svg{transition:none}}
+.tb input,.tb select{height:42px}
+.tb select{padding:0 12px;background:var(--bg)}
+.wrap td{overflow-wrap:anywhere}.wrap td .acts{min-width:150px}
+@media(max-width:900px){.top .pick{flex:1 1 140px;min-width:0}.top .me{margin-left:auto}.hello .tag{width:100%}}
+
+</style>
+</head>
+<body>
+<section id="login" hidden>
+ <form class="lc" id="lf">
+  <img alt="Soko Smart" src="logo.png" style="height:88px;width:fit-content;border-radius:10px"><h1>Admin</h1><p>Sign in with your administrator account.</p>
+  <label>Email<input name="em" type="email" required autocomplete="username"></label>
+  <label>Password<div class="pwf"><input name="pw" type="password" required autocomplete="current-password"><button type="button" class="eye" data-eye aria-label="Show password" aria-pressed="false"></button></div></label>
+  <div class="err" id="err" role="alert"></div>
+  <button class="btn p" style="padding:11px">Sign in</button>
+  <a href="index.html" class="m" style="text-align:center">← Back to marketplace</a>
+ </form>
+</section>
+
+<div id="app" hidden>
+ <aside class="side" id="side">
+  <div class="brand"><img src="logo.png" alt="Soko Smart – Shop Smart. Sell Smart"><button type="button" class="sbt" id="sbt" aria-label="Collapse sidebar" aria-expanded="true" title="Collapse sidebar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button></div>
+  <nav id="nav" aria-label="Admin sections"></nav>
+  <div class="sf"><button class="nv" id="out" data-tip="Logout"><span data-ic="logout" data-sz="24"></span><span class="lb">Logout</span></button></div>
+ </aside>
+ <div class="scrim" id="scrim"></div>
+
+ <div>
+  <header class="top">
+   <button class="ib menu" id="menu" aria-label="Open menu"><span data-ic="menu"></span></button>
+   <label class="pick"><span data-ic="calendar" data-sz="20"></span><select id="rng" aria-label="Date range"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select><span class="cv" data-ic="chev" data-sz="16"></span></label>
+   <label class="pick"><span data-ic="pin" data-sz="20"></span><select id="cty" aria-label="County"><option value="">All Counties</option></select><span class="cv" data-ic="chev" data-sz="16"></span></label>
+   <label class="pick search"><span data-ic="search" data-sz="20"></span><input id="gs" type="search" placeholder="Search anything…" aria-label="Search listings"></label>
+   <button class="ib mailb" id="mailb" aria-label="Unread messages"><span data-ic="message" data-sz="22"></span><em id="mc" hidden>0</em></button>
+   <button class="ib" id="bell" aria-label="Pending reviews"><span data-ic="bell" data-sz="22"></span><em id="bc" hidden>0</em></button>
+   <button class="me" id="me" aria-label="Account"><span class="av" id="av">A</span><div><b id="nm">Admin</b><small id="rl">Admin</small></div><span data-ic="chev" data-sz="16"></span></button>
+  </header>
+
+  <main>
+   <div class="subtabs" id="dtabs" hidden></div>
+   <!-- dashboard -->
+   <section id="vd">
+    <div class="hello">
+     <div><h1 id="wel">Welcome back, Admin!</h1><p>Here’s what’s happening on Soko Smart Marketplace today.</p></div>
+     <div class="tag"><svg viewBox="0 0 24 24" width="34" height="34" fill="#7a2d0f"><rect x="3" y="12" width="4.5" height="9" rx="1"/><rect x="9.8" y="6" width="4.5" height="15" rx="1"/><rect x="16.6" y="2" width="4.5" height="19" rx="1"/></svg><div><b>Soko Smart</b><small>Kenya’s Trusted Marketplace</small></div></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="row2">
+     <div class="card">
+      <div class="ch"><h2><span class="ico" data-ic="chart" data-sz="24"></span>Platform Overview</h2><div class="lg" id="lg"></div></div>
+      <div id="chart"></div>
+     </div>
+     <div class="card">
+      <div class="ch"><h2><span class="ico" data-ic="pie" data-sz="24"></span>Listings by Category</h2></div>
+      <div class="donut" id="donut"></div>
+     </div>
+    </div>
+    <div class="row3">
+     <div class="card"><div class="ch"><h2><span class="ic-a" data-ic="trophy" data-sz="24"></span>Top Categories</h2><button class="va" data-go="products">View All <span data-ic="arrow" data-sz="15"></span></button></div><div class="tc" id="tc"></div></div>
+     <div class="card"><div class="ch"><h2><span class="ic-a" data-ic="bolt" data-sz="24"></span>Recent Activities</h2><button class="va" data-go="notifications">View All <span data-ic="arrow" data-sz="15"></span></button></div><div class="ra" id="ra"></div></div>
+     <div class="card"><div class="ch"><h2><span class="ic-br" data-ic="rocket" data-sz="24"></span>Quick Actions</h2></div>
+      <div class="qa">
+       <button class="qb g" data-go="shops"><span data-ic="store" data-sz="28"></span>Manage Shops</button>
+       <button class="qb a" data-go="products" data-st="pending"><span data-ic="box" data-sz="28"></span>Approve Products<i id="qp" hidden>0</i></button>
+       <button class="qb b" data-go="jobs"><span data-ic="briefcase" data-sz="28"></span>Manage Jobs</button>
+       <button class="qb g2" data-go="promotions"><span data-ic="megaphone" data-sz="28"></span>Create Promotion</button>
+      </div>
+     </div>
+    </div>
+   </section>
+
+   <!-- listings by section -->
+   <section id="vs" hidden>
+    <div class="ph" style="display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap"><div><h1 id="sh"></h1><p>Review, approve and manage what people post, or post your own.</p></div><button class="btn p" id="addL" hidden>+ Add listing</button></div>
+    <div class="subtabs" id="subs" hidden></div>
+    <div class="tabs" id="views"><button data-v="list" class="on">Listings</button><button data-v="cats">Categories</button></div>
+    <div id="vl">
+     <div class="stats" id="stats"></div>
+     <div class="tb"><input id="q" type="search" placeholder="Search by title or name…" aria-label="Search"><select id="fs" aria-label="Status"><option value="">All statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div>
+     <div class="wrap"><table><thead><tr><th></th><th>Listing</th><th>Price</th><th>Status</th><th>Views</th><th>Actions</th></tr></thead><tbody id="rows"></tbody></table></div>
+     <p style="text-align:center"><button class="btn" id="more" hidden>Load more</button></p>
+    </div>
+    <div id="vc" hidden>
+     <p class="m" id="chint" hidden>Tip: press <b>Form fields</b> on a category to build the form sellers fill in when they add a product in that category (e.g. Animals → Breed, Age, Vaccinated).</p>
+     <form class="cat" id="cf"><input name="nm" placeholder="New category name" required aria-label="Category name"><button class="btn p">Add</button></form>
+     <div class="wrap"><table style="min-width:0"><tbody id="crows"></tbody></table></div>
+    </div>
+   </section>
+
+   <!-- homepage control -->
+   <section id="vh" hidden></section>
+
+   <!-- users -->
+   <section id="vu" hidden>
+    <div class="ph" style="display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap"><div><h1>User Management</h1><p>Administrators and staff who can sign in to this admin area.</p></div><button class="btn p" id="addU" type="button">+ Add new user</button></div>
+    <div class="wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead><tbody id="urows"></tbody></table></div>
+   </section>
+
+   <!-- customers -->
+   <section id="vcu" hidden>
+    <div class="ph"><h1>Customer Management</h1><p>People who signed up on the website.</p></div>
+    <div class="stats" id="cust"></div>
+    <div class="tb"><input id="cuq" type="search" placeholder="Search by name, email, phone or source…" aria-label="Search customers"><button class="btn p" id="addC" type="button">+ Add customer</button></div>
+    <div class="wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone number</th><th>How you heard about us</th><th>Actions</th></tr></thead><tbody id="curows"></tbody></table></div>
+   </section>
+
+   <!-- messages / support inbox -->
+   <section id="vm" hidden>
+    <div class="ph"><h1>Messages / Support</h1><p>Chat with people who message the Soko Smart Team. Replies appear instantly.</p></div>
+    <div class="unr" id="unr" hidden></div>
+    <div id="adminChat"></div>
+   </section>
+
+   <!-- orders -->
+   <section id="vo" hidden>
+    <div class="ph"><h1>Orders Management</h1><p>Orders from customers for products posted by Soko Smart (paid into escrow), and orders placed with shops. Payments are held until the buyer releases them.</p></div>
+    <div class="subtabs" id="otabs"><button data-ot="admin" class="on">My products (admin)</button><button data-ot="shops">Shops</button></div>
+    <div class="stats" id="ostats"></div>
+    <div class="tb"><input id="oq" type="search" placeholder="Search customer, shop or order…" aria-label="Search orders"><select id="ofs" aria-label="Order status"><option value="">All statuses</option><option>pending</option><option>confirmed</option><option>shipped</option><option>delivered</option><option>cancelled</option></select></div>
+    <div class="wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Seller</th><th>Items</th><th>Total</th><th>Payment</th><th>Date</th><th>Status</th></tr></thead><tbody id="orows"></tbody></table></div>
+   </section>
+
+   <!-- analytics -->
+   <section id="va" hidden></section>
+
+   <!-- complaints + ads -->
+   <section id="vw" hidden></section>
+   <section id="vf" hidden></section>
+   <section id="vsh" hidden></section>
+   <section id="vr" hidden></section>
+   <section id="vpr" hidden></section>
+   <section id="vbl" hidden></section>
+   <section id="vset" hidden></section>
+
+   <!-- not yet built -->
+   <section id="vp" hidden>
+    <div class="soon"><span id="pi"></span><h2 id="pt"></h2><p id="pd"></p></div>
+   </section>
+  </main>
+ </div>
+</div>
+
+<dialog id="dlg"><div id="dc"></div></dialog>
+
+<script>
+const CFG={url:"https://xalatowgjhwayrncrfbq.supabase.co",key:"sb_publishable_CfY5JZTUXpx51pkfbwey7w_jZtrYwog"};
+const sb=window.supabase&&CFG.url.startsWith("http")?supabase.createClient(CFG.url,CFG.key):null;
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const SEC={products:["Products","products","title"],shops:["Shops","shops","name"],jobs:["Jobs","jobs","title"],services:["Services","services","title"],realestate:["Real Estate","properties","title"],free:["Free Things","free_listings","title"],applications:["Shop applications","shop_applications","shop_name"]};
+
+/* ---------- icons ---------- */
+const I={
+grid:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+store:'<path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/>',
+box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+briefcase:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
+wrench:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/>',
+home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+car:'<path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5M3 12h18"/>',
+gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8h14v-8M8 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4-5a2.5 2.5 0 0 1 0 5"/>',
+cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.5L21.5 8H6"/>',
+message:'<path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-5.5A8 8 0 1 1 21 12z"/>',
+flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+megaphone:'<path d="M3 11v3a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/>',
+chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
+bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/>',
+gear:'<path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+calendar:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/>',
+pin:'<path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+chev:'<path d="M6 9l6 6 6-6"/>',
+arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>',
+bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+rocket:'<path d="M5 15c-1 1-2 4-2 6 2 0 5-1 6-2M14 4c3-1 6-1 7-1 0 1 0 4-1 7l-6 6-6-6z"/><circle cx="15" cy="9" r="1.5"/>',
+layout:'<rect x="3" y="3" width="18" height="6" rx="1"/><rect x="3" y="12" width="8" height="9" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/>',
+pie:'<path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15 3a9 9 0 0 1 6 6h-6z"/>'
+};
+/* icons used by the Wallet, Freelance and Orders pages that were never defined (they rendered as blank boxes) */
+const MI={plus:'<path d="M12 5v14M5 12h14"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+dollar:'<path d="M12 3v18M16.5 7.5C15.8 6.3 14.1 5.5 12 5.5c-2.5 0-4.2 1.2-4.2 3s1.6 2.6 4.2 3.2 4.2 1.4 4.2 3.2-1.7 3-4.2 3c-2.2 0-3.9-.9-4.6-2.2"/>',
+folder:'<path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/>',
+image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 9"/>',
+wallet:'<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18v3"/><path d="M3 7.5V18a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H5.5A2.5 2.5 0 0 1 3 7.5z"/><circle cx="16.5" cy="14.5" r="1.2"/>',
+freelance:'<rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 20h20"/>'};
+for(const k in MI)if(!I[k])I[k]=MI[k];
+const IBN={edit:'<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',del:'<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>',view:'<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>'};
+const ic=(n,s=20,sw=1.8)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+const hydrate=(root=document)=>root.querySelectorAll("[data-ic]").forEach(e=>{e.innerHTML=ic(e.dataset.ic,+e.dataset.sz||20);e.style.display="inline-flex"});
+hydrate();
+
+const EYE='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYEOFF='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.6 19 2 12 2 12a18 18 0 0 1 5.1-5.9M9.9 5.2A9.7 9.7 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-2.2 3.2M1 1l22 22"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+document.querySelectorAll("[data-eye]").forEach(b=>b.innerHTML=EYE);
+document.addEventListener("click",e=>{const b=e.target.closest("[data-eye]");if(!b)return;const i=b.previousElementSibling,show=i.type==="password";
+ i.type=show?"text":"password";b.innerHTML=show?EYEOFF:EYE;b.setAttribute("aria-pressed",show);b.setAttribute("aria-label",show?"Hide password":"Show password")});
+function toast(t,type){let d=document.getElementById("pop");
+ if(!d){document.head.insertAdjacentHTML("beforeend",'<style>#pop{border:0;border-radius:16px;padding:24px 22px 18px;max-width:360px;width:calc(100% - 40px);text-align:center;background:#fff;color:#17201b;box-shadow:0 18px 50px rgba(0,0,0,.3)}#pop::backdrop{background:rgba(0,0,0,.4)}#pop .pi{width:52px;height:52px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;font-size:28px;font-weight:800;color:#fff}#pop.ok .pi{background:#0d4630}#pop.er .pi{background:#d3261e}#pop h3{margin:0 0 6px;font-size:18px}#pop p{margin:0 0 14px;color:#667068;overflow-wrap:anywhere}#pop button{border:0;border-radius:10px;background:#f2a626;color:#0d4630;font:inherit;font-weight:700;padding:9px 28px;cursor:pointer}</style>');
+  d=document.createElement("dialog");d.id="pop";d.setAttribute("role","alertdialog");document.body.appendChild(d);d.addEventListener("click",e=>{if(e.target===d)d.close()})}
+ const er=type?type==="error":/error|fail|invalid|violat|denied|permission|policy|row-level|not allowed|already|do not match|must|cannot|can't|unable|no longer|expired|wrong|incorrect|required|network|jwt|connect supabase|your own|confirm|please log/i.test(t);
+ d.className=er?"er":"ok";d.innerHTML=`<div class="pi">${er?"!":"✓"}</div><h3>${er?"Something went wrong":"Done"}</h3><p></p><button autofocus>OK</button>`;
+ d.querySelector("p").textContent=t;d.querySelector("button").onclick=()=>d.close();
+ if(!d.open)d.showModal();clearTimeout(toast.t);if(!er)toast.t=setTimeout(()=>d.open&&d.close(),2000)}
+const fmt=n=>n==null?"—":"KSh "+Number(n).toLocaleString("en-KE");
+const num=n=>Number(n).toLocaleString("en-KE");
+let page="dash",sec="products",view="list",pg=0,REC={},range=30,county="",PEND={};const PAGE=20,DAY=864e5;
+
+
+/* ---------- confirmation pop-up (replaces the browser's plain confirm box) ---------- */
+function askConfirm(o){o=typeof o==="string"?{msg:o}:(o||{});
+ return new Promise(res=>{let d=document.getElementById("cfm");
+  if(!d){document.head.insertAdjacentHTML("beforeend",'<style>#cfm{border:0;border-radius:16px;padding:24px 22px 18px;max-width:380px;width:calc(100% - 40px);text-align:center;background:#fff;color:#1d1a16;box-shadow:0 18px 50px rgba(0,0,0,.3)}#cfm::backdrop{background:rgba(0,0,0,.45)}#cfm .cfi{width:54px;height:54px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;font-size:28px;font-weight:800;color:#fff;background:#F58E20}#cfm.dg .cfi{background:#d3261e}#cfm h3{margin:0 0 6px;font-size:19px}#cfm p{margin:0 0 18px;color:#6b625a;overflow-wrap:anywhere;font-size:14.5px}#cfm .cfb{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}#cfm button{font:inherit;font-weight:700;border-radius:10px;padding:10px 20px;cursor:pointer;border:1.5px solid #d8d2ca;background:#fff;color:#1d1a16}#cfm .cfy{background:#0B4A2E;border-color:#0B4A2E;color:#fff}#cfm.dg .cfy{background:#d3261e;border-color:#d3261e}#cfm button:focus-visible{outline:3px solid #F58E20;outline-offset:2px}</style>');
+   d=document.createElement("dialog");d.id="cfm";d.setAttribute("role","alertdialog");document.body.appendChild(d)}
+  const danger=o.danger!==false&&o.danger!==0;d.className=danger?"dg":"";
+  d.innerHTML='<div class="cfi"></div><h3></h3><p></p><div class="cfb"><button type="button" class="cfn"></button><button type="button" class="cfy"></button></div>';
+  d.querySelector(".cfi").textContent=danger?"!":"?";d.querySelector("h3").textContent=o.title||"Are you sure?";d.querySelector("p").textContent=o.msg||"";
+  d.querySelector(".cfn").textContent=o.cancel||"Cancel";d.querySelector(".cfy").textContent=o.ok||"Yes, continue";
+  let done=false;const fin=v=>{if(done)return;done=true;if(d.open)d.close();res(v)};
+  d.querySelector(".cfn").onclick=()=>fin(false);d.querySelector(".cfy").onclick=()=>fin(true);
+  d.oncancel=e=>{e.preventDefault();fin(false)};d.onclick=e=>{if(e.target===d)fin(false)};
+  d.showModal();d.querySelector(".cfn").focus()})}
+
+/* ---------- navigation model ---------- */
+const NAV=[["dash","Dashboard","grid"],["homepage","Homepage Control","layout"],["users","User Management","users"],["customers","Customer Management","users"],["shops","Shop Management","store"],["products","Product Management","box"],["jobs","Job Management","briefcase"],["free","Free Things","gift"],["orders","Orders Management","cart"],["wallets","Wallet Management","wallet"],["freelance","Freelance","freelance"],["servicehub","Service Management","wrench"],["messages","Messages / Support","message"],["reports","Reports & Complaints","flag"],["promotions","Promotions & Ads","megaphone"],["blog","Blog Management","file"],["notifications","Notifications","bell"],["settings","Settings & Configuration","gear"]];
+const PH={};
+const AN=[["users","User Management"],["customers","Customer Management"],["shops","Shop Management"],["products","Product Management"],["orders","Orders Management"],["jobs","Job Management"],["services","Service Management"],["free","Free Things"],["wallets","Wallet Management"],["freelance","Freelance & Ratings"],["messages","Messages / Support"],["reports","Reports & Complaints"],["promotions","Promotions & Ads"],["blog","Blog Management"],["notifications","Notifications"]];
+let ANOPEN=false;
+const LBL=Object.fromEntries(NAV.map(n=>[n[0],n[1]])),ICO=Object.fromEntries(NAV.map(n=>[n[0],n[2]]));LBL.applications="Shop Applications";
+const COUNTIES=["Baringo","Bomet","Bungoma","Busia","Elgeyo-Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita-Taveta","Tana River","Tharaka-Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"];
+$("#cty").insertAdjacentHTML("beforeend",COUNTIES.map(c=>`<option>${esc(c)}</option>`).join(""));
+const navCount=k=>k==="shops"?(PEND.shops||0)+(PEND.applications||0):(PEND[k]||0);
+const isAn=()=>String(page).startsWith("an:");
+const isSet=()=>String(page).startsWith("set:");
+function buildNav(){if(isAn())ANOPEN=true;
+ $("#nav").innerHTML=NAV.filter(n=>canSee(n[0])).map(([k,l,i])=>{
+  const on=k===page||(k==="shops"&&page==="applications")||(k==="dash"&&isAn()),n=navCount(k);
+  let h=`<button class="nv${on?" on":""}" data-go="${k}" data-tip="${esc(l)}"${k==="settings"?` style="${isSet()?"font-weight:700":""}"`:""}>${ic(i,24)}<span class="lb">${esc(l)}</span>${n?`<i title="${k==="messages"?"Unread":"Pending"}">${n}</i>`:""}</button>`;
+  if(k==="settings")h+=`<div class="sub${isSet()?" open":""}">`+[...(window.SETTINGS_NAV||[]).filter(x=>x[0]!=="security"&&x[0]!=="plans"),["security","Security","Sign-out timer"],["plans","Payment Plans","Set package prices"]].map(([sk,sl,sd])=>`<button class="nv${page==="set:"+sk?" on":""}" data-go="set:${sk}"><span>${esc(sl)}<small>${esc(sd)}</small></span></button>`).join("")+`</div>`;
+  return h}).join("")}
+const DTL={users:"Users",shops:"Shops",products:"Products",orders:"Orders",jobs:"Jobs",services:"Services",free:"Free Things",freelance:"Freelance"};
+function dTabs(){const el=$("#dtabs"),on=page==="dash"||isAn();el.hidden=!on;if(!on)return;
+ const opts=[["dash","Overview"],...AN.map(a=>["an:"+a[0],a[1]])].filter(t=>canSee(t[0]));
+ el.innerHTML=`<label style="display:flex;gap:10px;align-items:center;font-weight:600;color:var(--tx);font-size:14px"><span>Analytics for</span><select id="dsel" aria-label="Choose a section" style="width:auto;min-width:260px;font-weight:600;height:42px">${opts.map(([k,l])=>`<option value="${esc(k)}" ${page===k?"selected":""}>${esc(l)}</option>`).join("")}</select></label>`}
+document.addEventListener("change",e=>{if(e.target.id==="dsel")go(e.target.value)});
+function go(k,o={}){if(k==="services")k="servicehub";if(!canSee(k)){toast("You do not have access to that area.","error");return}if(k==="settings")k="set:"+(window.settingsLast?window.settingsLast():"general");page=k;if(SEC[k]){sec=k;view="list"}if(k==="orders")OT="admin";
+ $("#fs").value=o.status||"";$("#q").value=o.q||"";document.body.classList.remove("nav-open");render()}
+function render(){
+ const isSec=!!SEC[page];document.body.dataset.sec=sec;
+ $("#vd").hidden=page!=="dash";$("#vs").hidden=!isSec;$("#vu").hidden=page!=="users";$("#vm").hidden=page!=="messages";$("#vp").hidden=!PH[page];$("#vr").hidden=page!=="reports";$("#vw").hidden=page!=="wallets";$("#vf").hidden=page!=="freelance";$("#vsh").hidden=page!=="servicehub";$("#vpr").hidden=page!=="promotions";$("#vbl").hidden=page!=="blog";$("#vset").hidden=!isSet();$("#vh").hidden=page!=="homepage";$("#vcu").hidden=page!=="customers";$("#vo").hidden=page!=="orders";$("#va").hidden=!isAn();
+ buildNav();dTabs();scrollTo(0,0);
+ if(page==="dash")dash();
+ else if(isSec){const merged=sec==="shops"||sec==="applications";$("#sh").textContent=merged?"Shop Management":LBL[sec];$("#addL").hidden=!["products","shops","jobs","services","free"].includes(sec);$("#addL").textContent="+ Post "+({products:"a product",shops:"a shop",jobs:"a job",services:"a service",free:"a free item"}[sec]||"listing");drawSubs();if(merged&&sec==="applications")view="list";$("#views").hidden=sec==="applications";$("#vl").hidden=view!=="list";$("#vc").hidden=view!=="cats";
+  document.querySelectorAll("#views button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));refresh()}
+ else if(page==="homepage")window.homeAdmin();
+ else if(page==="users")users();
+ else if(page==="customers")customers();
+ else if(page==="orders")orders();
+ else if(isAn())analytics(page.slice(3));
+ else if(page==="messages")inbox();
+ else if(page==="wallets")window.walletAdmin();else if(page==="freelance")window.freelanceAdmin();else if(page==="servicehub")window.serviceHubAdmin();else if(page==="reports")window.complaintsAdmin();else if(page==="promotions")window.adsAdmin();else if(page==="blog")window.blogAdmin();else if(isSet())(page==="set:security"?window.securityAdmin&&window.securityAdmin():page==="set:plans"?window.plansAdmin&&window.plansAdmin():window.settingsAdmin(page.slice(4)));else if(PH[page]){$("#pi").innerHTML=ic(ICO[page],40);$("#pt").textContent=PH[page];$("#pd").textContent=PH[page]+" isn’t connected to the database yet. Once its table exists, it can be built the same way as the listing pages."}}
+
+/* ---------- messages / support inbox ---------- */
+let INB=null;
+function inbox(){if(!window.SokoChat){$("#adminChat").innerHTML='<div class="empty">Chat failed to load.</div>';return}
+ if(!INB){INB=SokoChat.mount($("#adminChat"),{support:true,onUnread:n=>{PEND.messages=n;buildNav();unreadUI()}})}else INB.refresh()}
+
+/* ---------- auth ---------- */
+let ALLOWED=null;
+function canSee(k){if(!ALLOWED)return true;k=String(k);let s=k;if(k==="applications")s="shops";else if(k==="services")s="servicehub";else if(k.startsWith("set:"))s="settings";else if(k.startsWith("an:")){s=k.slice(3);if(s==="services")s="servicehub"}return ALLOWED.includes(s)}
+let ACCT=null;
+async function loadAllowed(u){ALLOWED=null;ACCT=null;
+ try{const s=await sb.from("staff_users").select("full_name,account_type,sections").eq("id",u.id).maybeSingle();if(!s.error&&s.data){ACCT=s.data;if(s.data.account_type==="staff"){ALLOWED=Array.isArray(s.data.sections)?s.data.sections:[];return}ALLOWED=null;return}}catch(e){}
+ try{const {data,error}=await sb.from("profiles").select("admin_sections").eq("id",u.id).maybeSingle();if(!error&&data&&Array.isArray(data.admin_sections)&&data.admin_sections.length)ALLOWED=data.admin_sections}catch(e){}}
+async function isAdmin(u){const {data}=await sb.from("profiles").select("role").eq("id",u.id).maybeSingle();return data?.role==="admin"}
+async function enter(){const {data:{session}}=await sb.auth.getSession();
+ if(!session){showLogin();return}
+ if(!(await isAdmin(session.user))){await sb.auth.signOut({scope:"local"});showLogin("This account is not an administrator.");return}
+ await loadAllowed(session.user);if(!canSee(page)){const f=NAV.find(n=>canSee(n[0]));page=f?f[0]:"dash"}
+ const em=session.user.email||"admin",nm=(em.split("@")[0].split(/[._\-0-9]/)[0]||"Admin");
+ NAME=(ACCT&&ACCT.full_name&&ACCT.full_name.trim().split(/\s+/)[0])||(nm.charAt(0).toUpperCase()+nm.slice(1));$("#rl").textContent=ALLOWED?"Staff":"Super Admin";$("#nm").textContent=NAME;$("#av").textContent=NAME.charAt(0);$("#me").title=em;
+ $("#login").hidden=true;$("#app").hidden=false;badges();render();setInterval(()=>{if(!$("#app").hidden)badges()},15000);
+ try{sb.channel("adm-unread").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},()=>badges()).subscribe()}catch(e){}
+ sb.auth.getSession().then(r=>{ADMIN_ID=r.data.session?.user.id||null})}
+let ADMIN_ID=null,OT="admin";
+let NAME="Admin";
+function showLogin(m){$("#app").hidden=true;$("#login").hidden=false;$("#err").textContent=m||""}
+$("#lf").addEventListener("submit",async e=>{e.preventDefault();if(!sb){$("#err").textContent="Set CFG.url and CFG.key in admin.html first.";return}
+ const f=e.target,{error}=await sb.auth.signInWithPassword({email:f.em.value.trim(),password:f.pw.value});
+ if(error){$("#err").textContent=error.message;return}f.pw.value="";enter()});
+$("#out").onclick=async()=>{if(!await askConfirm({title:"Log out?",msg:"Are you sure you want to log out? You will need to sign in again to use the admin area.",ok:"Yes, log out",cancel:"Stay logged in",danger:false}))return;await sb.auth.signOut({scope:"local"});showLogin();toast("You have been logged out successfully.")};
+$("#me").onclick=()=>$("#out").click();
+
+/* ---------- shell controls ---------- */
+$("#menu").onclick=()=>document.body.classList.add("nav-open");$("#scrim").onclick=()=>document.body.classList.remove("nav-open");
+(function(){const B=document.body,K="admSideMin",btn=document.getElementById("sbt"),sd=document.getElementById("side"),tip=document.createElement("div");
+ tip.id="sbtip";tip.setAttribute("role","tooltip");tip.hidden=true;B.appendChild(tip);
+ try{if(localStorage.getItem(K)==="1")B.classList.add("side-min")}catch(e){}
+ const sync=()=>{const m=B.classList.contains("side-min"),t=m?"Expand sidebar":"Collapse sidebar";btn.setAttribute("aria-expanded",String(!m));btn.setAttribute("aria-label",t);btn.title=t;tip.hidden=true};
+ btn.onclick=()=>{B.classList.toggle("side-min");try{localStorage.setItem(K,B.classList.contains("side-min")?"1":"0")}catch(e){}sync()};sync();
+ const show=e=>{if(!B.classList.contains("side-min")||matchMedia("(max-width:900px)").matches)return;const n=e.target.closest(".nv[data-tip]");if(!n||n.closest(".sub"))return;
+  tip.textContent=n.dataset.tip;tip.hidden=false;const r=n.getBoundingClientRect();tip.style.left=(r.right+10)+"px";tip.style.top=(r.top+r.height/2-tip.offsetHeight/2)+"px"};
+ const hide=()=>{tip.hidden=true};
+ sd.addEventListener("mouseover",show);sd.addEventListener("focusin",show);sd.addEventListener("mouseout",hide);sd.addEventListener("focusout",hide);
+ document.getElementById("nav").addEventListener("scroll",hide)})();
+$("#rng").onchange=e=>{range=+e.target.value;if(page==="dash")dash();else if(isAn())analytics(page.slice(3))};
+$("#cty").onchange=e=>{county=e.target.value;if(page==="dash")dash();else if(isAn())analytics(page.slice(3));else if(SEC[page]&&view==="list")list()};
+$("#gs").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const v=e.target.value;go(SEC[page]?page:"products",{q:v,status:$("#fs").value});e.target.blur()});
+$("#bell").onclick=notif;
+document.addEventListener("click",e=>{const dtb=e.target.closest("[data-dt]");if(dtb){go(dtb.dataset.dt);return}
+ const ss=e.target.closest("[data-sub]");if(ss){go(ss.dataset.sub);return}
+ const ot=e.target.closest("[data-ot]");if(ot){OT=ot.dataset.ot;document.querySelectorAll("#otabs button").forEach(b=>b.classList.toggle("on",b===ot));orders();return}});
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(!g)return;const k=g.dataset.go;
+ if(k==="notifications"){notif();document.body.classList.remove("nav-open");return}
+ if($("#dlg").open)$("#dlg").close();go(k,{status:g.dataset.st||""})});
+function notif(){const rows=Object.keys(SEC).filter(k=>PEND[k]).map(k=>`<button data-go="${k}" data-st="pending"><span>${esc(LBL[k])}</span><i>${PEND[k]}</i></button>`).join("");
+ $("#dc").innerHTML=`<h3>Waiting for review</h3>${rows?`<div class="pl">${rows}</div>`:'<p class="m">Nothing is waiting. You are all caught up.</p>'}<div style="text-align:right"><button class="btn" id="ec">Close</button></div>`;$("#dlg").showModal()}
+
+/* ---------- merged shop management tabs ---------- */
+function drawSubs(){const el=$("#subs"),m=sec==="shops"||sec==="applications";el.hidden=!m;if(!m)return;
+ el.innerHTML=`<button data-sub="shops" class="${sec==="shops"?"on":""}">Shops${PEND.shops?`<i>${PEND.shops}</i>`:""}</button><button data-sub="applications" class="${sec==="applications"?"on":""}">Applications${PEND.applications?`<i>${PEND.applications}</i>`:""}</button>`}
+
+/* ---------- counts ---------- */
+async function cnt(t,st,extra){let b=sb.from(t).select("id",{count:"exact",head:true});if(st)b=b.eq("status",st);if(extra)b=b.eq(extra,true);const {count}=await b;return count||0}
+async function cntQ(t,o={}){const run=c=>{let b=sb.from(t).select("id",{count:"exact",head:true});if(o.from)b=b.gte("created_at",o.from);if(o.to)b=b.lte("created_at",o.to);if(c)b=b.eq("county",c);return b};
+ let r=await run(county);if(r.error&&county)r=await run("");return r.error?null:(r.count||0)}
+async function badges(){const keys=Object.keys(SEC),p=await Promise.all(keys.map(k=>cnt(SEC[k][1],"pending")));
+ PEND=Object.fromEntries(keys.map((k,i)=>[k,p[i]]));const tot=p.reduce((a,b)=>a+b,0);
+ try{const u=await sb.rpc("chat_support_unread");PEND.messages=Number(u.data)||0}catch(e){}
+ if(PEND.messages==null)PEND.messages=0;
+ try{const [c1,a1]=await Promise.all([cnt("complaints","open"),cnt("ads","pending")]);PEND.reports=c1;PEND.promotions=a1}catch(e){}
+ try{const w=await sb.rpc("wallet_admin_pending"),h=await sb.from("orders").select("id",{count:"exact",head:true}).eq("pay_status","held");PEND.wallets=(w.data||[]).length+(h.count||0)}catch(e){}
+ try{const fa=await sb.from("freelancer_profiles").select("user_id",{count:"exact",head:true}).eq("status","pending"),fb=await sb.from("freelancer_portfolio").select("id",{count:"exact",head:true}).eq("status","pending");PEND.freelance=(fa.count||0)+(fb.count||0)}catch(e){}
+ $("#bc").hidden=!tot;$("#bc").textContent=tot>99?"99+":tot;unreadUI();const q=$("#qp");if(q){q.hidden=!PEND.products;q.textContent=PEND.products||0}buildNav()}
+async function stats(){const T=SEC[sec][1];
+ const [p,a,r,f]=await Promise.all([cnt(T,"pending"),cnt(T,"approved"),cnt(T,"rejected"),cnt(T,null,"is_featured")]);
+ $("#stats").innerHTML=[["Pending review",p],["Approved",a],["Rejected",r],["Featured",f]].map(x=>`<div class="st"><b>${num(x[1])}</b><span>${x[0]}</span></div>`).join("");badges()}
+function unreadUI(){const n=PEND.messages||0;$("#mc").hidden=!n;$("#mc").textContent=n>99?"99+":n;document.title=(n?"("+n+") ":"")+"Soko Smart – Admin";
+ const u=$("#unr");if(u){u.hidden=!n;u.innerHTML=n?`${ic("message",18)}<span>You have ${n} unread message${n===1?"":"s"} from customers.</span>`:""}drawSubs()}
+$("#mailb").onclick=()=>go("messages");
+function refresh(){document.body.dataset.sec=sec;view==="list"?(stats(),list()):cats()}
+document.addEventListener("click",e=>{const v=e.target.closest("[data-v]");
+ if(v){view=v.dataset.v;document.querySelectorAll("#views button").forEach(b=>b.classList.toggle("on",b===v));$("#vl").hidden=view!=="list";$("#vc").hidden=view!=="cats";refresh()}});
+
+/* ---------- dashboard ---------- */
+const KPIS=[["Total Customers","customers","users","var(--g2)"],["Total Shops","shops","store","var(--g)"],["Total Products","products","box","var(--a)"],["Total Jobs","jobs","briefcase","var(--g)"]];
+const DON=[["products","Products","#0d4630"],["realestate","Real Estate","#7a2d0f"],["jobs","Jobs","#2e8b4f"],["services","Services","#f7c65a"],["free","Free Things","#dcdce6"]];
+const SER=[["customers","Customers","#0d4630"],["products","Products","#f2a626"],["shops","Shops","#7a2d0f"]];
+let tok=0;
+const nice=x=>{x=Math.max(1,x);const p=10**Math.floor(Math.log10(x)),n=x/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p};
+const kfmt=n=>n>=1000?(n/1000)+"k":String(n);
+const ago=t=>{const s=Math.max(0,(Date.now()-new Date(t))/1000);if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+" mins ago";if(s<86400)return Math.floor(s/3600)+" hrs ago";return Math.floor(s/86400)+" days ago"};
+async function dash(){const my=++tok;
+ $("#wel").textContent=`Welcome back, ${NAME}!`;
+ $("#kpis").innerHTML=KPIS.map((k,i)=>`<div class="kp" style="color:${k[3]}">${ic(k[2],48,1.6)}<div style="color:var(--tx)"><b id="kv${i}">…</b><span>${k[0]}</span><span class="gw na" id="kg${i}">&nbsp;</span></div></div>`).join("");
+ const from=new Date(Date.now()-range*DAY).toISOString();
+ KPIS.forEach(async(k,i)=>{const [t,r]=await Promise.all([cntQ(k[1]),cntQ(k[1],{from})]);if(my!==tok)return;
+  $("#kv"+i).textContent=t==null?"—":num(t);const g=$("#kg"+i);
+  if(t!=null&&r!=null&&t-r>0){g.className="gw";g.textContent="↑ "+(r/(t-r)*100).toFixed(1)+"%";g.title="New in the selected range, compared with everything before it"}else{g.textContent="—"}});
+ /* overview chart: running totals at 7 points across the range */
+ const pts=[...Array(7)].map((_,i)=>{const d=new Date(Date.now()-range*DAY*(6-i)/6);d.setHours(23,59,59,999);return d});
+ const labels=pts.map(d=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"}));
+ Promise.all(SER.map(async s=>({n:s[1],c:s[2],v:await Promise.all(pts.map(d=>cntQ(s[0],{to:d.toISOString()})))}))).then(all=>{if(my!==tok)return;
+  const ok=all.filter(s=>s.v.every(x=>x!=null));
+  $("#lg").innerHTML=ok.map(s=>`<span><i style="background:${s.c}"></i>${s.n}</span>`).join("");
+  $("#chart").innerHTML=ok.length?chart(labels,ok):'<div class="empty">No growth data available yet.</div>'});
+ /* listings by category (section) */
+ Promise.all(DON.map(d=>cntQ(SEC[d[0]][1]))).then(v=>{if(my!==tok)return;const tot=v.reduce((a,b)=>a+(b||0),0);$("#donut").innerHTML=donut(tot,v)});
+ topCats(my);activity(my)}
+function chart(labels,series){const W=760,H=300,L=54,R=22,T=14,B=34,iw=W-L-R,ih=H-T-B,n=labels.length;
+ const mx=Math.max(1,...series.flatMap(s=>s.v)),st=Math.max(1,nice(mx/4)),ym=st*4,X=i=>L+iw*i/(n-1),Y=v=>T+ih-ih*v/ym;let g="";
+ for(let k=0;k<=4;k++){const y=Y(st*k);g+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" class="gl"/><text x="${L-10}" y="${y+4}" text-anchor="end" class="ax">${kfmt(st*k)}</text>`}
+ labels.forEach((l,i)=>g+=`<line x1="${X(i)}" x2="${X(i)}" y1="${T}" y2="${T+ih}" class="gl"/><text x="${X(i)}" y="${H-10}" text-anchor="middle" class="ax">${esc(l)}</text>`);
+ series.forEach(s=>{const p=s.v.map((v,i)=>`${X(i)},${Y(v)}`);
+  g+=`<polygon points="${X(0)},${T+ih} ${p.join(" ")} ${X(n-1)},${T+ih}" fill="${s.c}" opacity=".09"/><polyline points="${p.join(" ")}" fill="none" stroke="${s.c}" stroke-width="2.5" stroke-linejoin="round"/>`+
+  s.v.map((v,i)=>`<circle cx="${X(i)}" cy="${Y(v)}" r="5" fill="${s.c}" stroke="#fff" stroke-width="1.5"><title>${esc(s.n)}: ${num(v)} (${esc(labels[i])})</title></circle>`).join("")});
+ return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Users, products and shops over time">${g}</svg>`}
+function donut(tot,v){const r=82,C=2*Math.PI*r;let off=0,seg="";
+ if(tot>0)DON.forEach((d,i)=>{const f=(v[i]||0)/tot,len=f*C;if(len<=0)return;seg+=`<circle cx="110" cy="110" r="${r}" fill="none" stroke="${d[2]}" stroke-width="36" stroke-dasharray="${Math.max(0,len-2)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 110 110)"/>`;off+=len});
+ else seg=`<circle cx="110" cy="110" r="${r}" fill="none" stroke="#ececec" stroke-width="36"/>`;
+ const svg=`<svg viewBox="0 0 220 220" role="img" aria-label="Listings by category">${seg}<text x="110" y="112" text-anchor="middle" class="dc" font-size="26">${num(tot)}</text><text x="110" y="132" text-anchor="middle" class="dcs">Total Listings</text></svg>`;
+ return svg+`<div class="dl">${DON.map((d,i)=>`<div><i style="background:${d[2]}"></i><span>${d[1]}</span><b>${tot?((v[i]||0)/tot*100).toFixed(1):"0.0"}%</b></div>`).join("")}</div>`}
+async function topCats(my){const {data,error}=await sb.from("products").select("category").limit(1000);if(my!==tok)return;
+ const m={};(data||[]).forEach(r=>{const c=r.category;if(c)m[c]=(m[c]||0)+1});const e=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,5),tot=Object.values(m).reduce((a,b)=>a+b,0),mx=e[0]?.[1]||1,cols=["#0d4630","#f2a626","#7a2d0f","#2e8b4f","#f7c65a"];
+ $("#tc").innerHTML=error||!e.length?'<div class="empty" style="grid-template-columns:1fr;display:block">Categories will appear once products have one.</div>':e.map((c,i)=>`<div><span class="ti">${ic("box",18)}</span><span>${esc(c[0])}</span><span class="bar"><u style="width:${c[1]/mx*100}%;background:${cols[i]}"></u></span><em>${(c[1]/tot*100).toFixed(1)}%</em></div>`).join("")}
+async function activity(my){const src=[["shops","name","New shop registered","store","#2e8b4f"],["products","title","New product uploaded","box","#2563eb"],["jobs","title","New job posted","briefcase","#f2a626"]];
+ const all=await Promise.all(src.map(async s=>{const {data}=await sb.from(s[1]==="name"?s[0]:s[0]).select(`${s[1]},created_at`).order("created_at",{ascending:false}).limit(3);return (data||[]).map(r=>({t:s[2],n:r[s[1]],at:r.created_at,i:s[3],c:s[4],k:s[0]}))}));
+ if(my!==tok)return;const rows=all.flat().filter(r=>r.at).sort((a,b)=>new Date(b.at)-new Date(a.at)).slice(0,5);
+ $("#ra").innerHTML=rows.length?rows.map(r=>`<button data-go="${r.k}"><span class="dot" style="background:${r.c}">${ic(r.i,17)}</span><span><b>${esc(r.t)}</b><small>${esc(r.n)} • ${ago(r.at)}</small></span></button>`).join(""):'<div class="empty">No recent activity yet.</div>'}
+
+/* ---------- users ---------- */
+async function users(){const body=$("#urows");body.innerHTML='<tr><td colspan="6" class="empty">Loading…</td></tr>';
+ const r=await sb.from("staff_users").select("*").order("created_at",{ascending:false}).limit(200);
+ if(r.error){body.innerHTML=`<tr><td colspan="6" class="empty">${esc(/staff_users/.test(r.error.message)?"Not set up yet: run supabase-staff-users.sql in the Supabase SQL editor.":r.error.message)}</td></tr>`;return}
+ window.UROWS=(r.data||[]).map(u=>Object.assign({},u,{_kind:"staff",role:"admin",admin_sections:u.account_type==="staff"?(u.sections||[]):null}));
+ body.innerHTML=window.UROWS.map(u=>{const st=u.account_type==="staff";return `<tr><td><b>${esc(u.full_name||"—")}</b></td><td>${esc(u.email||"—")}</td><td>${esc(u.phone||"—")}</td><td><span class="pill ${st?"":"approved"}">${st?"staff":"admin"}</span>${st?`<div class="m">${esc((u.sections||[]).map(k=>LBL[k]||k).join(", "))}</div>`:""}</td><td class="m">${u.created_at?new Date(u.created_at).toLocaleDateString("en-KE",{day:"numeric",month:"short",year:"numeric"}):"—"}</td><td>${ALLOWED?"":`<div class="acts"><button class="ibn" data-ued="${esc(u.id)}" title="Edit" aria-label="Edit">${IBN.edit}</button>${u.id===ADMIN_ID?"":`<button class="ibn d" data-udel="${esc(u.id)}" title="Delete" aria-label="Delete">${IBN.del}</button>`}</div>`}</td></tr>`}).join("")||'<tr><td colspan="6" class="empty">No users yet.</td></tr>'}
+let CUQ="";
+async function customers(){
+ const body=$("#curows");body.innerHTML='<tr><td colspan="5" class="empty">Loading…</td></tr>';
+ if(!$("#cuq").dataset.w){let t;$("#cuq").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{CUQ=e.target.value.trim().toLowerCase();drawCust()},250)};$("#cuq").dataset.w=1}
+ $("#addC").hidden=!!ALLOWED;
+ const r=await sb.from("customers").select("*",{count:"exact"}).order("created_at",{ascending:false}).limit(500);
+ if(r.error){body.innerHTML=`<tr><td colspan="5" class="empty">${esc(/customers/.test(r.error.message)?"Not set up yet: run supabase-staff-users.sql in the Supabase SQL editor.":r.error.message)}</td></tr>`;return}
+ window.CUROWS=(r.data||[]).map(u=>Object.assign({},u,{_kind:"customer"}));window.CUCOUNT=r.count!=null?r.count:window.CUROWS.length;drawCust()}
+function drawCust(){
+ const all=window.CUROWS||[],now=Date.now(),n=d=>all.filter(u=>u.created_at&&now-new Date(u.created_at)<d*864e5).length;
+ $("#cust").innerHTML=[["Total customers",window.CUCOUNT],["Joined in the last 7 days",n(7)],["Joined in the last 30 days",n(30)]].map(x=>`<div class="st"><b>${num(x[1])}</b><span>${x[0]}</span></div>`).join("");
+ const rows=all.filter(u=>!CUQ||[u.full_name,u.name,u.username,u.email,u.phone,u.heard_from].join(" ").toLowerCase().includes(CUQ));
+ window.UROWS=rows;
+ $("#curows").innerHTML=rows.map(u=>`<tr><td><b>${esc(u.full_name||u.name||u.username||"—")}</b></td><td>${esc(u.email||"—")}</td><td>${esc(u.phone||"—")}</td><td>${u.heard_from?`<span class="pill">${esc(u.heard_from)}</span>`:"—"}</td><td>${ALLOWED?"":`<div class="acts"><button class="ibn" data-ued="${esc(u.id)}" title="Edit" aria-label="Edit">${IBN.edit}</button><button class="ibn d" data-udel="${esc(u.id)}" title="Delete" aria-label="Delete">${IBN.del}</button></div>`}</td></tr>`).join("")||'<tr><td colspan="5" class="empty">No customers found.</td></tr>'}
+
+/* ---------- listings ---------- */
+const clean=v=>String(v||"").replace(/[%,()*\\_]/g," ").trim().slice(0,60);
+async function list(more){const [,T,col]=SEC[sec];if(!more){pg=0;REC={};$("#rows").innerHTML='<tr><td colspan="6" class="empty">Loading…</td></tr>'}
+ const st=$("#fs").value,q=clean($("#q").value);
+ const run=c=>{let b=sb.from(T).select("*",{count:"exact"});if(st)b=b.eq("status",st);if(q)b=b.ilike(col,`%${q}%`);if(c)b=b.eq("county",c);return b.order("created_at",{ascending:false}).range(pg*PAGE,pg*PAGE+PAGE-1)};
+ let res=await run(county);if(res.error&&county)res=await run("");
+ const {data,count,error}=res;
+ if(error){$("#rows").innerHTML=`<tr><td colspan="6" class="empty">${esc(error.message)}</td></tr>`;return}
+ const h=(data||[]).map(r=>{REC[r.id]=r;const s=r.status||"pending";
+  return `<tr><td>${r.cover_url?`<img class="th" alt="" src="${esc(r.cover_url)}">`:'<div class="th"></div>'}</td>
+  <td><b>${esc(r[col])}</b>${r.is_featured?' <span class="pill">Featured</span>':""}${r.seller_verified?' <span class="pill approved">✓ Verified</span>':""}<div class="m">${esc([r.town,r.county,r.full_name,r.email,r.phone].filter(Boolean).join(", "))}</div></td>
+  <td>${esc(fmt(r.price))}</td><td><span class="pill ${s}">${esc(s)}</span></td><td>${r.views||0}</td>
+  <td><div class="acts">${s!=="approved"?`<button class="btn s" data-a="approve" data-id="${r.id}">Approve</button>`:""}${s!=="rejected"?`<button class="btn s d" data-a="reject" data-id="${r.id}">Reject</button>`:""}
+  <button class="btn s" data-a="feat" data-id="${r.id}">${r.is_featured?"Unfeature":"Feature"}</button><button class="btn s" data-a="ver" data-id="${r.id}">${r.seller_verified?"Unverify":"Verify"}</button>
+  <button class="ibn" data-a="edit" data-id="${r.id}" title="Edit" aria-label="Edit">${IBN.edit}</button><a class="ibn vw" target="_blank" rel="noopener" href="product.html?s=${sec}&id=${r.id}" title="View" aria-label="View">${IBN.view}</a><button class="ibn d" data-a="del" data-id="${r.id}" title="Delete" aria-label="Delete">${IBN.del}</button></div></td></tr>`}).join("");
+ $("#rows").innerHTML=more?$("#rows").innerHTML+h:h||'<tr><td colspan="6" class="empty">No listings found.</td></tr>';
+ $("#more").hidden=(pg+1)*PAGE>=(count||0)}
+async function patch(id,p,msg){const r=REC[id],{error}=await sb.from(SEC[sec][1]).update(p).eq("id",id);if(error){toast(error.message,"error");return}
+ let note="";if(p.status==="approved"&&r&&r.status!=="approved"){const e=await notifyApproved(r);note=e?" (approved, but the owner could not be notified: "+e+")":" The owner was notified in Messages."}
+ else if(p.status==="rejected"&&r&&r.status!=="rejected"){const e=await notifyRejected(r);note=e?" (rejected, but the owner could not be notified: "+e+")":" The owner was notified in Messages."}
+ toast(msg+note);refresh()}
+async function notifyRejected(r){const u=await ownerOf(r);if(!u)return"owner account not found";
+ const name=r[SEC[sec][2]]||"your listing",k=KIND[sec]||"listing";
+ const body=`Your ${k} “${name}” was not approved this time. Please check that it follows the SOKO Smart rules (clear photos, accurate details and price, no prohibited items), then edit it and submit again. Reply here if you need help and the Soko Smart Team will assist.`;
+ const {error}=await sb.rpc("admin_notify_user",{p_user:u,p_body:body});return error?error.message:""}
+const KIND={products:"product",shops:"shop",applications:"shop",jobs:"job post",services:"service",realestate:"property listing",free:"free listing"};
+const abs=u=>new URL(u,location.href).href;
+async function ownerOf(r){let u=r.owner_id||r.user_id||null;
+ if(!u&&r.email){const x=await sb.from("profiles").select("id").eq("email",r.email).maybeSingle();u=x.data&&x.data.id||null}return u}
+async function notifyApproved(r){const u=await ownerOf(r);if(!u)return"owner account not found";
+ const name=r[SEC[sec][2]]||"your listing",k=KIND[sec]||"listing";
+ const link=sec==="products"?"\nView it: "+abs("product.html?s=products&id="+encodeURIComponent(r.id)):(sec==="shops"||sec==="applications")?"\nManage your shop: "+abs("shopmanager.html"):"";
+ const body=(sec==="applications"||sec==="shops")?`Congratulations! Your shop “${name}” has been approved and is now live on Soko Smart. You can start adding products and receiving orders.${link}`:`Good news! Your ${k} “${name}” has been approved and is now live on Soko Smart.${link}`;
+ const {error}=await sb.rpc("admin_notify_user",{p_user:u,p_body:body});return error?error.message:""}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-a]");if(!b)return;const id=b.dataset.id,r=REC[id],a=b.dataset.a;
+ if(a==="approve")patch(id,{status:"approved"},"Approved");
+ else if(a==="reject"){if(await askConfirm({title:"Reject this listing?",msg:"It will not appear on the marketplace.",ok:"Yes, reject"}))patch(id,{status:"rejected"},"Rejected")}
+ else if(a==="feat")patch(id,{is_featured:!r.is_featured},r.is_featured?"Removed from featured":"Now featured");
+ else if(a==="ver")patch(id,{seller_verified:!r.seller_verified},r.seller_verified?"Verification removed":"Seller verified");
+ else if(a==="del"){if(await askConfirm({title:"Delete this listing?",msg:"It will be removed permanently and cannot be recovered.",ok:"Yes, delete"})){const {error}=await sb.from(SEC[sec][1]).delete().eq("id",id);error?toast(error.message,"error"):(toast("Deleted"),refresh())}}
+ else if(a==="edit"){const col=SEC[sec][2];$("#dc").innerHTML=`<h3>Edit listing</h3><form id="ef" data-id="${id}"><label>Title<input name="t" required value="${esc(r[col])}"></label>${"price" in r?`<label>Price (KSh)<input name="p" type="number" min="0" value="${esc(r.price??"")}"></label>`:""}<label>Description<textarea name="d" rows="4">${esc(r.description||"")}</textarea></label><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" id="ec">Cancel</button><button class="btn p">Save</button></div></form>`;$("#dlg").showModal()}});
+document.addEventListener("click",e=>{if(e.target.id==="ec")$("#dlg").close()});
+document.addEventListener("submit",async e=>{const f=e.target;
+ if(f.id==="ef"){e.preventDefault();const p={[SEC[sec][2]]:f.t.value.trim(),description:f.d.value.trim()};if(f.p)p.price=f.p.value===""?null:Number(f.p.value);$("#dlg").close();patch(f.dataset.id,p,"Saved")}
+ if(f.id==="cf"){e.preventDefault();const {error}=await sb.from("categories").insert({name:f.nm.value.trim(),section:sec});error?toast(error.message,"error"):(f.reset(),toast("Category added"),cats())}});
+$("#more").onclick=()=>{pg++;list(true)};$("#fs").onchange=()=>list();let tm;$("#q").oninput=()=>{clearTimeout(tm);tm=setTimeout(list,350)};
+
+/* ---------- categories ---------- */
+let CATD={};
+async function cats(){let r=await sb.from("categories").select("id,name,fields").eq("section",sec).order("sort_order");if(r.error)r=await sb.from("categories").select("id,name").eq("section",sec).order("sort_order");
+ const {data,error}=r,P=sec==="products";$("#chint").hidden=!P;CATD=Object.fromEntries((data||[]).map(c=>[c.id,c]));
+ $("#crows").innerHTML=error?`<tr><td class="empty">${esc(error.message)}</td></tr>`:(data||[]).map(c=>{const fs=Array.isArray(c.fields)?c.fields:[];
+  return `<tr><td><b>${esc(c.name)}</b>${P?`<div class="m">${fs.length?fs.length+" form field"+(fs.length===1?"":"s")+": "+esc(fs.map(f=>f.label).join(", ")):"No extra form yet"}</div>`:""}</td><td style="text-align:right;white-space:nowrap">${P?`<button class="btn s" data-cf="${c.id}">Form fields</button> `:""}<button class="ibn d" data-cd="${c.id}" title="Delete" aria-label="Delete">${IBN.del}</button></td></tr>`}).join("")||'<tr><td class="empty">No categories for this section yet.</td></tr>'}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-cd]");if(!b)return;if(!await askConfirm({title:"Delete this category?",msg:"Its product form is deleted too. Sellers will no longer be able to pick this category.",ok:"Yes, delete"}))return;
+ const {error}=await sb.from("categories").delete().eq("id",b.dataset.cd);error?toast(error.message,"error"):(toast("Category deleted"),cats())});
+
+
+/* ---------- category product forms ---------- */
+let FB=null;
+const FT=[["text","Short text"],["number","Number"],["select","Dropdown"],["yesno","Yes / No"],["textarea","Long text"],["date","Date"]],FILT=["text","select","yesno"];
+const slug=s=>String(s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,30)||"field";
+const fbRow=(f,i)=>`<div class="fr"><div class="fr1"><input data-p="label" value="${esc(f.label)}" placeholder="Field name, e.g. Breed" aria-label="Field name"><select data-p="type" aria-label="Field type">${FT.map(x=>`<option value="${x[0]}" ${x[0]===f.type?"selected":""}>${x[1]}</option>`).join("")}</select></div>
+ ${f.type==="select"?`<input data-p="options" value="${esc((f.options||[]).join(", "))}" placeholder="Choices separated by commas, e.g. Boran, Galla, Sahiwal" aria-label="Choices">`:""}
+ <div class="fr2"><label class="ck"><input type="checkbox" data-p="required" ${f.required?"checked":""}> Required</label>${FILT.includes(f.type)?`<label class="ck"><input type="checkbox" data-p="filter" ${f.filter?"checked":""}> Buyers can filter by this</label>`:""}<span style="flex:1"></span><button type="button" class="btn s" data-fm="-1" data-i="${i}" ${i?"":"disabled"} aria-label="Move up">↑</button><button type="button" class="btn s" data-fm="1" data-i="${i}" ${i<FB.fields.length-1?"":"disabled"} aria-label="Move down">↓</button><button type="button" class="btn s d" data-fx="${i}">Remove</button></div></div>`;
+function fbDraw(){$("#dc").innerHTML=`<h3>Product form: ${esc(FB.name)}</h3><p class="m" style="margin:0 0 12px">Sellers adding a product in this category fill in these fields, after the standard name, price, stock, image and description.</p>
+ <div id="fbl">${FB.fields.map(fbRow).join("")||'<div class="empty">No extra fields yet. Add the first one below.</div>'}</div>
+ <div style="display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-top:14px"><button type="button" class="btn" id="fbadd">+ Add field</button><span><button type="button" class="btn" id="ec">Cancel</button> <button type="button" class="btn p" id="fbsave">Save form</button></span></div>`}
+document.addEventListener("click",async e=>{const g=s=>e.target.closest(s);let b;
+ if(b=g("[data-cf]")){const c=CATD[b.dataset.cf];if(!c)return;FB={id:c.id,name:c.name,fields:JSON.parse(JSON.stringify(Array.isArray(c.fields)?c.fields:[]))};$("#dlg").classList.add("wide");fbDraw();$("#dlg").showModal()}
+ else if(g("#fbadd")){FB.fields.push({label:"",type:"text",options:[],required:false,filter:false});fbDraw();const L=document.querySelectorAll('#fbl [data-p="label"]');L[L.length-1].focus()}
+ else if(b=g("[data-fx]")){FB.fields.splice(+b.dataset.fx,1);fbDraw()}
+ else if(b=g("[data-fm]")){const i=+b.dataset.i,k=i+ +b.dataset.fm;if(k<0||k>=FB.fields.length)return;[FB.fields[i],FB.fields[k]]=[FB.fields[k],FB.fields[i]];fbDraw()}
+ else if(g("#fbsave")){const used=new Set(),out=[];
+  for(const f of FB.fields){const label=String(f.label||"").trim();if(!label){toast("Give every field a name, or remove the empty one.","error");return}
+   const opts=[...new Set(String(Array.isArray(f.options)?f.options.join(","):f.options||"").split(",").map(x=>x.trim()).filter(Boolean))];
+   if(f.type==="select"&&!opts.length){toast("Add at least one choice to the dropdown “"+label+"”.","error");return}
+   let key=f.key||slug(label),k=key,n=2;while(used.has(k))k=key+"_"+n++;used.add(k);
+   out.push({key:k,label,type:f.type,options:f.type==="select"?opts:[],required:!!f.required,filter:!!f.filter&&FILT.includes(f.type)})}
+  const {error}=await sb.from("categories").update({fields:out}).eq("id",FB.id);
+  if(error){toast(error.message+" (run supabase-category-forms.sql in Supabase first)","error");return}
+  $("#dlg").close();toast("Product form saved");cats()}});
+document.addEventListener("input",e=>{const el=e.target.closest("#fbl [data-p]");if(!el||!FB)return;const i=[...document.querySelectorAll("#fbl .fr")].indexOf(el.closest(".fr")),f=FB.fields[i],p=el.dataset.p;if(!f)return;
+ if(el.type==="checkbox")f[p]=el.checked;else if(p==="options")f.options=el.value.split(",");else f[p]=el.value;
+ if(p==="type"){if(!FILT.includes(f.type))f.filter=false;fbDraw()}});
+$("#dlg").addEventListener("close",()=>$("#dlg").classList.remove("wide"));
+
+
+/* ---------- orders (admin products + shops) ---------- */
+const PAYL={held:["Held in escrow","pz"],released:["Released to seller","approved"],refunded:["Refunded","rejected"]};
+let ORD=[],otok=0;const OST=["pending","confirmed","shipped","delivered","cancelled"],oid=o=>String(o.id).slice(0,8);
+async function loadOrders(){const u=ADMIN_ID||(await sb.auth.getSession()).data.session?.user.id;ADMIN_ID=u;
+ const [p,s,o]=await Promise.all([sb.from("products").select("id").eq("owner_id",u).limit(1000),sb.from("shops").select("id,name,owner_id").limit(1000),sb.from("orders").select("*,order_items(*)").order("created_at",{ascending:false}).limit(500)]);
+ if(o.error)return{error:o.error.message};
+ const pid=new Set((p.data||[]).map(x=>String(x.id))),nm={},mine=new Set();(s.data||[]).forEach(x=>{nm[String(x.id)]=x.name;if(x.owner_id===u)mine.add(String(x.id))});
+ return{rows:(o.data||[]).map(r=>{const adm=!r.shop_id||mine.has(String(r.shop_id))||(r.order_items||[]).some(i=>pid.has(String(i.product_id)));return{...r,_adm:adm,_shop:adm?"Soko Smart (admin)":(nm[String(r.shop_id)]||"Shop")}})}}
+async function orders(){const my=++otok;$("#orows").innerHTML='<tr><td colspan="8" class="empty">Loading…</td></tr>';
+ const r=await loadOrders();if(my!==otok)return;
+ if(r.error){$("#orows").innerHTML=`<tr><td colspan="8" class="empty">${esc(r.error.message||r.error)}<br>Admin needs permission to read the orders table.</td></tr>`;return}
+ ORD=r.rows;drawOrders()}
+function drawOrders(){const all=ORD.filter(o=>OT==="admin"?o._adm:!o._adm),st=$("#ofs").value,q=$("#oq").value.trim().toLowerCase();
+ const live=all.filter(o=>o.status!=="cancelled");
+ $("#ostats").innerHTML=[["Orders",all.length],["Pending",all.filter(o=>o.status==="pending").length],["Delivered",all.filter(o=>o.status==="delivered").length],["Revenue (released)",fmt(live.filter(o=>o.pay_status!=="held"&&o.pay_status!=="refunded").reduce((a,o)=>a+(+o.total||0),0))],["Held in escrow",fmt(all.filter(o=>o.pay_status==="held").reduce((a,o)=>a+(+o.escrow_amount||+o.total||0),0))]].map(x=>`<div class="st"><b>${typeof x[1]==="number"?num(x[1]):x[1]}</b><span>${x[0]}</span></div>`).join("");
+ const rows=all.filter(o=>(!st||o.status===st)&&(!q||[o.buyer_name,o.buyer_phone,o._shop,oid(o)].join(" ").toLowerCase().includes(q)));
+ $("#orows").innerHTML=rows.map(o=>`<tr><td>#${esc(oid(o))}</td><td><b>${esc(o.buyer_name||"Customer")}</b><div class="m">${esc(o.buyer_phone||"")}</div></td><td>${esc(o._shop)}</td><td class="m">${(o.order_items||[]).map(i=>esc(i.title)+" × "+i.qty).join("<br>")||"—"}</td><td>${esc(fmt(o.total))}</td><td>${PAYL[o.pay_status]?`<span class="pill ${PAYL[o.pay_status][1]}">${PAYL[o.pay_status][0]}</span>`:'<span class="m">Not paid online</span>'}</td><td class="m">${o.created_at?new Date(o.created_at).toLocaleDateString("en-KE",{day:"numeric",month:"short",year:"numeric"}):"—"}</td><td><select class="ost" data-os="${esc(o.id)}" aria-label="Order status">${OST.map(x=>`<option ${x===o.status?"selected":""}>${x}</option>`).join("")}</select></td></tr>`).join("")||`<tr><td colspan="8" class="empty">${OT==="admin"?"No orders for products you listed yet.":"No shop orders yet."}</td></tr>`}
+$("#ofs").onchange=drawOrders;$("#oq").oninput=drawOrders;
+document.addEventListener("change",async e=>{const s=e.target.closest("[data-os]");if(!s)return;const o=ORD.find(x=>String(x.id)===s.dataset.os);if(!o||o.status===s.value)return;
+ if(s.value==="cancelled"&&!await askConfirm({title:"Cancel this order?",msg:o.pay_status==="held"?"The customer already paid. Their money is refunded to their wallet and the items go back into stock.":"The order will be marked cancelled. Stock is not changed automatically.",ok:"Yes, cancel order",cancel:"Keep order"})){s.value=o.status;return}
+ const refund=s.value==="cancelled"&&o.pay_status==="held",{error}=await(refund?sb.rpc("escrow_refund",{p_order:o.id}):sb.from("orders").update({status:s.value}).eq("id",o.id));if(error){toast(error.message,"error");s.value=o.status;return}o.status=s.value;if(refund)o.pay_status="refunded";toast("Order marked "+o.status);drawOrders()});
+
+/* ---------- analytics dropdown ---------- */
+const AT={wallets:"wallets",messages:"messages",reports:"complaints",promotions:"ads",blog:"blog_posts",notifications:"notifications",freelancers:"freelancer_profiles",users:"staff_users",customers:"customers",shops:"shops",applications:"shop_applications",products:"products",jobs:"jobs",services:"services",realestate:"properties",free:"free_listings"};
+let atok=0;
+const hb=rows=>rows.length?`<div class="hb">${(()=>{const mx=Math.max(1,...rows.map(r=>r[1]));return rows.map(r=>`<div><span>${esc(r[0])}</span><span class="bar"><u style="width:${r[1]/mx*100}%;background:${r[2]||"var(--g)"}"></u></span><em style="font-style:normal;font-weight:600;text-align:right">${num(r[1])}</em></div>`).join("")})()}</div>`:'<div class="empty">Nothing to show yet.</div>';
+const tally=(rows,f)=>{const m={};rows.forEach(r=>{const k=f(r);if(k)m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,6)};
+const kp=(n,l,sub)=>`<div class="st"><b>${n}</b><span>${l}</span>${sub?`<div class="m">${sub}</div>`:""}</div>`;
+const pan=(t,body,ic2)=>`<div class="card"><div class="ch"><h2>${ic2?`<span class="ico">${ic(ic2,22)}</span>`:""}${t}</h2></div>${body}</div>`;
+function pts(){const p=[...Array(7)].map((_,i)=>{const d=new Date(Date.now()-range*DAY*(6-i)/6);d.setHours(23,59,59,999);return d});return[p,p.map(d=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"}))]}
+async function growth(defs){const [p,labels]=pts(),all=await Promise.all(defs.map(async d=>({n:d[1],c:d[2],v:await Promise.all(p.map(x=>cntQ(AT[d[0]],{to:x.toISOString()})))}))),ok=all.filter(s=>s.v.every(x=>x!=null));
+ return ok.length?`<div class="lg" style="margin-bottom:8px">${ok.map(s=>`<span><i style="background:${s.c}"></i>${s.n}</span>`).join("")}</div>${chart(labels,ok)}`:'<div class="empty">No growth data available yet.</div>'}
+const inR=(r,from)=>r.created_at&&new Date(r.created_at)>=from;
+
+/* ---------- analytics for the newer sections ---------- */
+const sinceN=(rows,from)=>rows.filter(x=>inR(x,from)).length;
+const noData=m=>`<div class="empty">${esc(m)}</div>`;
+async function rowsOf(t){let r=await sb.from(t).select("*").order("created_at",{ascending:false}).limit(1000);if(r.error)r=await sb.from(t).select("*").limit(1000);return r}
+const recent=(rows,go,name,sub)=>`<div class="ra">${rows.slice(0,6).map(u=>`<button data-go="${go}"><span class="dot" style="background:var(--g2)">${esc(String(name(u)||"?").charAt(0).toUpperCase())}</span><span><b>${esc(name(u)||"—")}</b><small>${esc(sub(u))}</small></span></button>`).join("")||'<div class="empty">Nothing yet.</div>'}</div>`;
+const simpleAn=async(key,label,color,from)=>{const [t,n,d]=await Promise.all([cntQ(AT[key]),cntQ(AT[key],{from:from.toISOString()}),cntQ(AT[key],{from:new Date(Date.now()-DAY).toISOString()})]);
+ if(t==null)return noData("No data found for "+label+" yet.");
+ return `<div class="stats">${kp(num(t),"Total")}${kp(num(n||0),"New in range")}${kp(num(d||0),"Last 24 hours")}</div>${pan("Growth",await growth([[key,label,color]]),"chart")}`};
+const NEWAN={
+ async users(from){const r=await sb.from("staff_users").select("*").order("created_at",{ascending:false}).limit(1000);if(r.error)return noData("Run supabase-staff-users.sql in Supabase first. ("+r.error.message+")");
+  const rows=r.data||[],st=rows.filter(x=>x.account_type==="staff"),fa=rows.length-st.length,sc={};st.forEach(x=>(x.sections||[]).forEach(k=>sc[LBL[k]||k]=(sc[LBL[k]||k]||0)+1));
+  return `<div class="stats">${kp(num(rows.length),"Users (admins & staff)")}${kp(num(fa),"Admins")}${kp(num(st.length),"Staff (limited access)")}${kp(num(sinceN(rows,from)),"Added in range")}</div>
+  <div class="an2">${pan("Access level",hb([["Admins",fa,"var(--g)"],["Staff",st.length,"var(--a)"]]),"users")}${pan("Sections staff can open",hb(Object.entries(sc).sort((a,b)=>b[1]-a[1]).map(x=>[x[0],x[1],"var(--g2)"])),"grid")}</div>
+  ${pan("Newest users",recent(rows,"users",u=>u.full_name||u.email,u=>(u.account_type==="staff"?"Staff":"Admin")+(u.created_at?" · "+ago(u.created_at):"")),"bolt")}`},
+ async customers(from){const r=await sb.from("customers").select("*",{count:"exact"}).order("created_at",{ascending:false}).limit(1000);
+  if(r.error)return noData("Run supabase-staff-users.sql in Supabase first. ("+r.error.message+")");
+  const rows=r.data||[],src=["Facebook","Instagram","TikTok","WhatsApp","Friend or family","Google search","Other"].map(o=>[o,rows.filter(x=>x.heard_from===o).length,"var(--a)"]),none=rows.filter(x=>!x.heard_from).length,[p,labels]=pts();
+  const ser=[{n:"Customers",c:"#0d4630",v:p.map(d=>rows.filter(x=>x.created_at&&new Date(x.created_at)<=d).length)}];
+  return `<div class="stats">${kp(num(r.count==null?rows.length:r.count),"Total customers")}${kp(num(sinceN(rows,from)),"Joined in range")}${kp(num(rows.filter(x=>x.phone).length),"With phone number","of latest 1,000")}${kp(num(rows.filter(x=>x.heard_from).length),"Told us how they heard","of latest 1,000")}</div>
+  <div class="an2">${pan("Customer growth",`<div class="lg" style="margin-bottom:8px"><span><i style="background:#0d4630"></i>Customers (latest 1,000)</span></div>${chart(labels,ser)}`,"chart")}${pan("How customers heard about us",hb(src.concat(none?[["Not given",none,"var(--bd)"]]:[])),"megaphone")}</div>
+  ${pan("Newest sign-ups",recent(rows,"customers",u=>u.full_name||u.email,u=>(u.heard_from?u.heard_from+" · ":"")+(u.created_at?ago(u.created_at):"")),"bolt")}`},
+ async reports(from){const r=await rowsOf("complaints");if(r.error)return noData("Complaints are not set up yet. Run supabase-complaints-ads.sql in Supabase. ("+r.error.message+")");
+  const rows=r.data||[],n=s=>rows.filter(x=>x.status===s).length;
+  return `<div class="stats">${kp(num(rows.length),"Complaints")}${kp(num(sinceN(rows,from)),"In selected range")}${kp(num(n("open")),"New")}${kp(num(n("in_review")),"In review")}${kp(num(n("resolved")),"Resolved")}${kp(num(n("dismissed")),"Closed")}</div>
+  <div class="an2">${pan("Complaints by status",hb([["New",n("open"),"var(--r)"],["In review",n("in_review"),"var(--a)"],["Resolved",n("resolved"),"var(--g2)"],["Closed",n("dismissed"),"var(--bd)"]]),"flag")}${pan("Most common problems",hb(tally(rows,x=>x.category).map(x=>[x[0],x[1],"var(--a)"])),"pie")}</div>
+  ${pan("Complaints over time",await growth([["reports","Complaints","#d3261e"]]),"chart")}`},
+ async promotions(from){const r=await rowsOf("ads");if(r.error)return noData("Ads are not set up yet. Run supabase-complaints-ads.sql in Supabase. ("+r.error.message+")");
+  const rows=r.data||[],n=s=>rows.filter(x=>x.status===s).length,imp=rows.reduce((a,x)=>a+(+x.impressions||0),0),clk=rows.reduce((a,x)=>a+(+x.clicks||0),0),spend=rows.filter(x=>!x.is_house).reduce((a,x)=>a+(+x.spend||0),0),top=[...rows].filter(x=>+x.impressions).sort((a,b)=>b.impressions-a.impressions).slice(0,5);
+  return `<div class="stats">${kp(num(rows.length),"Ads")}${kp(num(n("active")),"Live now")}${kp(num(n("pending")),"Waiting for review")}${kp(num(imp),"Views")}${kp(num(clk),"Taps",imp?(clk/imp*100).toFixed(1)+"% tap rate":"")}${kp(fmt(Math.round(spend)),"Seller ad spend")}</div>
+  <div class="an2">${pan("Ads by status",hb([["Live",n("active"),"var(--g2)"],["Needs review",n("pending"),"var(--a)"],["Paused",n("paused"),"var(--bd)"],["Rejected",n("rejected"),"var(--r)"],["Draft",n("draft"),"var(--bd)"],["Completed",n("completed"),"var(--bd)"]]),"megaphone")}${pan("Admin vs seller ads",hb([["Admin ads",rows.filter(x=>x.is_house).length,"var(--g)"],["Seller ads",rows.filter(x=>!x.is_house).length,"var(--a)"]]),"store")}</div>
+  ${pan("Ads created over time",await growth([["promotions","Ads","#f2a626"]]),"chart")}
+  ${top.length?pan("Most viewed ads",`<div class="tc">${top.map(x=>`<div><span class="ti">${ic("megaphone",18)}</span><span>${esc(x.headline||x.name)}</span><span></span><em>${num(x.impressions)}</em></div>`).join("")}</div>`,"trophy"):""}`},
+ async blog(from){const r=await rowsOf("blog_posts");if(r.error)return noData("No blog data yet. ("+r.error.message+")");
+  const rows=r.data||[],pub=rows.filter(x=>x.status==="published").length,views=rows.reduce((a,x)=>a+(+x.views||0),0),top=[...rows].filter(x=>+x.views).sort((a,b)=>b.views-a.views).slice(0,5);
+  return `<div class="stats">${kp(num(rows.length),"Posts")}${kp(num(pub),"Published")}${kp(num(rows.length-pub),"Drafts / other")}${kp(num(sinceN(rows,from)),"Written in range")}${views?kp(num(views),"Views"):""}</div>
+  <div class="an2">${pan("Posts over time",await growth([["blog","Posts","#0d4630"]]),"chart")}${pan("Posts by category",hb(tally(rows,x=>x.category).map(x=>[x[0],x[1],"var(--a)"])),"pie")}</div>
+  ${top.length?pan("Most read posts",`<div class="tc">${top.map(x=>`<div><span class="ti">${ic("search",18)}</span><span>${esc(x.title)}</span><span></span><em>${num(x.views)}</em></div>`).join("")}</div>`,"trophy"):""}`},
+ async wallets(from){const r=await rowsOf("wallets");if(r.error)return noData("No wallet data found yet. ("+r.error.message+")");
+  const rows=r.data||[],bal=rows.reduce((a,x)=>a+(+x.balance||0),0),hasBal=rows.some(x=>x.balance!=null),tx=await cntQ("wallet_transactions");
+  return `<div class="stats">${kp(num(rows.length),"Wallets")}${kp(num(sinceN(rows,from)),"Opened in range")}${hasBal?kp(fmt(Math.round(bal)),"Total balance held"):""}${tx!=null?kp(num(tx),"Transactions"):""}</div>${pan("Wallets over time",await growth([["wallets","Wallets","#0d4630"]]),"chart")}${tx!=null?"":""}`},
+ messages:from=>simpleAn("messages","Messages","#0d4630",from),
+ notifications:from=>simpleAn("notifications","Notifications","#7a2d0f",from)};
+async function analytics(k){const my=++atok,el=$("#va"),from=new Date(Date.now()-range*DAY),title=(AN.find(a=>a[0]===k)||[])[1]||"Analytics";
+ const head=`<div class="ph"><h1>Dashboard · ${esc(title)}</h1><p>Last ${range} days${county?" · "+esc(county):""}. Change the range or county at the top.</p></div>`;
+ el.innerHTML=head+'<div class="empty">Loading…</div>';let body="";
+ if(k==="overview"){const keys=["users","shops","applications","products","jobs","services","realestate","free"];
+  const res=await Promise.all(keys.map(async x=>{const T=AT[x],[t,n]=await Promise.all([cntQ(T),cntQ(T,{from:from.toISOString()})]);const pe=x==="users"?null:await cnt(T,"pending");return[x,t,n,pe]}));
+  const o=await loadOrders();
+  const exs=[["customers","Customers","users",async()=>{return cntQ("customers")}],["wallets","Wallets","wallet",()=>cntQ("wallets")],["messages","Messages","message",()=>cntQ("messages")],["reports","Complaints","flag",()=>cntQ("complaints")],["promotions","Ads","megaphone",()=>cntQ("ads")],["blog","Blog posts","file",()=>cntQ("blog_posts")]],exv=await Promise.all(exs.map(x=>x[3]().catch(()=>null)));
+  const lab={users:"Admins & staff",shops:"Shops",applications:"Shop applications",products:"Products",jobs:"Jobs",services:"Services",realestate:"Real estate",free:"Free things"},ico={users:"users",shops:"store",applications:"file",products:"box",jobs:"briefcase",services:"wrench",realestate:"home",free:"gift"},go2={applications:"shops"};
+  body=`<div class="ovg">${res.map(r=>`<button class="ovc" data-go="an:${go2[r[0]]||r[0]}"><strong>${ic(ico[r[0]],20)}${lab[r[0]]}</strong><b>${r[1]==null?"—":num(r[1])}</b><span>${r[2]==null?"":"+"+num(r[2])+" in range"}${r[3]?" · "+num(r[3])+" pending":""}</span></button>`).join("")}
+   <button class="ovc" data-go="an:orders"><strong>${ic("cart",20)}Orders</strong><b>${o.rows?num(o.rows.length):"—"}</b><span>${o.rows?o.rows.filter(x=>x.status==="pending").length+" pending":""}</span></button>${exs.map((x,i)=>!canSee("an:"+x[0])?"":`<button class="ovc" data-go="an:${x[0]}"><strong>${ic(x[2],20)}${x[1]}</strong><b>${exv[i]==null?"—":num(exv[i])}</b><span></span></button>`).join("")}</div>
+   ${pan("Platform growth",await growth([["users","Users","#0d4630"],["shops","Shops","#7a2d0f"],["products","Products","#f2a626"],["jobs","Jobs","#2e8b4f"]]),"chart")}`}
+ else if(k==="orders"){const o=await loadOrders();if(o.error){body=`<div class="empty">${esc(o.error.message||o.error)}</div>`}else{const rs=o.rows,live=rs.filter(x=>x.status!=="cancelled"),rev=a=>a.filter(x=>x.status!=="cancelled").reduce((s2,x)=>s2+(+x.total||0),0),adm=rs.filter(x=>x._adm),sh=rs.filter(x=>!x._adm),rr=rs.filter(x=>inR(x,from));
+   const top={};sh.filter(x=>x.status!=="cancelled").forEach(x=>top[x._shop]=(top[x._shop]||0)+(+x.total||0));
+   body=`<div class="stats">${kp(num(rs.length),"Orders (latest 500)")}${kp(num(rr.length),"In selected range")}${kp(fmt(rev(rs)),"Revenue")}${kp(num(rs.filter(x=>x.status==="pending").length),"Pending")}</div>
+   <div class="an2">${pan("Orders by status",hb(OST.map(x=>[x,rs.filter(y=>y.status===x).length,x==="cancelled"?"var(--r)":x==="delivered"?"var(--g2)":"var(--a)"])),"cart")}
+   ${pan("Admin products vs shops",hb([["Admin products",adm.length,"var(--g)"],["Shops",sh.length,"var(--a)"]])+`<p class="m">Revenue: admin ${esc(fmt(rev(adm)))} · shops ${esc(fmt(rev(sh)))}</p>`,"store")}</div>
+   ${pan("Top shops by revenue",hb(Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>[x[0],Math.round(x[1])])),"trophy")}`}}
+ else if(k==="freelance"){const [pr,rv,od]=await Promise.all([sb.from("freelancer_profiles").select("*").order("created_at",{ascending:false}).limit(1000),sb.from("freelance_reviews").select("*").order("created_at",{ascending:false}).limit(2000),sb.from("freelance_orders").select("*").order("created_at",{ascending:false}).limit(1000)]);
+  if(pr.error){body=`<div class="empty">${esc(pr.error.message)}. Run supabase-freelance-v2.sql in Supabase.</div>`}
+  else{const F=(pr.data||[]).filter(x=>!county||x.county===county),ids=new Set(F.map(x=>x.user_id)),R=(rv.data||[]).filter(x=>ids.has(x.freelancer_id)&&+x.rating>=1&&+x.rating<=5),O=(od.data||[]).filter(x=>!county||ids.has(x.freelancer_id)),
+   avg=R.length?R.reduce((a,x)=>a+ +x.rating,0)/R.length:0,ok=F.filter(x=>x.status==="approved"),done=O.filter(x=>x.status==="completed"),gross=done.reduce((a,x)=>a+(+x.total||0),0),fee=done.reduce((a,x)=>a+(+x.total||0)-(+x.payout||0),0),
+   by={};R.forEach(x=>{(by[x.freelancer_id]=by[x.freelancer_id]||[]).push(+x.rating)});
+   const top=ok.map(f=>{const a=by[f.user_id]||[];return{f,n:a.length,a:a.length?a.reduce((p,q)=>p+q,0)/a.length:0}}).filter(x=>x.n).sort((a,b)=>b.a-a.a||b.n-a.n).slice(0,6),
+   low=ok.map(f=>{const a=by[f.user_id]||[];return{f,n:a.length,a:a.length?a.reduce((p,q)=>p+q,0)/a.length:0}}).filter(x=>x.n&&x.a<3.5).sort((a,b)=>a.a-b.a).slice(0,5);
+   body=`<div class="stats">${kp(num(F.length),"Freelancers",num(F.filter(x=>inR(x,from)).length)+" new in range")}${kp(num(ok.length),"Approved")}${kp(num(F.filter(x=>x.status==="pending").length),"Pending approval")}${kp(R.length?avg.toFixed(1)+" / 5":"—","Average rating",num(R.length)+" reviews")}${kp(num(O.length),"Freelance orders",num(done.length)+" completed")}${kp(fmt(gross),"Completed order value","Commission "+fmt(fee))}</div>
+   <div class="an2">${pan("Freelancer growth",await growth([["freelancers","Freelancers","#0d4630"]]),"chart")}${pan("Rating breakdown",hb([5,4,3,2,1].map(n=>[n+" ★",R.filter(x=>+x.rating===n).length,n>=4?"var(--g2)":n===3?"var(--a)":"var(--r)"])),"flag")}</div>
+   <div class="an2">${pan("Top rated freelancers",top.length?`<div class="tc">${top.map(x=>`<div><span class="ti">${ic("trophy",18)}</span><span>${esc(x.f.name||"Freelancer")}</span><span></span><em>★ ${x.a.toFixed(1)} (${x.n})</em></div>`).join("")}</div>`:'<div class="empty">No rated freelancers yet.</div>',"trophy")}${pan("Needs attention (below 3.5 stars)",low.length?`<div class="tc">${low.map(x=>`<div><span class="ti">${ic("flag",18)}</span><span>${esc(x.f.name||"Freelancer")}</span><span></span><em>★ ${x.a.toFixed(1)} (${x.n})</em></div>`).join("")}</div>`:'<div class="empty">Every rated freelancer is at 3.5 or above.</div>',"flag")}</div>
+   <div class="an2">${pan("Orders by status",hb(tally(O,x=>String(x.status||"").replace(/_/g," ")).map(x=>[x[0],x[1],"var(--a)"])),"cart")}${pan("Top counties",hb(tally(F,x=>x.county).map(x=>[x[0],x[1],"var(--g2)"])),"pin")}</div>
+   ${pan("Latest reviews",`<div class="ra">${R.slice(0,6).map(x=>{const f=F.find(z=>z.user_id===x.freelancer_id)||{};return `<button data-go="freelance"><span class="dot" style="background:var(--a)">${esc(String(x.rating))}</span><span><b>${esc(f.name||"Freelancer")}</b><small>${"★".repeat(+x.rating)}${"☆".repeat(5-x.rating)} · ${esc(x.client_name||"Client")} · ${x.created_at?ago(x.created_at):""}</small></span></button>`}).join("")||'<div class="empty">No reviews yet.</div>'}</div>`,"bolt")}`}}
+ else if(NEWAN[k]){body=await NEWAN[k](from)}
+ else if(AT[k]){const keys=k==="shops"?["shops","applications"]:[k],T=AT[k];
+  const [t,n,pe,ap,rj,ft,vf]=await Promise.all([cntQ(T),cntQ(T,{from:from.toISOString()}),cnt(T,"pending"),cnt(T,"approved"),cnt(T,"rejected"),cnt(T,null,"is_featured"),cnt(T,null,"seller_verified")]);
+  const r=await sb.from(T).select("*").order("created_at",{ascending:false}).limit(1000);let rows=(r.data||[]).filter(x=>!county||x.county===county);
+  const col=SEC[k][2];let cn={};const cr=await sb.from("categories").select("id,name").eq("section",k);(cr.data||[]).forEach(c=>cn[c.id]=c.name);
+  const views=rows.reduce((a,x)=>a+(+x.views||0),0),topv=[...rows].filter(x=>x.views).sort((a,b)=>b.views-a.views).slice(0,5);
+  body=`<div class="stats">${kp(t==null?"—":num(t),"Total")}${kp(n==null?"—":num(n),"New in range")}${kp(num(pe),"Pending review")}${kp(num(ap),"Approved")}${kp(num(rj),"Rejected")}${kp(num(ft),"Featured")}${kp(num(vf),"Verified sellers")}${kp(num(views),"Views","latest 1,000")}</div>
+   <div class="an2">${pan("Growth",await growth(keys.map(x=>[x,x==="applications"?"Applications":LBL[x]||x,x==="applications"?"#f2a626":"#0d4630"])),"chart")}
+   ${pan("Status",hb([["Approved",ap,"var(--g2)"],["Pending",pe,"var(--a)"],["Rejected",rj,"var(--r)"]]),"flag")}</div>`;
+  if(k==="shops"){const [at,aa,ar,ap2]=await Promise.all([cnt("shop_applications"),cnt("shop_applications","approved"),cnt("shop_applications","rejected"),cnt("shop_applications","pending")]);
+   body+=`<div class="stats">${kp(num(at),"Applications received")}${kp(num(ap2),"Applications pending")}${kp(num(aa),"Applications approved")}${kp(aa+ar?Math.round(aa/(aa+ar)*100)+"%":"—","Approval rate")}</div>`}
+  const cats=tally(rows,x=>cn[x.category_id]),cty=tally(rows,x=>x.county);
+  body+=`<div class="an2">${pan("Top counties",hb(cty.map(x=>[x[0],x[1],"var(--g2)"])),"pin")}${Object.keys(cn).length?pan("Top categories",hb(cats.map(x=>[x[0],x[1],"var(--a)"])),"pie"):""}</div>
+   ${topv.length?pan("Most viewed",`<div class="tc">${topv.map(x=>`<div><span class="ti">${ic("search",18)}</span><span>${esc(x[col])}</span><span></span><em>${num(x.views)}</em></div>`).join("")}</div>`,"trophy"):""}`}
+ if(my!==atok)return;el.innerHTML=head+`<div class="ana">${body}</div>`}
+
+sb?enter():(showLogin("Set CFG.url and CFG.key at the bottom of admin.html to connect Supabase."));
+</script>
+<script>window.SOKO_NO_ADS=1</script>
+<script src="ads.js?v=2"></script>
+<script src="homeadmin.js?v=5"></script>
+<script src="admin-extra.js?v=1"></script>
+<script src="walletadmin.js?v=2"></script>
+<script src="adminfreelance.js?v=4"></script>
+<script src="adminservicehub.js?v=1"></script>
+<script src="adminusers.js?v=1"></script>
+<script src="adminstaff.js?v=5"></script>
+<script src="adminicons.js?v=3"></script>
+<script src="adminsettings.js?v=1"></script>
+<script src="adminsecurity.js?v=3"></script>
+<script src="adminplans.js?v=4"></script>
+<script src="blogmd.js?v=1"></script>
+<script src="adminblog.js?v=1"></script>
+<script>
+/* SOKO Smart admin: post listings directly (Products, Jobs, Services, Free Things).
+   Needs admin.html globals: sb, $, esc, toast, SEC, sec, refresh, COUNTIES.
+   Listings posted here go live immediately (status "approved") and belong to the admin account. */
+(()=>{
+const KINDS=["Giveaway","Charity","Donation","Free to collect"];
+const JT=["Full-time","Part-time","Contract","Internship","Casual"],JM=["On-site","Remote","Hybrid"],JX=["Entry-level","Mid-level","Senior"];
+const AV=["Available now","Weekdays","Weekends","By appointment"],CO=["New","Used","Refurbished"];
+const CAN=["products","shops","jobs","services","free"];
+const LBLS={products:"product",shops:"shop",jobs:"job",services:"service",free:"free item"};
+let CATS=[];
+
+const opt=(a,v="")=>a.map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("");
+const selF=(l,n,a,rq="")=>`<label>${l}<select name="${n}" ${rq}><option value="">Choose</option>${opt(a)}</select></label>`;
+const inF=(l,n,t="text",x="")=>`<label>${l}<input name="${n}" type="${t}" ${x}></label>`;
+const taF=(l,n,r=3,x="")=>`<label>${l}<textarea name="${n}" rows="${r}" ${x}></textarea></label>`;
+const ck=(l,n,on=false)=>`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="${n}" ${on?"checked":""} style="width:auto"> ${l}</label>`;
+const two=(...a)=>`<div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${a.join("")}</div>`;
+
+/* extra fields an admin defined for a product category (Categories > Form fields) */
+function attrHTML(fs){return fs.map(f=>{const n="a_"+f.key,rq=f.required?"required":"",L=esc(f.label)+(f.required?" *":"");
+ if(f.type==="textarea")return `<label style="grid-column:1/-1">${L}<textarea name="${n}" rows="2" ${rq}></textarea></label>`;
+ if(f.type==="select"||f.type==="yesno"){const o=f.type==="yesno"?["Yes","No"]:(f.options||[]);return `<label>${L}<select name="${n}" ${rq}><option value="">Choose</option>${opt(o)}</select></label>`}
+ return `<label>${L}<input name="${n}" type="${f.type==="number"?"number":f.type==="date"?"date":"text"}" ${f.type==="number"?'min="0" step="any"':'maxlength="200"'} ${rq}></label>`}).join("")}
+const readAttrs=(f,fs)=>{const o={};fs.forEach(x=>{const el=f.elements["a_"+x.key];if(!el)return;const v=el.value.trim();if(v==="")return;o[x.key]=x.type==="number"?+v:v});return o};
+const fieldsOf=id=>{const c=CATS.find(x=>String(x.id)===String(id));return Array.isArray(c&&c.fields)?c.fields:[]};
+
+async function loadCats(k){if(k==="services"){const sr=await sb.from("sh_categories").select("id,name").eq("active",true).order("sort_order").order("name");CATS=sr.data||[];return}let r=await sb.from("categories").select("id,name,fields").eq("section",k).order("sort_order");
+ if(r.error)r=await sb.from("categories").select("id,name").eq("section",k).order("sort_order");CATS=r.data||[]}
+
+function formHTML(k){
+ const catSel=(l="Category *")=>`<label>${l}<select name="category_id" required><option value="">Choose</option>${CATS.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></label>`;
+ const img=two(inF("Photo (upload)","img","file",'accept="image/*"'),inF("…or image link (optional)","img_url","url",'placeholder="https://…"'));
+ const feat=ck("Feature on the homepage","is_featured");
+ const badge=`<div class="apv"><img class="apv-i" src="logo.png" alt="Soko Smart"><div><b>Shop: Soko Smart</b> <i class="vbd" title="Verified"><svg viewBox="0 0 24 24" width="16" height="16"><path fill="#3897F0" d="M12 1.8l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3-3.2-.1L12 22.2l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3 3.2.1z"/><path d="M8 12.2l2.6 2.6L16 9.4" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></i><div class="m">Products you post here are sold by Soko Smart.</div></div></div>`;
+ /* same fields, same order as Shop Manager > Add product on the website */
+ if(k==="products")return badge+inF("Product name *","title","text",'required maxlength="120"')
+  +two(catSel(),selF("Condition (optional)","condition",CO))+`<div id="ax" class="axg"></div>`
+  +two(inF("Price (KSh) *","price","number",'min="0" required'),inF("Opening stock *","stock","number",'min="0" value="1" required'))
+  +two(selF("County *","county",COUNTIES,"required"),inF("Town","town"))
+  +img+taF("Description","description",4)+ck("Price is negotiable","negotiable")+feat;
+ if(k==="shops")return badge.replace("Products you post here are sold by Soko Smart.","Shops you create here are marked verified.").replace("Shop: Soko Smart","Verified shop")+inF("Shop name *","name","text",'required maxlength="80"')
+  +taF("About the shop","description",3)+two(selF("County *","county",COUNTIES,"required"),inF("Town","town"))+inF("Neighbourhood","neighbourhood")
+  +img;
+ if(k==="services")return `<p class="m" style="margin:0">This adds a service to the Services page (servicehub.html), where approved providers sign up to offer it.</p>`+two(inF("Service title *","title","text",'required maxlength="120"'),catSel())
+  +two(inF("Lowest price (KSh)","base_price","number",'min="0"'),inF("Highest price (KSh)","max_price","number",'min="0"'))
+  +`<label>Price is<select name="price_unit"><option>per job</option><option>per hour</option><option>per day</option></select></label>`
+  +taF("Description","description",3)+img;
+ if(k==="free")return inF("What is being given? *","title","text",'required maxlength="120"')+two(selF("Type *","kind",KINDS,"required"),selF("County *","county",COUNTIES,"required"))
+  +inF("Town","town")+img+taF("Details (condition, how to collect…) *","description",4,"required");
+ /* jobs: same fields, same order as Profile > Post a job on the website */
+ return `<p class="m" style="margin:0">Fields marked * are required.</p>`
+  +two(inF("Job title *","title","text",'required maxlength="120" placeholder="e.g. Digital Marketing Executive"'),inF("Company name *","company","text",'required maxlength="120"'))
+  +two(inF("Company logo","img","file",'accept="image/*"'),catSel("Job category *"))
+  +two(selF("Employment type *","employment_type",JT,"required"),selF("Work arrangement","work_mode",JM))
+  +two(selF("Experience level","experience_level",JX),selF("County *","county",COUNTIES,"required"))
+  +two(inF("Town / city","town"),inF("Number of vacancies","vacancies","number",'min="1" value="1"'))
+  +two(inF("Minimum salary (KSh)","salary_min","number",'min="0"'),inF("Maximum salary (KSh)","salary_max","number",'min="0"'))
+  +ck("Salary is negotiable","salary_negotiable")
+  +taF("Job description *","description",4,"required")+taF("Responsibilities (one per line)","responsibilities",4)+taF("Requirements (one per line)","requirements",4)
+  +inF("Application deadline","deadline","date")
+  +`<label>How should people apply? *<select name="application_method" required><option value="Easy Apply">Easy Apply on SOKO Smart</option><option value="Email">By email</option><option value="Website">External website link</option></select></label>`
+  +`<label id="jae" hidden>Application email *<input name="apply_email" type="email"></label><label id="jau" hidden>Application link *<input name="apply_url" type="url" placeholder="https://…"></label>`
+  +two(inF("Contact person","contact_name"),inF("Contact phone","contact_phone","tel"))+inF("Contact email","contact_email","email")
+  +ck("Urgently hiring","is_urgent")+feat}
+
+/* look of the form: same as the forms on the website (labels above bordered fields, orange focus, green button) */
+function formCSS(){if(document.getElementById("apcss"))return;const s=document.createElement("style");s.id="apcss";s.textContent=`
+#dlg.postwide{max-width:780px;width:calc(100% - 24px);max-height:94vh;padding:18px 20px;overflow-x:hidden;overflow-y:auto}
+#dlg.postwide #dc{width:100%;min-width:0}#apf *{min-width:0;box-sizing:border-box}
+#apf{display:grid;gap:12px}#apf label{display:grid;gap:5px;font-size:13px;font-weight:600;color:#5b534b;text-align:left}
+#apf input:not([type=checkbox]),#apf select,#apf textarea{width:100%;box-sizing:border-box;border:1px solid #e6dccd;border-radius:8px;padding:9px 10px;font:inherit;font-weight:400;background:#fff;color:#1d1a16}
+#apf input:focus,#apf select:focus,#apf textarea:focus{outline:0;border-color:#F58E20;box-shadow:0 0 0 3px rgba(245,142,32,.18)}
+#apf .two,#apf .axg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#apf .axg:empty{display:none}
+#apf label[style*="flex"]{font-weight:600}
+@media(max-width:560px){#apf .two,#apf .axg{grid-template-columns:minmax(0,1fr)}}
+.apv{display:flex;gap:10px;align-items:center;background:#F3F8FE;border:1px solid #d6e6fb;border-radius:12px;padding:10px 12px}
+.apv-i{width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid #d6e6fb;object-fit:contain;padding:3px;flex:none}
+.apv .vbd{display:inline-flex;vertical-align:middle}.apv .m{font-size:13px;color:#6b625a;font-weight:400}`;document.head.appendChild(s)}
+
+async function open(){const k=sec;if(!CAN.includes(k))return;formCSS();
+ await loadCats(k);
+ const dl=$("#dlg");dl.classList.add("postwide");if(!dl._pw){dl._pw=1;dl.addEventListener("close",()=>dl.classList.remove("postwide"))}
+ $("#dc").innerHTML=`<h3 style="margin:0 0 4px">Post a ${LBLS[k]}</h3><p class="m" style="margin:0 0 12px">It goes live straight away and is listed under your admin account.</p>
+ <form id="apf" data-k="${k}">${formHTML(k)}
+ <div style="display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:-18px;background:#fff;padding:10px 0;border-top:1px solid #eee"><button type="button" class="btn" id="ec">Cancel</button><button class="btn p" id="apgo">Publish ${LBLS[k]}</button></div></form>`;
+ $("#dlg").showModal()}
+
+async function upload(file,uid,tag){if(!file)return null;
+ if(!/^image\//.test(file.type)||file.size>3e6)throw new Error("The photo must be an image under 3 MB");
+ const ext=(file.name.split(".").pop()||"png").toLowerCase().replace(/[^a-z0-9]/g,"")||"png",path=`${uid}/${tag}-${Date.now()}.${ext}`;
+ const up=await sb.storage.from("listing-images").upload(path,file,{contentType:file.type});if(up.error)throw up.error;
+ return sb.storage.from("listing-images").getPublicUrl(path).data.publicUrl}
+
+async function build(f,k,uid){
+ const v=n=>f.elements[n]?f.elements[n].value.trim():"",num=n=>v(n)===""?null:+v(n),on=n=>!!(f.elements[n]&&f.elements[n].checked);
+ const file=f.elements.img&&f.elements.img.files&&f.elements.img.files[0];
+ const url=await upload(file,uid,k==="jobs"?"logo":"admin")||(v("img_url")||null);
+ if(k==="shops")return{owner_id:uid,status:"approved",name:v("name"),description:v("description")||null,county:v("county"),town:v("town")||null,neighbourhood:v("neighbourhood")||null,logo_url:url,cover_url:url,seller_verified:true};
+ const base={owner_id:uid,status:"approved",title:v("title"),county:v("county"),town:v("town")||null};
+ if(k==="free")return{...base,kind:v("kind"),description:v("description"),cover_url:url};
+ if(k==="products"){const fs=fieldsOf(v("category_id"));
+  return{...base,neighbourhood:v("neighbourhood")||null,category_id:+v("category_id"),price:num("price"),stock:Math.max(0,num("stock")||0),condition:v("condition")||null,negotiable:on("negotiable"),
+   attributes:readAttrs(f,fs),description:v("description")||null,cover_url:url,is_featured:on("is_featured"),seller_verified:true,shop_name:"Soko Smart"}}
+ if(k==="services")return{title:v("title"),category_id:v("category_id")||null,description:v("description")||null,base_price:num("base_price"),max_price:num("max_price"),price_unit:v("price_unit")||"per job",active:true,image_url:url};
+ const mn=num("salary_min"),mx=num("salary_max"),m=v("application_method");
+ if(mn!=null&&mx!=null&&mn>mx)throw new Error("Maximum salary must be higher than the minimum");
+ if(m==="Email"&&!v("apply_email"))throw new Error("Enter the application email");
+ if(m==="Website"&&!/^https?:\/\//i.test(v("apply_url")))throw new Error("Enter the application link starting with https://");
+ return{...base,company:v("company"),company_logo_url:url,category_id:+v("category_id"),employment_type:v("employment_type"),work_mode:v("work_mode")||null,experience_level:v("experience_level")||null,
+  salary_min:mn,salary_max:mx,salary_negotiable:on("salary_negotiable"),price:mn??mx,description:v("description"),responsibilities:v("responsibilities")||null,requirements:v("requirements")||null,
+  deadline:v("deadline")||null,vacancies:Math.max(1,num("vacancies")||1),application_method:m,apply_email:m==="Email"?v("apply_email"):null,apply_url:m==="Website"?v("apply_url"):null,
+  contact_name:v("contact_name")||null,contact_phone:v("contact_phone")||null,contact_email:v("contact_email")||null,is_urgent:on("is_urgent"),seller_verified:true,is_featured:on("is_featured")}}
+
+document.addEventListener("click",async e=>{if(e.target.closest("#addL")){try{await open()}catch(err){toast("Could not open the form: "+(err.message||err),"error")}}},true);
+document.addEventListener("change",e=>{const t=e.target,f=t.form;if(!f||f.id!=="apf")return;
+ if(t.name==="category_id"&&f.dataset.k==="products"){const fs=fieldsOf(t.value),box=f.querySelector("#ax");if(box)box.innerHTML=fs.length?attrHTML(fs):""}
+ if(t.name==="application_method"){f.querySelector("#jae").hidden=t.value!=="Email";f.querySelector("#jau").hidden=t.value!=="Website";f.apply_email.required=t.value==="Email";f.apply_url.required=t.value==="Website"}});
+document.addEventListener("submit",async e=>{const f=e.target;if(f.id!=="apf")return;e.preventDefault();
+ const k=f.dataset.k,btn=$("#apgo");btn.disabled=true;
+ try{const uid=(await sb.auth.getSession()).data.session?.user.id;if(!uid)throw new Error("Please log in again");
+  const row=await build(f,k,uid),T=k==="services"?"sh_services":SEC[k][1];
+  let warn=0,{error}=await sb.from(T).insert(row);
+  for(let n=0;error&&n<5;n++){const m=String(error.message||"").match(/'([a-z_]+)' column|column "?([a-z_]+)"?/i),c=m&&(m[1]||m[2]);
+   if(!c||!(c in row)||["owner_id","status","title","name"].includes(c))break;delete row[c];warn=1;({error}=await sb.from(T).insert(row))}
+  if(error)throw error;
+  $("#dlg").close();warn?toast("Published, but some optional details were skipped because the table is missing those columns.","error"):toast(k==="services"?"Service added. It now shows on the Services page (servicehub.html).":"Published. It is live on the marketplace.");refresh()}
+ catch(err){toast(/row-level|policy/i.test(err.message||"")?"Your account is not allowed to post here yet. Run supabase-payments.sql (admin posting policies) in Supabase.":(err.message||String(err)),"error")}
+ btn.disabled=false});
+})();
+</script>
+</body>
+</html>

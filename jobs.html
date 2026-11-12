@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jobs in Kenya – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="soko.js?v=19"></script>
+<style>.fl{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}#dlg{max-width:620px;max-height:90vh;overflow:auto}#dlg ul{margin:0;padding-left:20px}</style>
+</head>
+<body>
+<div id="hd"></div>
+<main><section class="alt"><div class="w">
+<h2>Jobs in Kenya <a href="profile.html#jobs">+ Post a job</a></h2>
+<form class="fl" id="jf" onsubmit="return false">
+ <input id="jq" type="search" placeholder="Job title or company" aria-label="Search jobs">
+ <select id="jc" aria-label="County"></select>
+ <select id="jt" aria-label="Employment type"><option value="">Any type</option><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Internship</option><option>Casual</option></select>
+ <select id="jm" aria-label="Work mode"><option value="">Any mode</option><option>On-site</option><option>Remote</option><option>Hybrid</option></select>
+ <select id="jcat" aria-label="Category"><option value="">All categories</option></select>
+ <select id="jx" aria-label="Experience level"><option value="">Any level</option><option>Entry-level</option><option>Mid-level</option><option>Senior</option></select>
+ <input id="jmin" type="number" min="0" placeholder="Min salary (KSh)" aria-label="Minimum salary">
+</form>
+<div class="tb"><strong id="cnt" aria-live="polite"></strong></div>
+<div id="res" class="jobs"></div>
+<p class="more"><button class="btn p" id="more" hidden>Load more</button></p>
+</div></section></main>
+<div id="ft"></div>
+<script>
+shell("jobs.html");
+const PAGE=12,REC={};let pg=0,tk=0,tm;
+const clean=v=>String(v||"").replace(/[%,()*\\_]/g," ").trim().slice(0,60);
+$("#jc").innerHTML='<option value="">All Kenya</option>'+COUNTIES.map(c=>`<option>${esc(c)}</option>`).join("");
+const CATN={};(async()=>{if(!sb)return;const {data}=await sb.from("categories").select("id,name").eq("section","jobs").order("sort_order");(data||[]).forEach(c=>CATN[c.id]=c.name);$("#jcat").innerHTML='<option value="">All categories</option>'+(data||[]).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")})();
+$("#jq").value=new URLSearchParams(location.search).get("q")||"";
+async function run(more){
+ if(!sb){$("#res").innerHTML='<div class="msg">Connect Supabase (CFG in soko.js) to load jobs.</div>';return}
+ const my=++tk;if(!more){pg=0;$("#res").innerHTML='<div class="sk"></div>'.repeat(3)}
+ const q=clean($("#jq").value),mn=$("#jmin").value;
+ let b=sb.from("jobs").select("*",{count:"exact"}).eq("status","approved");
+ if(q)b=b.or(`title.ilike.%${q}%,company.ilike.%${q}%`);
+ if($("#jc").value)b=b.eq("county",$("#jc").value);if($("#jt").value)b=b.eq("employment_type",$("#jt").value);if($("#jm").value)b=b.eq("work_mode",$("#jm").value);
+ if(mn!==""&&+mn>=0)b=b.gte("price",+mn);
+ if($("#jcat").value)b=b.eq("category_id",+$("#jcat").value);if($("#jx").value)b=b.eq("experience_level",$("#jx").value);
+ const {data,count,error}=await b.order("created_at",{ascending:false}).range(pg*PAGE,pg*PAGE+PAGE-1);if(my!==tk)return;
+ if(error){$("#res").innerHTML=`<div class="msg">${esc(error.message)}</div>`;return}
+ (data||[]).forEach(r=>REC[r.id]=r);$("#cnt").textContent=`${(count||0).toLocaleString("en-KE")} ${count===1?"job":"jobs"} found`;
+ const h=(data||[]).map(r=>jcard(r).replace('href="jobs.html?id='+encodeURIComponent(r.id)+'"',`href="#" data-j="${esc(r.id)}"`)).join("");
+ $("#res").innerHTML=more?$("#res").innerHTML+h:h||'<div class="msg">No jobs match these filters.</div>';$("#more").hidden=(pg+1)*PAGE>=(count||0)}
+const li=t=>{const a=String(t||"").split("\n").map(x=>x.replace(/^\s*[-•*]\s*/,"").trim()).filter(Boolean);return a.length?"<ul>"+a.map(x=>`<li>${esc(x)}</li>`).join("")+"</ul>":""};
+const blk=(h,b)=>b?`<h4 style="margin:16px 0 6px">${h}</h4>${b}`:"";
+async function jobView(id){let r=REC[id];if(!r&&sb){const x=await sb.from("jobs").select("*").eq("id",id).maybeSingle();r=x.data}
+ if(!r||r.status!=="approved"){toast("This job is no longer available");return}
+ const today=new Date().toISOString().slice(0,10),closed=r.deadline&&r.deadline<today,cat=CATN[r.category_id]||"",sal=salTxt(r),m=r.application_method||"Easy Apply";
+ const cu=await user();let saved=false;if(cu){const f=await sb.from("favorites").select("listing_id").eq("listing_type","jobs").eq("listing_id",r.id).maybeSingle();saved=!!f.data}
+ openD(`<div style="display:flex;gap:12px;align-items:center">${r.company_logo_url?`<img alt="" src="${esc(r.company_logo_url)}" style="width:56px;height:56px;border-radius:12px;object-fit:cover">`:""}<div><h3 style="margin:0">${esc(r.title)}</h3><p class="m" style="margin:2px 0 0">${esc([r.company,[r.town,r.county,"Kenya"].filter(Boolean).join(", ")].filter(Boolean).join(" · "))}${r.seller_verified?' · <span class="ver">✓ Verified employer</span>':""}</p></div></div>
+ <p style="margin:10px 0">${r.is_urgent?'<span class="tag urg">Urgently hiring</span> ':""}${r.is_featured?'<span class="tag">Featured</span> ':""}${[r.employment_type,r.work_mode,r.experience_level,cat].filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join(" ")}</p>
+ ${sal?`<div class="price">Salary: ${esc(sal)}</div>`:""}
+ ${blk("Job overview",`<p style="white-space:pre-wrap;margin:0">${esc(r.description||"No description provided.")}</p>`)}${blk("Responsibilities",li(r.responsibilities))}${blk("Requirements",li(r.requirements))}
+ <p class="m" style="margin:14px 0 0">${r.deadline?`<b>Application deadline:</b> ${esc(new Date(r.deadline+"T00:00").toLocaleDateString("en-KE",{day:"numeric",month:"long",year:"numeric"}))}<br>`:""}${r.vacancies>1?`<b>Vacancies:</b> ${r.vacancies}<br>`:""}${r.reference_no?`<b>Reference:</b> ${esc(r.reference_no)}`:""}</p>
+ ${(r.contact_name||r.contact_phone||r.contact_email)?blk("Contact",`<p class="m" style="margin:0">${esc([r.contact_name,r.contact_phone,r.contact_email].filter(Boolean).join(" · "))}</p>`):""}
+ <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap" id="jact"></div>`);
+ const A=$("#jact"),subj=encodeURIComponent("Application: "+r.title+(r.reference_no?" ("+r.reference_no+")":""));
+ if(closed)A.innerHTML='<span class="pill rejected">Applications closed</span>';
+ else if(m==="Email"&&r.apply_email)A.innerHTML=`<a class="btn p" href="mailto:${esc(r.apply_email)}?subject=${subj}">Apply by email</a>`;
+ else if(m==="Website"&&/^https?:\/\//i.test(r.apply_url||""))A.innerHTML=`<a class="btn p" target="_blank" rel="noopener noreferrer" href="${esc(r.apply_url)}">Apply on company website</a>`;
+ else A.innerHTML='<button class="btn p" id="ap">Easy Apply</button>';
+ A.insertAdjacentHTML("beforeend",`<button class="btn" id="sj">${saved?"Saved ✓":"Save job"}</button>`);
+ const ext=A.querySelector("a.btn");if(ext)ext.addEventListener("click",e=>{if(!CURU){e.preventDefault();needLogin("Log in or create an account to apply for this job.")}});
+ $("#sj").onclick=async()=>{const u=await needUser("Log in or create an account to save this job.");if(!u)return;saved=!saved;$("#sj").textContent=saved?"Saved ✓":"Save job";toast(saved?"Job saved":"Removed from saved jobs");
+  const {error}=await(saved?sb.from("favorites").upsert({user_id:u.id,listing_type:"jobs",listing_id:r.id}):sb.from("favorites").delete().eq("user_id",u.id).eq("listing_type","jobs").eq("listing_id",r.id));if(error)toast(error.message,"error")};
+ if($("#ap"))$("#ap").onclick=async()=>{const u=await needUser("Log in or create an account to apply for this job.");if(!u)return;if(u.id===r.owner_id){toast("This is your own job post");return}
+  openD(`<h3>Apply: ${esc(r.title)}</h3><form id="ja" style="display:grid;gap:10px"><label>Full name<input name="nm" required value="${esc(u.user_metadata?.full_name||"")}"></label><label>Email<input name="em" type="email" required value="${esc(u.email||"")}"></label><label>Phone<input name="ph" type="tel" required value="${esc(u.user_metadata?.phone||"")}"></label><label>Short note to the employer<textarea name="n" rows="4"></textarea></label><button class="btn p">Send application</button></form>`);
+  $("#ja").onsubmit=async ev=>{ev.preventDefault();const f=ev.target,{error}=await sb.from("job_applications").insert({job_id:r.id,applicant_name:f.nm.value.trim(),applicant_email:f.em.value.trim(),phone:f.ph.value.trim(),cover_note:f.n.value.trim()||null});if(error){toast(error.code==="23505"?"You already applied for this job":error.message,"error");return}$("#dlg").close();toast("Application sent")}}}
+document.addEventListener("click",e=>{const j=e.target.closest("[data-j]");if(j){e.preventDefault();jobView(j.dataset.j)}});
+$("#jf").addEventListener("input",()=>{clearTimeout(tm);tm=setTimeout(run,350)});$("#more").onclick=()=>{pg++;run(true)};
+run();const jid=new URLSearchParams(location.search).get("id");if(jid)jobView(jid);
+</script>
+</body>
+</html>

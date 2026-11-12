@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Services – Hire trusted local service providers | SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="soko.js?v=19"></script>
+<style>
+:root{--gn:#0F5C34;--gd:#0B4A2E;--or:#F58E20;--od2:#D9740A;--cr:#FFF3E3;--pg:#F2F4EF;--ln:#E4E8DE;--ink:#17261D;--mu:#66746A}
+#dlg{max-width:820px;max-height:92vh;overflow:auto}
+.sh{max-width:1180px;margin:0 auto;padding:14px 14px 40px}
+.shh{position:relative;overflow:hidden;border-radius:22px;padding:28px 30px;margin-bottom:16px;color:#fff;background:linear-gradient(105deg,#0B4A2E,#10613A 62%,#17703F);display:grid;gap:10px}
+.shh:after{content:"";position:absolute;right:-40px;top:0;bottom:0;width:30%;background:linear-gradient(135deg,#F5A12E,#F58E20);clip-path:polygon(34% 0,100% 0,100% 100%,0 100%);opacity:.95}
+.shh>*{position:relative;z-index:1;max-width:640px}
+.shh h1{margin:0;font-size:32px;line-height:1.1;color:#fff}.shh h1 span{color:#F5A12E}
+.shh p{margin:0;color:#DDEBE1;font-size:15.5px;line-height:1.55}
+.shh .bt{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.shh .btn{background:var(--or);border-color:var(--or);color:#fff}.shh .btn.w{background:#fff;color:var(--gd);border-color:#fff}
+.shs{display:flex;gap:8px;margin:0 0 12px}
+.shs input,.shs select{border:1px solid var(--ln);border-radius:12px;padding:11px 14px;font:inherit;background:#fff;min-width:0}
+.shs input{flex:1}
+.shtabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 12px}
+.shtabs button{border:1px solid var(--ln);background:#fff;color:var(--ink);border-radius:999px;padding:8px 18px;font-weight:700;white-space:nowrap;cursor:pointer}
+.shtabs .on{background:var(--gn);border-color:var(--gn);color:#fff}
+.shg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.shc{background:#fff;border:1px solid var(--ln);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0;cursor:pointer;box-shadow:0 2px 8px rgba(11,74,46,.07);transition:box-shadow .18s,transform .18s,border-color .18s}
+.shc:hover{box-shadow:0 12px 26px rgba(11,74,46,.16);transform:translateY(-3px);border-color:#F9C27D}
+.shc .cv{position:relative;min-height:120px;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;gap:3px;color:#fff;background:linear-gradient(135deg,var(--c1,#0B4A2E),var(--c2,#1C7A45));background-size:cover;background-position:center}
+.shc .cv b{font-size:19px;line-height:1.1;font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,.3);overflow-wrap:anywhere}
+.shc .cv small{font-size:12px;font-weight:600;opacity:.95}
+.shc .bd{padding:14px;display:grid;gap:8px;align-content:start;flex:1}
+.shc .bd p{margin:0;font-size:14px;color:var(--mu);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.shc .mt{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;color:var(--mu)}.shc .mt b{color:var(--gd);font-size:15px}
+.shc .go{border:0;border-radius:10px;background:var(--or);color:#fff;font-weight:800;padding:10px;cursor:pointer}.shc .go:hover{background:var(--od2)}
+.shp{display:flex;gap:12px;align-items:center;min-width:0;padding:14px 14px 0}
+.shp .av{width:64px;height:64px;font-size:26px;border:3px solid #FFE3C0}
+.shp b{display:block;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shp small{color:var(--mu);font-size:13px;display:block}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#a7b0a9;margin-right:5px}.dot.on{background:#1FA45B}
+.tag{display:inline-block;background:var(--pg);border:1px solid var(--ln);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;margin:0 4px 4px 0}
+.fp{display:inline-block;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;background:#eee;color:#555}
+.fp.g{background:#dff3e8;color:#14633F}.fp.o{background:var(--cr);color:#9A5408}.fp.r{background:#fde3e0;color:#b3261e}
+.shh2{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px}.shh2 h2{margin:0;font-size:20px}
+.shfav{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:0;background:#fff;color:#7b8a80;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.shfav.on{color:#e0483c}.shfav.on svg{fill:#e0483c}
+.ffm{display:grid;gap:10px}.ffm label{display:grid;gap:4px;font-weight:600;font-size:13px}
+.ffm input:not([type=checkbox]):not([type=radio]),.ffm select,.ffm textarea{width:100%;box-sizing:border-box;border:1px solid var(--ln);border-radius:8px;padding:9px 10px;font:inherit;font-weight:400;background:#fff;color:var(--ink)}
+.ffm .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ffm .m,.m{color:var(--mu);font-size:13px;font-weight:400}
+.chk{display:grid;gap:6px;max-height:240px;overflow:auto;border:1px solid var(--ln);border-radius:10px;padding:10px}
+.chk .gh{font-weight:800;font-size:12px;text-transform:uppercase;color:var(--gn);margin-top:6px}
+.chk label{display:flex;gap:8px;align-items:center;font-weight:500}.chk input{width:auto}
+.pfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.pfg .pi{position:relative;border-radius:10px;overflow:hidden;background:#000;aspect-ratio:1}
+.pfg img,.pfg video{width:100%;height:100%;object-fit:cover;display:block}
+.pfg .st{position:absolute;left:6px;top:6px}.pfg .dl{position:absolute;right:6px;bottom:6px;border:0;border-radius:8px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;padding:4px 8px;cursor:pointer}
+.pfg .vt{display:grid;place-items:center;height:100%;color:#fff;font-weight:700}
+.box{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.box.or{background:#FFF8EF;border-color:#F5B972}
+.row{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}.kv div{background:var(--pg);border-radius:10px;padding:8px 12px}.kv span{display:block;font-size:12px;color:var(--mu)}.kv b{font-size:15px}
+.bn{width:100%;max-height:200px;object-fit:cover;border-radius:14px;display:block;margin-bottom:10px}
+.ap{border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin-bottom:8px;display:grid;gap:4px}
+.msg{grid-column:1/-1;padding:28px 12px;text-align:center;color:var(--mu)}
+.sk{height:150px;border-radius:16px;background:linear-gradient(90deg,#eef0ea,#f7f8f5,#eef0ea);background-size:200% 100%;animation:shk 1.2s infinite}@keyframes shk{to{background-position:-200% 0}}
+@media(max-width:640px){.shh{padding:22px 18px}.shh h1{font-size:25px}.shh:after{display:none}.ffm .two{grid-template-columns:1fr}.shs{flex-wrap:wrap}.shs select{flex:1}}
+
+/* tidy, equal-height cards */
+.shg{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));align-items:stretch}
+.shc{height:100%}
+.shc .cv{height:132px;min-height:132px;box-sizing:border-box}
+.shc .cv b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.shc .cv small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shc .bd{display:flex;flex-direction:column;gap:10px}
+.shc .bd p{min-height:2.9em;line-height:1.45;overflow-wrap:anywhere}
+.shc .mt{display:grid;grid-template-columns:1fr;gap:4px;padding-top:10px;border-top:1px solid var(--ln);margin-top:auto}
+.shc .mt span{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shc .mt b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shc .go{width:100%}
+@media(max-width:560px){.shg{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main><div class="sh">
+ <section class="shh"><h1>Hire trusted <span>service providers</span> near you</h1><p>Plumbers, cleaners, casual workers, event helpers and more. Browse approved providers, message them directly, or post a request and let them come to you.</p>
+  <div class="bt"><button class="btn w" id="bePv" type="button">Become a service provider</button><button class="btn" id="postReq" type="button">Post a request</button></div></section>
+ <div class="shtabs" id="tabs" role="tablist"><button data-t="services">Services</button><button data-t="providers">Providers</button><button data-t="requests">Requests</button><button data-t="hub">My provider profile</button></div>
+ <div id="pan"></div>
+</div></main>
+<div id="ft"></div>
+<script>
+shell("servicehub.html");
+(()=>{
+const kes=n=>"KSh "+Number(n||0).toLocaleString("en-KE");
+const sUrl=u=>/^https?:\/\//i.test(String(u||""))?String(u):"";
+const A=x=>Array.isArray(x)?x:[];
+const ago=d=>{const s=(Date.now()-new Date(d))/1000;if(!(s>=0))return"";if(s<3600)return Math.max(1,Math.floor(s/60))+" min ago";if(s<86400)return Math.floor(s/3600)+" hr ago";if(s<2592000)return Math.floor(s/86400)+" days ago";return new Date(d).toLocaleDateString("en-KE",{day:"numeric",month:"short",year:"numeric"})};
+const opts=(a,v)=>a.map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("");
+const split=v=>String(v||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,15);
+const clean=v=>String(v||"").replace(/[%,()*\\_]/g,"  ").trim().slice(0,60);
+const HEART='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
+const GRAD=[["#0B4A2E","#1C7A45"],["#E8830F","#F5B02E"],["#8C1730","#D13A4B"],["#16324F","#2F78B3"],["#3A2470","#7E55CF"],["#0E5A5A","#2FA6A0"]];
+const $p=document.getElementById("pan");
+const ERR=e=>{const m=String(e&&e.message||e);return/relation|schema cache|does not exist/i.test(m)?"The Services area is not set up yet. Run supabase-servicehub.sql in Supabase.":/row-level|policy|permission/i.test(m)?"Your account is not allowed to do that yet (permissions). Run supabase-servicehub.sql in Supabase. ("+m+")":m};
+let U=null,ME=null,CAT=[],SV=[],PR=[],PS=[],TAB="services",FAV=new Set((()=>{try{return JSON.parse(localStorage.getItem("soko_sh_fav")||"[]")}catch(e){return[]}})()),SETERR="";
+const F={q:"",cat:"",county:"",service:"",onlyFav:false},R={view:"open",q:"",service:"",county:""};
+const catName=id=>(CAT.find(c=>c.id===id)||{}).name||"";
+const svName=id=>(SV.find(s=>s.id===id)||{}).title||"";
+const grad=s=>{const i=Math.max(0,CAT.findIndex(c=>c.id===s.category_id));return GRAD[i%GRAD.length]};
+const price=s=>{const a=+s.base_price||0,b=+s.max_price||0,u=s.price_unit?" "+s.price_unit:"";return a&&b&&a!==b?kes(a)+" – "+kes(b)+u:a||b?kes(a||b)+u:"Agree with provider"};
+const av=(f,c)=>`<span class="av ${c||""}">${f.avatar_url?`<img alt="" src="${esc(sUrl(f.avatar_url))}">`:esc((f.name||"?")[0].toUpperCase())}</span>`;
+const place=f=>[f.town,f.county].filter(Boolean).join(", ")||"Kenya";
+const provSv=id=>PS.filter(x=>x.provider_id===id).map(x=>svName(x.service_id)).filter(Boolean);
+const rate=p=>p.rate?kes(p.rate)+" "+(p.rate_unit||"per job"):"Rate on request";
+
+async function user(){try{return (await sb.auth.getSession()).data.session?.user||null}catch(e){return null}}
+async function me(){U=await user();ME=null;if(!U||!sb)return;try{const r=await sb.from("sh_providers").select("*").eq("user_id",U.id).maybeSingle();ME=r.data||null}catch(e){}}
+async function login(msg){U=await user();if(U)return U;if(typeof needUser==="function")return needUser(msg);toast(msg||"Please log in","error");return null}
+async function load(){if(!sb)return;
+ const [c,s,ps,p]=await Promise.all([sb.from("sh_categories").select("*").eq("active",true).order("sort_order").order("name"),sb.from("sh_services").select("*").eq("active",true).order("sort_order").order("title"),
+  sb.from("sh_provider_services").select("provider_id,service_id"),sb.from("sh_providers").select("*").eq("status","approved").order("rating_avg",{ascending:false}).order("created_at",{ascending:false})]);
+ const bad=[c,s,p].find(x=>x.error);SETERR=bad?ERR(bad.error):"";CAT=c.data||[];SV=s.data||[];PR=p.data||[];const ok=new Set(PR.map(x=>x.user_id));PS=(ps.data||[]).filter(x=>ok.has(x.provider_id))}
+async function upImg(file,tag){if(!file)return null;if(!/^image\//.test(file.type))throw new Error("Please choose an image file");if(file.size>3e6)throw new Error(file.name+": images must be under 3 MB");
+ const ext=(file.name.split(".").pop()||"png").toLowerCase().replace(/[^a-z0-9]/g,"")||"png",path=`${U.id}/sh-${tag}-${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`;
+ const r=await sb.storage.from("listing-images").upload(path,file,{contentType:file.type});if(r.error)throw r.error;return sb.storage.from("listing-images").getPublicUrl(path).data.publicUrl}
+async function upMedia(file){const vid=/^video\//.test(file.type);if(!vid)return{url:await upImg(file,"pf"),type:"image"};if(file.size>30e6)throw new Error(file.name+": videos must be under 30 MB");
+ const ext=(file.name.split(".").pop()||"mp4").toLowerCase().replace(/[^a-z0-9]/g,"")||"mp4",path=`${U.id}/sh-pf-${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`;
+ const r=await sb.storage.from("listing-images").upload(path,file,{contentType:file.type});if(r.error)throw r.error;return{url:sb.storage.from("listing-images").getPublicUrl(path).data.publicUrl,type:"video"}}
+const dlgOpen=h=>{if(typeof openD==="function")openD(h);else{const d=document.getElementById("dlg");document.getElementById("dc").innerHTML=h;d.showModal()}};
+const dlgClose=()=>{const d=document.getElementById("dlg");if(d&&d.open)d.close()};
+const SKL='<div class="sk"></div>'.repeat(3);
+
+/* ---------- tabs ---------- */
+function tab(t){if(!["services","providers","requests","hub"].includes(t))t="services";TAB=t;history.replaceState(null,"","#"+t);
+ document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));({services,providers,requests,hub})[t]()}
+document.getElementById("tabs").onclick=e=>{const b=e.target.closest("[data-t]");if(b)tab(b.dataset.t)};
+document.getElementById("bePv").onclick=()=>tab("hub");document.getElementById("postReq").onclick=()=>postDlg();
+
+/* ---------- services ---------- */
+function services(){if(SETERR){$p.innerHTML=`<div class="msg">${esc(SETERR)}</div>`;return}
+ const cnt=id=>PS.filter(x=>x.service_id===id).length,SEED=["casual labour","hair & braiding","house cleaning","plumbing","electrical work","event helpers","gardening","laundry & ironing","moving & loading","painting"],ts=s=>+new Date(s.created_at||0)||0,t0=Math.min(...SV.filter(s=>SEED.includes(String(s.title||"").trim().toLowerCase())).map(ts).filter(Boolean),Infinity),seed=s=>SEED.includes(String(s.title||"").trim().toLowerCase())&&(!ts(s)||t0===Infinity||ts(s)-t0<6e4),live=SV.filter(s=>cnt(s.id)>0||!seed(s)),liveCat=CAT.filter(c=>live.some(s=>s.category_id===c.id));
+ $p.innerHTML=`<form class="shs" id="sq"><input type="search" placeholder="Search services, e.g. plumber, cleaning" value="${esc(F.q)}"><select id="sc"><option value="">All categories</option>${liveCat.map(c=>`<option value="${esc(c.id)}" ${F.cat===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></form><div class="shg" id="sl"></div>`;
+ const draw=()=>{const q=F.q.toLowerCase(),L=live.filter(s=>(!F.cat||s.category_id===F.cat)&&(!q||(s.title+" "+(s.description||"")+" "+catName(s.category_id)).toLowerCase().includes(q)));
+  document.getElementById("sl").innerHTML=L.map(s=>{const g=grad(s),n=cnt(s.id),img=sUrl(s.image_url);
+   return `<article class="shc" data-sv="${esc(s.id)}" tabindex="0"><div class="cv" style="--c1:${g[0]};--c2:${g[1]};${img?`background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.62)),url('${esc(img)}')`:""}"><b>${esc(s.title)}</b><small>${esc(catName(s.category_id))}</small></div>
+   <div class="bd"><p>${esc(s.description||s.title)}</p><div class="mt"><span>${n} provider${n===1?"":"s"}</span><b>${esc(price(s))}</b></div><button type="button" class="go">Find providers →</button></div></article>`}).join("")||'<div class="msg">No services available yet. Check back soon, or offer yours in the “My provider profile” tab.</div>'};
+ draw();const f=document.getElementById("sq");f.onsubmit=e=>e.preventDefault();f.querySelector("input").oninput=e=>{F.q=e.target.value.trim();draw()};document.getElementById("sc").onchange=e=>{F.cat=e.target.value;draw()}}
+$p.addEventListener("click",e=>{const c=e.target.closest("[data-sv]");if(c){F.service=c.dataset.sv;F.q="";tab("providers")}});
+
+/* ---------- providers ---------- */
+function providers(){if(SETERR){$p.innerHTML=`<div class="msg">${esc(SETERR)}</div>`;return}
+ $p.innerHTML=`<form class="shs" id="pq"><input type="search" placeholder="Name, skill or title" value="${esc(F.q)}"><select id="ps"><option value="">Any service</option>${SV.map(s=>`<option value="${esc(s.id)}" ${F.service===s.id?"selected":""}>${esc(s.title)}</option>`).join("")}</select><select id="pc"><option value="">All Kenya</option>${opts(COUNTIES,F.county)}</select></form>
+ <div class="shh2"><h2 id="pn">Providers</h2><label style="display:flex;gap:6px;align-items:center;font-size:14px"><input type="checkbox" id="pf" ${F.onlyFav?"checked":""}> Saved only</label></div><div class="shg" id="pl"></div>`;
+ const draw=()=>{const q=F.q.toLowerCase(),L=PR.filter(p=>{if(F.onlyFav&&!FAV.has(p.user_id))return false;if(F.county&&p.county!==F.county)return false;if(F.service&&!PS.some(x=>x.provider_id===p.user_id&&x.service_id===F.service))return false;
+   return !q||(p.name+" "+(p.title||"")+" "+A(p.skills).join(" ")+" "+provSv(p.user_id).join(" ")).toLowerCase().includes(q)});
+  document.getElementById("pn").textContent=L.length+" provider"+(L.length===1?"":"s");
+  document.getElementById("pl").innerHTML=L.map(p=>{const sv=provSv(p.user_id);return `<article class="shc" data-pv="${esc(p.user_id)}" tabindex="0" style="position:relative"><button type="button" class="shfav ${FAV.has(p.user_id)?"on":""}" data-fav="${esc(p.user_id)}" aria-label="Save provider">${HEART}</button>
+   <div class="shp">${av(p)}<div style="min-width:0"><b>${esc(p.name)}</b><small>${esc(p.title||"Service provider")}</small><small>${esc(place(p))}</small></div></div>
+   <div class="bd"><div>${sv.slice(0,3).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div><div class="mt"><span><i class="dot ${p.available===false?"":"on"}"></i>${p.available===false?"Busy":"Available"}${p.years_experience!=null?" · "+p.years_experience+" yr"+(+p.years_experience===1?"":"s"):""}</span><b>${esc(rate(p))}</b></div><button type="button" class="go">View profile</button></div></article>`}).join("")||'<div class="msg">No providers match yet.</div>'};
+ draw();const f=document.getElementById("pq");f.onsubmit=e=>e.preventDefault();f.querySelector("input").oninput=e=>{F.q=e.target.value.trim();draw()};
+ document.getElementById("ps").onchange=e=>{F.service=e.target.value;draw()};document.getElementById("pc").onchange=e=>{F.county=e.target.value;draw()};document.getElementById("pf").onchange=e=>{F.onlyFav=e.target.checked;draw()}}
+document.addEventListener("click",e=>{const h=e.target.closest("[data-fav]");if(h){e.preventDefault();e.stopPropagation();const id=h.dataset.fav;FAV.has(id)?FAV.delete(id):FAV.add(id);try{localStorage.setItem("soko_sh_fav",JSON.stringify([...FAV]))}catch(x){}h.classList.toggle("on",FAV.has(id));toast(FAV.has(id)?"Saved":"Removed from saved");return}
+ const c=e.target.closest("[data-pv]");if(c&&!e.target.closest("button:not(.go)")){provView(c.dataset.pv);return}
+ const m=e.target.closest("[data-msg]");if(m){e.preventDefault();chatWith(m.dataset.msg,m.dataset.t)}});
+const chatWith=async(uid,txt)=>{if(!await login("Log in to send a message."))return;if(U.id===uid){toast("That is your own profile");return}if(window.SokoChat)SokoChat.chatWith(uid,null,txt||"");else toast("Chat is still loading, please try again","error")};
+async function provView(id){const p=PR.find(x=>x.user_id===id);if(!p)return;
+ const r=await sb.from("sh_portfolio").select("*").eq("provider_id",id).eq("status","approved").order("created_at",{ascending:false});const pf=r.data||[];
+ dlgOpen(`${p.banner_url?`<img class="bn" alt="" src="${esc(sUrl(p.banner_url))}">`:""}<div class="shp" style="padding:0">${av(p)}<div style="min-width:0"><b style="font-size:20px;white-space:normal">${esc(p.name)}</b><small>${esc(p.title||"Service provider")} · ${esc(place(p))}</small></div></div>
+ <div class="kv"><div><span>Rate</span><b>${esc(rate(p))}</b></div><div><span>Experience</span><b>${p.years_experience!=null?p.years_experience+" yr"+(+p.years_experience===1?"":"s"):"-"}</b></div><div><span>Status</span><b><i class="dot ${p.available===false?"":"on"}"></i>${p.available===false?"Busy right now":"Available"}</b></div></div>
+ <h4 style="margin:10px 0 4px">Services</h4><div>${provSv(id).map(x=>`<span class="tag">${esc(x)}</span>`).join("")||'<span class="m">Not set</span>'}</div>
+ <h4 style="margin:10px 0 4px">About</h4><p style="white-space:pre-wrap;margin:0;line-height:1.6">${esc(p.bio||"")}</p>
+ ${A(p.skills).length?`<h4 style="margin:10px 0 4px">Skills</h4><div>${A(p.skills).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>`:""}
+ <h4 style="margin:10px 0 6px">Work gallery</h4><div class="pfg">${pf.map(x=>x.media_type==="video"&&/\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(x.media_url)?`<div class="pi"><video src="${esc(sUrl(x.media_url))}" controls preload="metadata"></video></div>`:x.media_type==="video"?`<div class="pi"><a class="vt" href="${esc(sUrl(x.media_url))}" target="_blank" rel="noopener">▶ Video</a></div>`:`<div class="pi"><a href="${esc(sUrl(x.media_url))}" target="_blank" rel="noopener"><img loading="lazy" alt="${esc(x.title||"")}" src="${esc(sUrl(x.media_url))}"></a></div>`).join("")||'<div class="m">No photos yet.</div>'}</div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn p" data-msg="${esc(id)}" data-t="Hi ${esc(p.name)}, I found you on SOKO Smart Services and would like to hire you.">Message ${esc(p.name.split(" ")[0])}</button><button class="btn" id="reqFor">Post a request</button><button class="btn" data-x type="button">Close</button></div>`);
+ document.querySelector("#dlg [data-x]").onclick=dlgClose;document.getElementById("reqFor").onclick=()=>{dlgClose();postDlg(A(PS.filter(x=>x.provider_id===id))[0]?.service_id)}}
+
+/* ---------- requests ---------- */
+const bud=r=>r.budget_type==="negotiable"?(r.budget?kes(r.budget)+" · Negotiable":"Negotiable"):r.budget_type==="hourly"?kes(r.budget)+"/hr":kes(r.budget);
+const rcard=p=>{const s=SV.find(x=>x.id===p.service_id)||{},g=grad(s),img=sUrl(p.banner_url),own=U&&p.client_id===U.id;
+ return `<article class="shc" data-rq="${esc(p.id)}" tabindex="0"><div class="cv" style="--c1:${g[0]};--c2:${g[1]};${img?`background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.62)),url('${esc(img)}')`:""}"><b>${esc(p.title)}</b><small>${esc(s.title||"Request")}${p.status!=="open"?" · "+(p.status==="hired"?"Provider chosen":"Closed"):""}</small></div>
+ <div class="bd"><p>${esc(p.description||"")}</p><div class="mt"><span>${esc([p.town,p.county].filter(Boolean).join(", ")||"Anywhere in Kenya")} · ${esc(ago(p.created_at))}</span><b>${esc(p.budget?bud(p):"Open budget")}</b></div>
+ <button type="button" class="go">${own?"Applicants ("+(p.applicants_count||0)+")":"View request"}</button></div></article>`};
+async function requests(){U=await user();if(SETERR){$p.innerHTML=`<div class="msg">${esc(SETERR)}</div>`;return}
+ const vs=[["open","Open requests"],["mine","My requests"],["applied","My applications"]];
+ $p.innerHTML=`<div class="shtabs" style="padding-top:0">${vs.map(v=>`<button data-rv="${v[0]}" class="${R.view===v[0]?"on":""}">${v[1]}</button>`).join("")}</div>
+ ${R.view==="open"?`<form class="shs" id="rq"><input type="search" placeholder="Search requests" value="${esc(R.q)}"><select id="rs"><option value="">Any service</option>${SV.map(s=>`<option value="${esc(s.id)}" ${R.service===s.id?"selected":""}>${esc(s.title)}</option>`).join("")}</select><select id="rc"><option value="">Anywhere in Kenya</option>${opts(COUNTIES,R.county)}</select></form>`:""}
+ <div class="${R.view==="applied"?"":"shg"}" id="rl">${SKL}</div>`;
+ const L=document.getElementById("rl");
+ if(R.view!=="open"&&!U){L.innerHTML='<div class="msg">Log in to see this.</div>';login("Log in to continue.");return}
+ let r;
+ if(R.view==="applied"){r=await sb.from("sh_applications").select("*,sh_requests(id,title,budget,budget_type,status)").eq("provider_id",U.id).order("created_at",{ascending:false});
+  if(r.error){L.innerHTML=`<div class="msg">${esc(ERR(r.error))}</div>`;return}
+  L.innerHTML=(r.data||[]).map(a=>{const q=a.sh_requests||{};return `<div class="box"><div class="row"><div><b>${esc(q.title||"Request")}</b><div class="m">Applied ${esc(ago(a.created_at))}${q.budget?" · "+esc(bud(q)):""}</div></div><span class="fp ${a.status==="hired"?"g":a.status==="declined"?"r":"o"}">${a.status==="applied"?"Waiting for client":a.status==="hired"?"Selected":"Not selected"}</span></div><p style="margin:8px 0">${esc(a.message||"")}</p>${a.status==="applied"?`<button class="btn" data-wd="${esc(a.id)}">Withdraw</button>`:""}</div>`}).join("")||'<div class="msg">You have not applied to any request yet.</div>';return}
+ if(R.view==="mine")r=await sb.from("sh_requests").select("*").eq("client_id",U.id).order("created_at",{ascending:false});
+ else{let b=sb.from("sh_requests").select("*").eq("status","open");const q=clean(R.q);if(q)b=b.or(`title.ilike.%${q}%,description.ilike.%${q}%`);if(R.service)b=b.eq("service_id",R.service);if(R.county)b=b.or(`county.eq."${R.county}",county.is.null`);r=await b.order("created_at",{ascending:false}).limit(60)}
+ if(r.error){L.innerHTML=`<div class="msg">${esc(ERR(r.error))}</div>`;return}
+ L.innerHTML=(r.data||[]).map(rcard).join("")||`<div class="msg">${R.view==="mine"?"You have not posted a request yet.":"No open requests match. Check back soon."}</div>`;
+ const f=document.getElementById("rq");if(f){f.onsubmit=e=>e.preventDefault();let t;f.querySelector("input").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{R.q=e.target.value.trim();requests()},350)};document.getElementById("rs").onchange=e=>{R.service=e.target.value;requests()};document.getElementById("rc").onchange=e=>{R.county=e.target.value;requests()}}}
+$p.addEventListener("click",async e=>{const v=e.target.closest("[data-rv]");if(v){R.view=v.dataset.rv;requests();return}
+ const c=e.target.closest("[data-rq]");if(c){reqView(c.dataset.rq);return}
+ const w=e.target.closest("[data-wd]");if(w){const x=await sb.from("sh_applications").delete().eq("id",w.dataset.wd);if(x.error)toast(ERR(x.error),"error");else{toast("Application withdrawn");requests()}}});
+async function reqView(id){U=await user();const r=await sb.from("sh_requests").select("*").eq("id",id).maybeSingle(),p=r.data;if(!p){toast("This request could not be loaded","error");return}
+ const s=SV.find(x=>x.id===p.service_id)||{},own=U&&p.client_id===U.id;
+ dlgOpen(`${p.banner_url?`<img class="bn" alt="" src="${esc(sUrl(p.banner_url))}">`:""}<span class="tag">${esc(s.title||"Request")}</span> ${p.status!=="open"?`<span class="fp ${p.status==="hired"?"g":"r"}">${p.status==="hired"?"Provider chosen":"Closed"}</span>`:""}
+ <h3 style="margin:8px 0 4px">${esc(p.title)}</h3><div class="m">Posted by ${esc(p.client_name||"Client")} · ${esc(ago(p.created_at))}</div>
+ <div class="kv"><div><span>Budget</span><b>${esc(p.budget?bud(p):"Open")}</b></div><div><span>Location</span><b>${esc([p.town,p.county].filter(Boolean).join(", ")||"Anywhere in Kenya")}</b></div>${p.deadline?`<div><span>Needed by</span><b>${esc(p.deadline)}</b></div>`:""}<div><span>Applicants</span><b>${p.applicants_count||0}</b></div></div>
+ <p style="white-space:pre-wrap;line-height:1.6;margin:0 0 12px">${esc(p.description||"")}</p>
+ <div style="display:flex;gap:8px;flex-wrap:wrap">${own?`<button class="btn p" data-ap="${esc(id)}">View applicants (${p.applicants_count||0})</button><button class="btn" data-st="${esc(id)}|${p.status==="open"?"closed":"open"}">${p.status==="open"?"Close request":"Reopen"}</button><button class="btn" style="color:#b3261e" data-del="${esc(id)}">Delete</button>`:p.status==="open"?`<button class="btn p" data-app="${esc(id)}">Apply to this request</button><button class="btn" data-msg="${esc(p.client_id)}" data-t="Hi, I saw your request “${esc(p.title)}” on SOKO Smart Services.">Message client</button>`:""}<button class="btn" data-x type="button">Close</button></div>`);
+ const d=document.getElementById("dlg");d.querySelector("[data-x]").onclick=dlgClose;
+ const b=k=>d.querySelector(`[data-${k}]`);
+ if(b("app"))b("app").onclick=()=>applyDlg(p);if(b("ap"))b("ap").onclick=()=>applicants(p);
+ if(b("st"))b("st").onclick=async()=>{const x=await sb.from("sh_requests").update({status:p.status==="open"?"closed":"open"}).eq("id",id);if(x.error){toast(ERR(x.error),"error");return}dlgClose();toast("Updated");requests()};
+ if(b("del"))b("del").onclick=async()=>{if(!confirm("Delete this request permanently?"))return;const x=await sb.from("sh_requests").delete().eq("id",id);if(x.error){toast(ERR(x.error),"error");return}dlgClose();toast("Deleted");requests()}}
+async function applyDlg(p){if(!await login("Log in to apply."))return;await me();
+ if(!ME||ME.status!=="approved"){dlgClose();toast("Only approved service providers can apply. Join in the profile tab.","error");tab("hub");return}
+ const ok=!p.service_id||PS.some(x=>x.provider_id===U.id&&x.service_id===p.service_id);if(!ok){toast("This request needs a "+svName(p.service_id)+" provider. Add that service to your profile first.","error");return}
+ dlgOpen(`<h3 style="margin:0 0 4px">Apply: ${esc(p.title)}</h3><p class="m" style="margin:0 0 10px">${esc(svName(p.service_id))} · ${esc(p.budget?bud(p):"Open budget")}</p>
+ <form class="ffm" id="apf"><label>Why are you the right person? *<textarea name="m" rows="5" required minlength="15" maxlength="1500" placeholder="Share your experience, when you can start and your price."></textarea></label><button class="btn p" id="apg">Send application</button></form>`);
+ document.getElementById("apf").onsubmit=async e=>{e.preventDefault();document.getElementById("apg").disabled=true;const x=await sb.from("sh_applications").insert({request_id:p.id,provider_id:U.id,message:e.target.m.value.trim()});
+  if(x.error){document.getElementById("apg").disabled=false;toast(x.error.code==="23505"?"You already applied to this request":ERR(x.error),"error");return}dlgClose();toast("Application sent. The client can now see your profile.");R.view="applied";requests()}}
+async function applicants(p){const r=await sb.from("sh_applications").select("*").eq("request_id",p.id).order("created_at");if(r.error){toast(ERR(r.error),"error");return}const L=r.data||[];let pr=[];
+ if(L.length){const x=await sb.from("sh_providers").select("*").in("user_id",L.map(a=>a.provider_id));pr=x.data||[]}
+ dlgOpen(`<h3 style="margin:0 0 8px">Applicants: ${esc(p.title)}</h3>${L.map(a=>{const f=pr.find(z=>z.user_id===a.provider_id)||{name:"Provider"};return `<div class="ap"><div style="display:flex;gap:10px;align-items:center">${av(f)}<div><b>${esc(f.name)}</b> ${a.status==="hired"?'<span class="fp g">Selected</span>':a.status==="declined"?'<span class="fp r">Declined</span>':""}<div class="m">${esc(f.title||"")} · ${esc(place(f))}</div></div></div><div style="white-space:pre-wrap">${esc(a.message||"")}</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-pv2="${esc(a.provider_id)}">Profile</button><button class="btn" data-msg="${esc(a.provider_id)}" data-t="Hi ${esc(f.name)}, thanks for applying to “${esc(p.title)}”.">Message</button>${p.status==="open"&&a.status==="applied"?`<button class="btn p" data-pick="${esc(a.id)}">Select</button><button class="btn" data-dec="${esc(a.id)}">Decline</button>`:""}</div></div>`}).join("")||'<div class="msg">No applicants yet.</div>'}<div style="margin-top:8px"><button class="btn" data-x>Close</button></div>`);
+ const d=document.getElementById("dlg");d.querySelector("[data-x]").onclick=dlgClose;
+ d.onclick=async e=>{const t=e.target,pk=t.closest("[data-pick]"),dc=t.closest("[data-dec]"),pv=t.closest("[data-pv2]");
+  if(pv){const f=pr.find(z=>z.user_id===pv.dataset.pv2);if(f&&!PR.some(z=>z.user_id===f.user_id))PR.push(f);provView(pv.dataset.pv2);return}
+  if(pk){const x=await sb.from("sh_applications").update({status:"hired"}).eq("id",pk.dataset.pick);if(x.error){toast(ERR(x.error),"error");return}await sb.from("sh_requests").update({status:"hired"}).eq("id",p.id);dlgClose();toast("Provider selected. Message them to agree the details.");requests()}
+  if(dc){const x=await sb.from("sh_applications").update({status:"declined"}).eq("id",dc.dataset.dec);if(x.error){toast(ERR(x.error),"error");return}toast("Declined");applicants(p)}}}
+async function postDlg(pre){if(!await login("Log in or create an account to post a request."))return;if(!SV.length){toast(SETERR||"No services are available yet","error");return}const today=new Date().toISOString().slice(0,10);
+ dlgOpen(`<h3 style="margin:0 0 2px">Post a request <span class="fp o">Free</span></h3><p class="m" style="margin:0 0 10px">Tell providers what you need. Approved providers of that service can apply.</p>
+ <form class="ffm" id="pj"><label>Service needed *<select name="s" required><option value="">Choose a service</option>${SV.map(x=>`<option value="${esc(x.id)}" ${pre===x.id?"selected":""}>${esc(catName(x.category_id))} › ${esc(x.title)}</option>`).join("")}</select></label>
+ <label>Title *<input name="t" required minlength="5" maxlength="120" placeholder="e.g. Fix leaking kitchen tap in Kilimani"></label>
+ <label>Details *<textarea name="d" rows="4" required minlength="15" maxlength="3000" placeholder="What needs doing, how big is the job, when and any access details?"></textarea></label>
+ <label>Banner image (optional)<input name="bn" type="file" accept="image/*"><span class="m">A photo of the job or place. JPG, PNG or WebP under 3 MB.</span></label><div id="bnp"></div>
+ <div class="two"><label>Budget type<select name="bt"><option value="fixed">Fixed price</option><option value="hourly">Per hour</option><option value="negotiable">Negotiable</option></select></label><label>Budget (KSh)<input name="b" type="number" min="0" step="1"></label></div>
+ <div class="two"><label>County<select name="c"><option value="">Anywhere in Kenya</option>${opts(COUNTIES,"")}</select></label><label>Town / area<input name="tw" maxlength="60"></label></div>
+ <label>Needed by<input name="dl" type="date" min="${today}"></label><button class="btn p" id="pjg">Post request</button></form>`);
+ const f=document.getElementById("pj");
+ f.bn.onchange=()=>{const x=f.bn.files[0],pv=document.getElementById("bnp");if(!x){pv.innerHTML="";return}if(!/^image\//.test(x.type)||x.size>3e6){toast("The banner must be an image under 3 MB","error");f.bn.value="";pv.innerHTML="";return}pv.innerHTML=`<img class="bn" alt="Banner preview" src="${URL.createObjectURL(x)}">`};
+ f.onsubmit=async e=>{e.preventDefault();const b=document.getElementById("pjg");b.disabled=true;try{const banner=f.bn.files[0]?await upImg(f.bn.files[0],"banner"):null,md=U.user_metadata||{};
+  const r=await sb.from("sh_requests").insert({client_id:U.id,client_name:md.full_name||md.name||"Client",service_id:f.s.value,title:f.t.value.trim(),description:f.d.value.trim(),banner_url:banner,budget:f.b.value===""?null:+f.b.value,budget_type:f.bt.value,county:f.c.value||null,town:f.tw.value.trim()||null,deadline:f.dl.value||null});
+  if(r.error)throw r.error;dlgClose();toast("Request posted. Providers can now apply.");R.view="mine";tab("requests")}catch(x){b.disabled=false;toast(ERR(x),"error")}}}
+
+/* ---------- provider hub (apply / edit) ---------- */
+const svGroups=on=>{const by={};SV.forEach(s=>{(by[catName(s.category_id)||"Other"]=by[catName(s.category_id)||"Other"]||[]).push(s)});return Object.entries(by).map(([g,a])=>`<div class="gh">${esc(g)}</div>${a.map(s=>`<label><input type="checkbox" name="sv" value="${esc(s.id)}" ${on.includes(s.id)?"checked":""}> ${esc(s.title)} <span class="m">· ${esc(price(s))}</span></label>`).join("")}`).join("")};
+async function hub(){U=await user();if(!U){$p.innerHTML='<div class="msg">Log in to apply as a service provider or manage your profile.</div>';login("Log in or create an account to become a service provider.");return}
+ if(SETERR){$p.innerHTML=`<div class="msg">${esc(SETERR)}</div>`;return}$p.innerHTML=SKL;await me();
+ if(!ME){$p.innerHTML=`<div class="box"><h3 style="margin:0 0 6px">Offer your services on SOKO Smart</h3><p style="margin:0 0 8px">Plumber, cleaner, casual worker, hairdresser, event helper? Create a profile, choose the services you offer and let clients find and message you.</p>
+  <ul style="margin:0 0 10px;padding-left:20px;line-height:1.8"><li>Choose from the services set up by SOKO Smart</li><li>Add photos of your work</li><li>Our team approves your profile before it goes live</li><li>Apply to client requests or get messaged directly</li></ul><button class="btn p" id="apply">Apply now</button></div>`;document.getElementById("apply").onclick=()=>profileForm(false);return}
+ const [sr,pf]=await Promise.all([sb.from("sh_provider_services").select("service_id").eq("provider_id",U.id),sb.from("sh_portfolio").select("*").eq("provider_id",U.id).order("created_at",{ascending:false})]);
+ const mine=(sr.data||[]).map(x=>x.service_id),ST={pending:["Your application is being reviewed by the SOKO Smart team. You can still edit it while you wait.","o"],approved:["Your profile is approved and visible to clients.","g"],rejected:["Your application was not approved."+(ME.status_note?" Reason: "+ME.status_note:"")+" Update your profile and save to resubmit.","r"],suspended:["Your profile is suspended."+(ME.status_note?" Reason: "+ME.status_note:"")+" Contact SOKO Smart support.","r"]}[ME.status]||["",""];
+ $p.innerHTML=`<div class="box"><div class="row"><div style="display:flex;gap:12px;align-items:center">${av(ME)}<div><b>${esc(ME.name)}</b> <span class="fp ${ST[1]}">${esc(ME.status)}</span><div class="m">${esc(ME.title||"")} · ${esc(place(ME))}</div></div></div><button class="btn p" id="eprof">${ME.status==="pending"?"Edit my application":"Edit profile"}</button></div><div class="m" style="margin-top:8px">${esc(ST[0])}</div></div>
+ <h3 style="margin:0 0 4px">My services</h3><p class="m" style="margin:0 0 8px">Pick every service you offer. Only services created by SOKO Smart are listed.</p>
+ <form id="sf" class="ffm"><div class="chk">${svGroups(mine)}</div><div><button class="btn p">Save my services</button></div></form>
+ <h3 style="margin:18px 0 4px">My work gallery</h3><p class="m" style="margin:0 0 8px">Photos and videos appear on your public profile once approved.</p>
+ <div class="pfg" id="myp">${(pf.data||[]).map(p=>`<div class="pi">${p.media_type==="video"&&/\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(p.media_url)?`<video src="${esc(sUrl(p.media_url))}" preload="metadata"></video>`:p.media_type==="video"?'<span class="vt">▶ Video link</span>':`<img loading="lazy" alt="" src="${esc(sUrl(p.media_url))}">`}<span class="st fp ${p.status==="approved"?"g":p.status==="rejected"?"r":"o"}">${esc(p.status)}</span><button class="dl" data-del="${esc(p.id)}" type="button">Delete</button></div>`).join("")||'<div class="m">No work added yet.</div>'}</div>
+ <form class="ffm box" id="paf" style="margin-top:12px"><b>Add work</b><div class="two"><label>Title<input name="t" maxlength="100" placeholder="e.g. Kitchen tap repair"></label><label>Related service<select name="s"><option value="">Choose</option>${mine.map(i=>`<option value="${esc(i)}">${esc(svName(i))}</option>`).join("")}</select></label></div>
+ <label>Photos or videos (images under 3 MB, videos under 30 MB)<input name="f" type="file" accept="image/*,video/*" multiple></label><label>…or a video link<input name="v" type="url" placeholder="https://…"></label><div><button class="btn p">Upload for review</button></div></form>`;
+ document.getElementById("eprof").onclick=()=>profileForm(true);
+ document.getElementById("sf").onsubmit=async e=>{e.preventDefault();const ids=[...e.target.querySelectorAll("[name=sv]:checked")].map(c=>c.value);if(!ids.length){toast("Choose at least one service","error");return}
+  const d=await sb.from("sh_provider_services").delete().eq("provider_id",U.id);if(d.error){toast(ERR(d.error),"error");return}const i=await sb.from("sh_provider_services").insert(ids.map(s=>({provider_id:U.id,service_id:s})));if(i.error){toast(ERR(i.error),"error");return}toast("Services saved");await load();hub()};
+ document.getElementById("paf").onsubmit=async e=>{e.preventDefault();const f=e.target,files=[...f.f.files],link=f.v.value.trim();if(!files.length&&!link){toast("Choose a file or paste a video link","error");return}const b=f.querySelector("button");b.disabled=true;
+  try{for(const file of files){const u=await upMedia(file);const r=await sb.from("sh_portfolio").insert({provider_id:U.id,service_id:f.s.value||null,title:f.t.value.trim()||file.name.replace(/\.[^.]+$/,"").slice(0,80),media_url:u.url,media_type:u.type});if(r.error)throw r.error}
+   if(link){const r=await sb.from("sh_portfolio").insert({provider_id:U.id,service_id:f.s.value||null,title:f.t.value.trim()||"Video",media_url:link,media_type:"video"});if(r.error)throw r.error}
+   toast("Uploaded. It will appear on your profile once approved.");hub()}catch(x){b.disabled=false;toast(ERR(x),"error")}};
+ document.getElementById("myp").onclick=async e=>{const d=e.target.closest("[data-del]");if(!d||!confirm("Delete this item from your gallery?"))return;const r=await sb.from("sh_portfolio").delete().eq("id",d.dataset.del);if(r.error){toast(ERR(r.error),"error");return}hub()}}
+async function profileForm(editing){U=await login("Log in or create an account to become a service provider.");if(!U)return;await me();if(!SV.length){toast("SOKO Smart has not added any services yet. Please check back soon.","error");return}
+ const m=editing&&ME?ME:{};let pv={},mine=[];
+ if(editing){try{const r=await sb.from("sh_provider_private").select("*").eq("user_id",U.id).maybeSingle();pv=r.data||{}}catch(e){}const r=await sb.from("sh_provider_services").select("service_id").eq("provider_id",U.id);mine=(r.data||[]).map(x=>x.service_id)}
+ const DK="soko_sh_draft";if(!editing){try{Object.assign(m,JSON.parse(localStorage.getItem(DK)||"{}"))}catch(x){}}
+ dlgOpen(`<h3 style="margin:0 0 4px">${editing?(m.status==="pending"?"Edit your application":"Edit your profile"):"Apply as a service provider"}</h3><p class="m" style="margin:0 0 10px">Fields marked * are required. Your phone and email are private: only the SOKO Smart team can see them.</p>
+ <form class="ffm" id="pfm"><label>Full name *<input name="nm" required maxlength="80" value="${esc(m.name||U.user_metadata?.full_name||"")}"></label>
+ <div class="two"><label>Profile picture ${editing&&m.avatar_url?"(leave empty to keep)":"*"}<input name="av" type="file" accept="image/*" ${editing&&m.avatar_url?"":"required"}></label><label>Banner image (optional)<input name="bn" type="file" accept="image/*"></label></div>
+ <div class="two"><label>What do you do? *<input name="t" required maxlength="100" value="${esc(m.title||"")}" placeholder="e.g. Plumber, Cleaner, Casual worker"></label><label>Years of experience *<input name="yx" type="number" min="0" max="60" required value="${esc(m.years_experience??"")}"></label></div>
+ <label>About you *<textarea name="b" rows="4" required minlength="30" maxlength="2000" placeholder="Tell clients what work you do, your experience and how you work.">${esc(m.bio||"")}</textarea></label>
+ <div class="two"><label>County *<select name="c" required><option value="">Choose</option>${opts(COUNTIES,m.county)}</select></label><label>Town *<input name="tw" required maxlength="60" value="${esc(m.town||"")}"></label></div>
+ <div class="two"><label>Phone number *<input name="ph" type="tel" required placeholder="0712 345 678" value="${esc(pv.phone||U.user_metadata?.phone||"")}"></label><label>Email *<input name="em" type="email" required value="${esc(pv.email||U.email||"")}"></label></div>
+ <div class="two"><label>Your usual rate (KSh)<input name="rt" type="number" min="0" value="${esc(m.rate??"")}"></label><label>Rate is<select name="ru">${opts(["per job","per hour","per day"],m.rate_unit||"per job")}</select></label></div>
+ <label>Skills (separate with commas)<input name="s" value="${esc(A(m.skills).join(", "))}" placeholder="Pipe fitting, Tap repair, Water tanks"></label>
+ <div><b style="font-size:13px">Services you offer (choose one or more) *</b><div class="chk" style="margin-top:6px">${svGroups(mine)}</div></div>
+ <label>Photos of your work ${editing?"(optional, add more)":"(optional, helps you get approved)"}<input name="pf" type="file" accept="image/*,video/*" multiple></label>
+ <label>Available for new work<select name="a"><option value="yes" ${m.available===false?"":"selected"}>Yes, I am available</option><option value="no" ${m.available===false?"selected":""}>No, not right now</option></select></label>
+ <button class="btn p" id="pgo">${editing?"Save":"Submit application"}</button></form>`);
+ const f=document.getElementById("pfm");if(!editing)f.addEventListener("input",()=>{try{localStorage.setItem(DK,JSON.stringify({name:f.nm.value,title:f.t.value,bio:f.b.value,county:f.c.value,town:f.tw.value,years_experience:f.yx.value}))}catch(x){}});
+ f.onsubmit=async e=>{e.preventDefault();const ids=[...f.querySelectorAll("[name=sv]:checked")].map(c=>c.value);if(!ids.length){toast("Choose at least one service","error");return}
+  const phn=f.ph.value.replace(/[\s\-().]/g,"").replace(/^\+/,"");if(!/^(254|0)[17][0-9]{8}$/.test(phn)){toast("Enter a valid Kenyan phone number, e.g. 0712 345 678","error");f.ph.focus();return}
+  const b=document.getElementById("pgo");b.disabled=true;
+  try{const avatar=f.av.files[0]?await upImg(f.av.files[0],"avatar"):(m.avatar_url||null),banner=f.bn.files[0]?await upImg(f.bn.files[0],"banner"):(m.banner_url||null);
+   const row={name:f.nm.value.trim(),avatar_url:avatar,banner_url:banner,title:f.t.value.trim(),bio:f.b.value.trim(),county:f.c.value,town:f.tw.value.trim(),skills:split(f.s.value),years_experience:+f.yx.value,rate:f.rt.value===""?null:+f.rt.value,rate_unit:f.ru.value,available:f.a.value==="yes"};
+   if(editing&&ME&&ME.status==="rejected")row.status="pending";
+   let r=editing?await sb.from("sh_providers").update(row).eq("user_id",U.id):await sb.from("sh_providers").insert({...row,user_id:U.id});
+   if(r.error&&!editing&&/duplicate key|unique/i.test(r.error.message||""))r=await sb.from("sh_providers").update(row).eq("user_id",U.id);
+   if(r.error)throw r.error;
+   const pr=await sb.from("sh_provider_private").upsert({user_id:U.id,phone:phn,email:f.em.value.trim()});if(pr.error)throw pr.error;
+   await sb.from("sh_provider_services").delete().eq("provider_id",U.id);const si=await sb.from("sh_provider_services").insert(ids.map(s=>({provider_id:U.id,service_id:s})));if(si.error)throw si.error;
+   for(const file of [...f.pf.files]){const u=await upMedia(file);const pi=await sb.from("sh_portfolio").insert({provider_id:U.id,title:file.name.replace(/\.[^.]+$/,"").slice(0,80),media_url:u.url,media_type:u.type});if(pi.error)throw pi.error}
+   try{localStorage.removeItem(DK)}catch(x){}dlgClose();toast(editing?(m.status==="pending"?"Application updated. We will review it shortly.":"Profile saved"):"Application submitted. We will review it shortly.");await load();hub()}
+  catch(x){console.error("provider save failed",x);b.disabled=false;toast(ERR(x),"error")}}}
+
+if(sb)sb.auth.onAuthStateChange(()=>setTimeout(async()=>{await me();if(TAB==="hub"||TAB==="requests")tab(TAB)},0));
+(async()=>{U=await user();await Promise.all([load(),me()]);tab((location.hash||"#services").slice(1))})();
+})();
+</script>
+</body>
+</html>

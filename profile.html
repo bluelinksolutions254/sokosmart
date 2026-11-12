@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Profile – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="soko.js?v=19"></script>
+<script src="wallet.js?v=2"></script>
+<style>
+.pfs{padding-top:12px}
+.pfh{display:flex;gap:12px;align-items:center;background:var(--g);color:#fff;border-radius:14px;padding:10px 14px;margin-bottom:10px}
+.pfa{width:42px;height:42px;border-radius:50%;background:var(--o);display:grid;place-items:center;font-weight:800;font-size:18px;flex:none}
+.pfm{min-width:0;display:grid;line-height:1.25}.pfm b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pfm small{opacity:.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pfq{margin-left:auto;display:flex;gap:6px;flex:none}.pfq .btn{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}.pfq .btn:hover{background:var(--o)}
+.tabs{padding-bottom:8px}.tabs button{padding:6px 14px;font-size:14px}
+.fm.pc{padding:12px 14px;margin-bottom:10px}
+.pig{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px;margin:0}.pig div{min-width:0}.pig dt{color:var(--mut);font-size:12.5px}.pig dd{margin:0;font-weight:700;overflow-wrap:anywhere}
+details.fm{padding:0}details.fm>summary{cursor:pointer;padding:12px 14px;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}details.fm>summary::-webkit-details-marker{display:none}details.fm>summary::after{content:"+";font-size:20px;color:var(--mut)}details.fm[open]>summary::after{content:"\2212"}
+details.fm>.in{padding:0 14px 14px;display:grid;gap:12px}
+@media(max-width:560px){.pfq .btn{padding:6px 10px;font-size:13px}.pfm small{display:none}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main><section class="alt pfs"><div class="w" style="max-width:820px"><div id="pf"></div></div></section></main>
+<div id="ft"></div>
+<script>
+shell("profile.html");
+const TABS={info:"My Information",jobs:"My Jobs",saved:"Wishlist",free:"Free Things",wallet:"Wallet",freelance:"Freelance",shops:"My Shop"},KINDS=["Giveaway","Charity","Donation","Free to collect"];
+const TYPES=["Full-time","Part-time","Contract","Internship","Casual"],MODES=["On-site","Remote","Hybrid"];
+let U,tab=TABS[location.hash.slice(1)]?location.hash.slice(1):"info";
+const del=(t,id)=>`<button class="btn s d" data-del="${t}" data-id="${esc(id)}">Delete</button>`;
+function gate(m,login){$("#pf").innerHTML=`<div class="msg">${m}${login?'<br><br><button class="btn p" id="gl">Login</button> <button class="btn" id="gs">Sign Up</button>':""}</div>`;if(login){$("#gl").onclick=logView;$("#gs").onclick=signView}}
+async function init(){if(!sb){gate("Connect Supabase (CFG in soko.js) to use your profile.");return}
+ U=await user();if(!U){gate("Please log in first, or create an account, to manage your information, jobs and listings.",1);return}
+ draw()}
+let PROF={};
+function head(){const nm=PROF.full_name||U.user_metadata?.full_name||"",shown=nm||dispName(U,24);
+ return `<div class="pfh"><span class="pfa">${esc(shown.charAt(0).toUpperCase())}</span><div class="pfm"><b>${esc(shown)}</b><small title="${esc(U.email)}">${esc(U.email)}</small></div><span class="pfq"><a class="btn s" href="#wallet" data-t="wallet">Wallet</a><a class="btn s" href="#freelance" data-t="freelance">Freelance</a><a class="btn s" href="shopmanager.html">Shop Manager</a></span></div>`}
+function draw(){$("#pf").innerHTML=head()+`<div class="tabs">${Object.entries(TABS).map(([k,v])=>`<button data-t="${k}" class="${k===tab?"on":""}">${v}</button>`).join("")}</div><div id="pn"></div>`;
+ ({info:infoTab,jobs:jobsTab,saved:savedTab,free:freeTab,wallet:walletTab,freelance:freelanceTab,shops:shopsTab})[tab]()}
+async function listOf(table,box,line){const {data,error}=await sb.from(table).select("*").eq("owner_id",U.id).order("created_at",{ascending:false});
+ $(box).innerHTML=error?`<div class="msg">${esc(error.message)}</div>`:(data||[]).map(r=>`<div class="row"><div><strong>${esc(r.title||r.shop_name)}</strong> <span class="pill ${r.status}">${esc(r.status)}</span><div class="m">${esc(line(r))}</div></div>${del(table,r.id)}</div>`).join("")||'<div class="empty">Nothing here yet.</div>'}
+async function infoTab(){const {data}=await sb.from("profiles").select("full_name,phone,county,created_at").eq("id",U.id).maybeSingle(),p=data||{},nm=p.full_name||U.user_metadata?.full_name||"";
+ if(p.full_name&&p.full_name!==PROF.full_name){PROF=p;const h=document.querySelector(".pfh");if(h)h.outerHTML=head()}
+ const since=new Date(U.created_at).toLocaleDateString("en-KE",{year:"numeric",month:"short",day:"numeric"});
+ $("#pn").innerHTML=`<div class="fm pc" id="card"><div class="tb" style="margin:0"><h3 style="margin:0">My information</h3><button class="btn s" id="ed">Edit</button></div>
+ <dl class="pig"><div><dt>Name</dt><dd>${esc(nm||"Not set")}</dd></div><div><dt>Email</dt><dd>${esc(U.email)}</dd></div><div><dt>Phone</dt><dd>${esc(p.phone||"Not set")}</dd></div><div><dt>County</dt><dd>${esc(p.county||"Not set")}</dd></div><div><dt>Member since</dt><dd>${esc(since)}</dd></div></dl></div>
+ <form class="fm pc" id="inf" hidden><h3 style="margin:0">Edit information</h3><div class="two"><label>Full name<input name="full_name" required value="${esc(nm)}"></label>
+ <label>Phone number<input name="phone" type="tel" pattern="(254|0|[+]254)[17][0-9]{8}" value="${esc(p.phone||"")}"></label></div>${sel("County","county",COUNTIES,p.county||"","")}
+ <div class="two"><button class="btn p">Save changes</button><button type="button" class="btn" id="cx">Cancel</button></div></form>
+ <details class="fm"><summary>Password &amp; account</summary><div class="in">
+ <form id="pwd" style="display:grid;gap:10px"><b>Change password</b><div class="two">${fld("New password","pw","password","minlength=8 autocomplete=new-password")}${fld("Confirm new password","pc","password","minlength=8 autocomplete=new-password")}</div><button class="btn p">Update password</button></form>
+ <div style="border-top:1px solid var(--bd);padding-top:12px;display:grid;gap:8px"><b style="color:var(--r)">Delete my profile</b><p class="m" style="margin:0">Permanently deletes your account, jobs, free listings and shop applications. Type DELETE to confirm.</p><input id="dcf" placeholder="DELETE" autocomplete="off" style="border:1px solid var(--bd);border-radius:8px;padding:9px 10px;font:inherit;width:100%"><button class="btn d" id="dp">Delete my profile</button></div></div></details>`;
+ $("#ed").onclick=()=>{$("#card").hidden=true;$("#inf").hidden=false};$("#cx").onclick=()=>{$("#inf").hidden=true;$("#card").hidden=false}}
+async function jobsTab(){const cs=(await sb.from("categories").select("id,name").eq("section","jobs").order("sort_order")).data||[],today=new Date().toISOString().slice(0,10),ck='style="width:auto;display:inline-block"';
+ $("#pn").innerHTML=`<div class="tb"><b>Jobs you posted</b><button class="btn p" id="tg">+ Post a job</button></div>
+ <form class="fm" id="jb" hidden><p class="m" style="margin:0">Fields marked * are required.</p>
+ <div class="two"><label>Job title *<input name="title" required maxlength="120" placeholder="e.g. Digital Marketing Executive"></label><label>Company name *<input name="company" required maxlength="120"></label></div>
+ <div class="two"><label>Company logo<input name="logo" type="file" accept="image/*"></label><label>Job category *<select name="category_id" required><option value="">Choose</option>${cs.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></label></div>
+ <div class="two">${sel("Employment type *","employment_type",TYPES)}${sel("Work arrangement","work_mode",MODES,"","")}</div>
+ <div class="two">${sel("Experience level","experience_level",["Entry-level","Mid-level","Senior"],"","")}${sel("County *","county",COUNTIES)}</div>
+ <div class="two"><label>Town / city<input name="town"></label><label>Number of vacancies<input name="vacancies" type="number" min="1" value="1"></label></div>
+ <div class="two"><label>Minimum salary (KSh)<input name="salary_min" type="number" min="0"></label><label>Maximum salary (KSh)<input name="salary_max" type="number" min="0"></label></div>
+ <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="salary_negotiable" ${ck}> Salary is negotiable</label>
+ <label>Job description *<textarea name="description" rows="4" required></textarea></label>
+ <label>Responsibilities (one per line)<textarea name="responsibilities" rows="4"></textarea></label>
+ <label>Requirements (one per line)<textarea name="requirements" rows="4"></textarea></label>
+ <label>Application deadline<input name="deadline" type="date" min="${today}"></label>
+ <label>How should people apply? *<select name="application_method" required><option value="Easy Apply">Easy Apply on SOKO Smart</option><option value="Email">By email</option><option value="Website">External website link</option></select></label>
+ <label id="ae" hidden>Application email *<input name="apply_email" type="email"></label><label id="au" hidden>Application link *<input name="apply_url" type="url" placeholder="https://…"></label>
+ <div class="two"><label>Contact person<input name="contact_name"></label><label>Contact phone<input name="contact_phone" type="tel"></label></div>
+ <label>Contact email<input name="contact_email" type="email"></label>
+ <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="is_urgent" ${ck}> Urgently hiring</label>
+ <button class="btn p">Submit job for review</button></form><div id="ls"></div>`;
+ $("#tg").onclick=()=>$("#jb").hidden=!$("#jb").hidden;myJobs()}
+async function myJobs(){const {data,error}=await sb.from("jobs").select("*,job_applications(count)").eq("owner_id",U.id).order("created_at",{ascending:false}),today=new Date().toISOString().slice(0,10);
+ $("#ls").innerHTML=error?`<div class="msg">${esc(error.message)}</div>`:(data||[]).map(r=>{const n=r.job_applications?.[0]?.count||0,ex=r.deadline&&r.deadline<today;
+  return `<div class="row"><div><strong>${esc(r.title)}</strong> <span class="pill ${r.status}">${esc(r.status)}</span>${ex?' <span class="pill rejected">Expired</span>':""}${r.is_urgent?' <span class="pill">Urgent</span>':""}<div class="m">${esc([r.reference_no,r.company,r.employment_type,r.county].filter(Boolean).join(" · "))}</div></div><span><button class="btn s" data-apps="${esc(r.id)}">Applications (${n})</button> ${del("jobs",r.id)}</span></div>`}).join("")||'<div class="empty">Nothing here yet.</div>'}
+async function savedTab(){$("#pn").innerHTML='<div class="msg">Loading…</div>';const f=await sb.from("favorites").select("listing_type,listing_id").eq("user_id",U.id),all=f.data||[],jid=all.filter(x=>x.listing_type==="jobs").map(x=>x.listing_id),pid=all.filter(x=>x.listing_type==="products").map(x=>x.listing_id);
+ if(!jid.length&&!pid.length){$("#pn").innerHTML='<div class="empty">Your wishlist is empty. Tap the heart on a product or job to save it.</div>';return}
+ const [j,p]=await Promise.all([jid.length?sb.from("jobs").select("*").in("id",jid):{data:[]},pid.length?sb.from("products").select("*").in("id",pid):{data:[]}]),err=j.error||p.error;
+ $("#pn").innerHTML=err?`<div class="msg">${esc(err.message)}</div>`:`${(p.data||[]).length?`<h3 style="margin:0 0 10px">Saved products</h3><div class="grid" style="margin-bottom:20px">${p.data.map(r=>pcard(r,"products")).join("")}</div>`:""}${(j.data||[]).length?`<h3 style="margin:0 0 10px">Saved jobs</h3><div class="jobs">${j.data.map(jcard).join("")}</div>`:""}`;paintFavs()}
+async function jobRow(f){const v=n=>f[n]?f[n].value.trim():"",num=n=>v(n)===""?null:+v(n);let logo=null;const file=f.logo&&f.logo.files[0];
+ if(file){if(!/^image\//.test(file.type)||file.size>2e6)throw new Error("Logo must be an image under 2 MB");const ext=(file.name.split(".").pop()||"png").toLowerCase().replace(/[^a-z0-9]/g,"")||"png",path=`${U.id}/logo-${Date.now()}.${ext}`;
+  const up=await sb.storage.from("listing-images").upload(path,file,{contentType:file.type});if(up.error)throw up.error;logo=sb.storage.from("listing-images").getPublicUrl(path).data.publicUrl}
+ const mn=num("salary_min"),mx=num("salary_max"),m=v("application_method");if(mn!=null&&mx!=null&&mn>mx)throw new Error("Maximum salary must be higher than the minimum");
+ return{title:v("title"),company:v("company"),company_logo_url:logo,category_id:+v("category_id"),employment_type:v("employment_type"),work_mode:v("work_mode")||null,experience_level:v("experience_level")||null,county:v("county"),town:v("town")||null,
+  salary_min:mn,salary_max:mx,salary_negotiable:f.salary_negotiable.checked,price:mn??mx,description:v("description"),responsibilities:v("responsibilities")||null,requirements:v("requirements")||null,deadline:v("deadline")||null,vacancies:Math.max(1,num("vacancies")||1),
+  application_method:m,apply_email:m==="Email"?v("apply_email"):null,apply_url:m==="Website"?v("apply_url"):null,contact_name:v("contact_name")||null,contact_phone:v("contact_phone")||null,contact_email:v("contact_email")||null,is_urgent:f.is_urgent.checked}}
+function freeTab(){$("#pn").innerHTML=`<p class="m">Only free things: giveaways, charity drives and donations. No prices.</p><div class="tb"><b>Your free listings</b><button class="btn p" id="tg">+ Add free item</button></div>
+ <form class="fm" id="fr" hidden><label>What are you giving?<input name="title" required></label>${sel("Type","kind",KINDS)}
+ <div class="two">${sel("County","county",COUNTIES)}<label>Town<input name="town"></label></div><label>Details (condition, how to collect…)<textarea name="description" rows="3" required></textarea></label><button class="btn p">Submit for review</button></form><div id="ls"></div>`;
+ $("#tg").onclick=()=>$("#fr").hidden=!$("#fr").hidden;listOf("free_listings","#ls",r=>[r.kind,r.town,r.county].filter(Boolean).join(" · "))}
+async function freelanceTab(){const P=$("#pn");P.innerHTML='<div class="msg">Loading…</div>';
+ let fp=null,mine=[],got=[],err=false;
+ try{const [a,b]=await Promise.all([sb.from("freelancer_profiles").select("*").eq("user_id",U.id).maybeSingle(),
+  sb.from("freelance_orders").select("id,service_title,package_name,total,payout,status,client_id,freelancer_id").or(`client_id.eq.${U.id},freelancer_id.eq.${U.id}`).order("created_at",{ascending:false}).limit(20)]);
+  err=!!(a.error||b.error);fp=a.data;const all=b.data||[];mine=all.filter(o=>o.client_id===U.id);got=all.filter(o=>o.freelancer_id===U.id)}catch(e){err=true}
+ const ST={pending_acceptance:"Waiting for freelancer",in_progress:"In progress",delivered:"Delivered",completed:"Completed",disputed:"In dispute",declined:"Declined",cancelled:"Cancelled",refunded:"Refunded"},waiting=got.filter(o=>o.status==="pending_acceptance").length;
+ const msg={pending:"Your application is being reviewed by the SOKO Smart team.",approved:"Your profile is approved and visible to clients.",rejected:"Your application was not approved. Open the Freelancer Hub to update and resubmit.",suspended:"Your profile is suspended. Contact SOKO Smart support."};
+ const row=o=>`<a href="freelance.html?order=${encodeURIComponent(o.id)}" style="display:flex;justify-content:space-between;gap:10px;border:1px solid var(--bd);border-radius:10px;padding:10px 12px;color:inherit;text-decoration:none"><span><b>${esc(o.service_title||"Service")}</b> <span class="m">· ${esc(o.package_name||"")}</span><br><span class="m">${esc(ST[o.status]||o.status)}</span></span><b>KSh ${Number(o.client_id===U.id?o.total:o.payout).toLocaleString("en-KE")}</b></a>`;
+ P.innerHTML=`<div class="fm" style="display:grid;gap:12px"><h3 style="margin:0">Freelance on SOKO Smart</h3><p class="m" style="margin:0">Hire verified Kenyan freelancers at fixed, fair prices, or offer your own skills. Payments are held safely by SOKO Smart until the client approves the work.</p>
+ ${err?'<div class="msg">Freelance is not set up yet. Run supabase-freelance-v2.sql in Supabase.</div>':`<div class="mc" style="background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:12px"><b>${fp?"Freelancer profile: "+esc(fp.status):"You are not a freelancer yet"}</b><div class="m">${fp?esc(msg[fp.status]||""):"Apply to join, choose the services you offer and upload your portfolio. SOKO Smart reviews every application."}</div>${waiting?`<div class="m" style="color:#B45F06"><b>${waiting} new order${waiting===1?"":"s"} waiting for you to accept.</b></div>`:""}</div>
+ ${got.length?`<h4 style="margin:6px 0 0">Orders I received</h4>${got.slice(0,5).map(row).join("")}`:""}${mine.length?`<h4 style="margin:6px 0 0">Orders I placed</h4>${mine.slice(0,5).map(row).join("")}`:""}`}
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn p" href="freelance.html#hub">${fp?"Freelancer Hub":"Become a freelancer"}</a><a class="btn" href="freelance.html#services">Browse services</a><a class="btn" href="freelance.html#talent">Find freelancers</a><a class="btn" href="freelance.html#orders">My orders</a></div></div>`}
+function walletTab(){$("#pn").innerHTML='<div id="wl"></div><p class="m" style="text-align:center"><a href="wallet.html">Open full-screen wallet</a></p>';SokoWallet.mount(document.getElementById("wl"),{mode:"auto",layout:"embed"})}
+function shopsTab(){$("#pn").innerHTML=`<div class="tb"><b>Your shop applications</b><span><a class="btn" href="shopmanager.html">Shop Manager</a> <a class="btn p" href="openshop.html">+ Open a shop</a></span></div><div id="ls"></div>`;listOf("shop_applications","#ls",r=>[r.town,r.county].filter(Boolean).join(", "))}
+document.addEventListener("click",async e=>{const t=e.target.closest("[data-t]"),d=e.target.closest("[data-del]");
+ if(t){tab=t.dataset.t;history.replaceState(null,"","#"+tab);draw()}
+ if(d&&await askConfirm({title:"Delete this item?",msg:"It will be removed permanently.",ok:"Yes, delete"})){const {error}=await sb.from(d.dataset.del).delete().eq("id",d.dataset.id);error?toast(error.message,"error"):(toast("Deleted"),draw())}
+ if(e.target.id==="dp"){if($("#dcf").value.trim()!=="DELETE"){toast("Type DELETE to confirm");return}
+  if(!await askConfirm({title:"Delete your profile?",msg:"This permanently deletes your account, jobs, free listings and shop applications.",ok:"Yes, delete everything"}))return;
+  const {error}=await sb.rpc("delete_my_account");if(error){toast(error.message,"error");return}await sb.auth.signOut({scope:"local"});toast("Your profile was deleted");setTimeout(()=>location.href="index.html",1200)}});
+document.addEventListener("submit",async e=>{const f=e.target,v=n=>f[n]?f[n].value.trim():undefined;
+ if(f.id==="jb"||f.id==="fr"){e.preventDefault();const j=f.id==="jb";let row;try{row=j?await jobRow(f):{title:v("title"),kind:v("kind"),county:v("county"),town:v("town"),description:v("description")}}catch(err){toast(err.message||String(err),"error");return}
+  const {error}=await sb.from(j?"jobs":"free_listings").insert({...row,owner_id:U.id,status:"pending"});if(error){toast(error.message,"error");return}toast("Submitted. It goes live after review.");draw()}
+ if(f.id==="inf"){e.preventDefault();const {error}=await sb.from("profiles").upsert({id:U.id,full_name:v("full_name"),phone:v("phone"),county:v("county")||null});if(error){toast(error.message,"error");return}toast("Details saved");draw()}
+ if(f.id==="pwd"){e.preventDefault();if(f.pw.value!==f.pc.value){toast("Passwords do not match");return}const {error}=await sb.auth.updateUser({password:f.pw.value});error?toast(error.message,"error"):(toast("Password updated"),f.reset())}});
+document.addEventListener("click",async e=>{const a=e.target.closest("[data-apps]");if(!a)return;
+ const {data,error}=await sb.from("job_applications").select("*").eq("job_id",a.dataset.apps).order("created_at",{ascending:false});if(error){toast(error.message,"error");return}
+ openD("<h3>Applications</h3>"+((data||[]).map(x=>`<div class="row" style="display:grid"><div><strong>${esc(x.applicant_name||"Applicant")}</strong><div class="m">${esc([x.applicant_email,x.phone].filter(Boolean).join(" · "))}</div>${x.cover_note?`<p style="margin:6px 0;white-space:pre-wrap">${esc(x.cover_note)}</p>`:""}<div class="m">${esc(new Date(x.created_at).toLocaleDateString("en-KE"))}</div></div><select data-as="${esc(x.id)}" aria-label="Application status">${["new","viewed","shortlisted","rejected"].map(t=>`<option ${t===x.status?"selected":""}>${t}</option>`).join("")}</select></div>`).join("")||'<div class="empty">No applications yet.</div>'))});
+document.addEventListener("change",async e=>{const t=e.target;
+ if(t.dataset&&t.dataset.as){const {error}=await sb.from("job_applications").update({status:t.value}).eq("id",t.dataset.as);toast(error?error.message:"Status updated")}
+ if(t.name==="application_method"){const m=t.value,f=t.form;f.querySelector("#ae").hidden=m!=="Email";f.querySelector("#au").hidden=m!=="Website";f.apply_email.required=m==="Email";f.apply_url.required=m==="Website"}});
+if(sb)sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_IN"||ev==="SIGNED_OUT")init()});
+init();
+</script>
+</body>
+</html>

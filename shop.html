@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shop – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="soko.js?v=19"></script>
+<style>
+.lay{display:grid;grid-template-columns:262px minmax(0,1fr);gap:20px;align-items:start;padding:8px 0 24px}
+#fa{border:1px solid var(--bd);border-radius:14px;padding:16px;position:sticky;top:150px;max-height:calc(100vh - 170px);overflow:auto;background:var(--bg)}
+#fb{display:grid;gap:12px}#fb select,#fb input:not([type=checkbox]){width:100%;border:1px solid var(--bd);border-radius:8px;padding:9px 10px;background:var(--bg);color:var(--tx);font:inherit}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ck{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--tx)}
+.fh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.fh b{font-size:16px}.fh button{border:0;background:none;color:var(--tx);font-size:26px;display:none}.ff{display:none}
+#ov{display:none}#fopen{display:none}
+.pg{padding:14px 0 4px}.pg h1{margin:0;font-size:28px}.pg .m{margin-top:2px}
+#tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 0 4px}#tabs button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:20px;padding:6px 16px;white-space:nowrap;font-weight:700}#tabs .on{background:var(--g);border-color:var(--g);color:#fff}
+#sort{border:1px solid var(--bd);border-radius:8px;padding:8px;background:var(--bg);color:var(--tx)}
+#chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.fchip{border:1px solid var(--o);background:var(--ot);color:var(--od);border-radius:20px;padding:3px 6px 3px 12px;font-size:13px}.fchip b{margin-left:6px;cursor:pointer}
+.clr{border:0;background:none;color:var(--od);font-weight:700;text-decoration:underline}
+#res.grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}.sk{height:260px}
+@media(max-width:900px){.lay{display:block}#fopen{display:inline-flex}.fh button{display:block}#fclr2{display:none}
+#fa{position:fixed;inset:0 auto 0 0;width:min(88vw,340px);max-height:none;border-radius:0;z-index:60;transform:translateX(-100%);transition:transform .25s;padding-top:calc(16px + env(safe-area-inset-top,0px))}
+#fa.open{transform:none}#ov.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:55}
+.ff{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:sticky;bottom:0;background:var(--bg);padding:12px 0}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main><section class="alt" style="padding-top:8px"><div class="w">
+<div class="lay">
+<aside id="fa" aria-label="Filters"><div class="fh"><b>Filters</b><button id="fclose" aria-label="Close filters">&times;</button></div><div id="fb"></div><div class="ff"><button class="btn" id="fclr">Clear All</button><button class="btn p" id="fapply">Apply</button></div><button class="clr" id="fclr2" style="margin-top:12px">Clear all filters</button></aside><div id="ov"></div>
+<div><div class="tb"><button class="btn" id="fopen"></button><strong id="cnt" aria-live="polite"></strong><select id="sort" aria-label="Sort by"></select></div>
+<div id="chips"></div><div id="res" class="grid"></div><p class="more"><button class="btn p" id="more" hidden>Load more</button></p></div>
+</div></div></section></main>
+<div id="ft"></div>
+<script>
+shell("shop.html");
+$("#fopen").innerHTML=ic("filter",16)+" Filters";
+const SEC={
+products:{t:"Products",tb:"products",tc:"title",pr:"Price (KSh)",sp:[{k:"condition",l:"Condition",t:"sel",o:["New","Used","Refurbished"]},{k:"negotiable",l:"Negotiable price",t:"bool"}]},
+shops:{t:"Shops",tb:"shops",tc:"name",pr:0,sp:[]},
+services:{t:"Services",tb:"services",tc:"title",pr:"Price (KSh)",sp:[{k:"availability",l:"Availability",t:"sel",o:["Available now","Weekdays","Weekends","By appointment"]},{k:"negotiable",l:"Negotiable price",t:"bool"}]},
+realestate:{t:"Real Estate",tb:"properties",tc:"title",pr:"Price (KSh)",sp:[{k:"listing_type",l:"Listing type",t:"sel",o:["For sale","For rent"]},{k:"property_type",l:"Property type",t:"sel",o:["House","Apartment","Bedsitter","Land","Commercial","Office","Warehouse","Short-stay"]},{k:"bedrooms",l:"Bedrooms (min)",t:"min"},{k:"bathrooms",l:"Bathrooms (min)",t:"min"},{k:"negotiable",l:"Negotiable price",t:"bool"}]}};
+const SORTS={latest:["Latest","created_at",0],oldest:["Oldest","created_at",1],popular:["Most popular","views",0],price_asc:["Price: low to high","price",1],price_desc:["Price: high to low","price",0]};
+const SHARED=["q","county","town","neighbourhood","sort"],PAGE=12;
+let sec="products",st={},pg=0,total=0,token=0,cats=[],subs=[],last="",timer;
+const mobile=()=>matchMedia("(max-width:900px)").matches;
+const num=v=>{if(v===""||v==null)return null;const n=Number(v);return isFinite(n)&&n>=0?n:null};
+const clean=v=>String(v||"").replace(/[%,()*\\_]/g," ").trim().slice(0,60);
+const catFields=()=>{const c=cats.find(x=>x.id==st.category);return Array.isArray(c&&c.fields)?c.fields:[]};
+const dropA=()=>Object.keys(st).forEach(x=>x.startsWith("a_")&&delete st[x]);
+function load(){const p=new URLSearchParams(location.search);sec=["products","shops","services"].includes(p.get("section"))?p.get("section"):"products";st={};p.forEach((v,k)=>{if(k!=="section")st[k]=v})}
+function save(){const p=new URLSearchParams();if(sec!=="products")p.set("section",sec);Object.entries(st).forEach(([k,v])=>v&&p.set(k,v));const s=p.toString();history.replaceState(null,"",s?"?"+s:location.pathname)}
+async function loadCats(){cats=[];subs=[];if(!sb)return;let a=await sb.from("categories").select("id,name,fields").eq("section",sec).order("sort_order");if(a.error)a=await sb.from("categories").select("id,name").eq("section",sec).order("sort_order");cats=a.data||[];await loadSubs()}
+async function loadSubs(){subs=[];if(!sb||!st.category)return;const r=await sb.from("subcategories").select("id,name").eq("category_id",+st.category).order("sort_order");subs=r.data||[]}
+function form(){const S=SEC[sec];
+ const sel=(k,l,o)=>`<label>${l}<select data-k="${k}"><option value="">Any</option>${o.map(v=>`<option value="${esc(v[0])}" ${String(st[k])===String(v[0])?"selected":""}>${esc(v[1])}</option>`).join("")}</select></label>`;
+ const inp=(k,l,n)=>`<label>${l}<input data-k="${k}" type="${n?"number":"text"}" ${n?'min="0" inputmode="numeric"':""} value="${esc(st[k]||"")}"></label>`;
+ const chk=(k,l)=>`<label class="ck"><input type="checkbox" data-k="${k}" ${st[k]?"checked":""}>${l}</label>`;
+ let h=sel("category","Category",cats.map(c=>[c.id,c.name]));if(subs.length)h+=sel("subcategory","Subcategory",subs.map(c=>[c.id,c.name]));
+ catFields().filter(f=>f.filter).forEach(f=>{h+=f.type==="text"?inp("a_"+f.key,f.label):sel("a_"+f.key,f.label,(f.type==="yesno"?["Yes","No"]:f.options||[]).map(o=>[o,o]))});
+ h+=sel("county","County",COUNTIES.map(c=>[c,c]))+inp("town","Town")+inp("neighbourhood","Neighbourhood");
+ if(S.pr)h+=`<div class="r2">${inp("min","Min price",1)}${inp("max","Max price",1)}</div>`;
+ S.sp.forEach(f=>{h+=f.t==="sel"?sel(f.k,f.l,f.o.map(o=>[o,o])):f.t==="txt"?inp(f.k,f.l):f.t==="rng"?`<div class="r2">${inp(f.k+"_min",f.l+" from",1)}${inp(f.k+"_max","to",1)}</div>`:f.t==="bool"?chk(f.k,f.l):inp(f.k,f.l,1)});
+ h+=chk("ver","Verified sellers only")+chk("feat","Featured only");$("#fb").innerHTML=h;
+ $("#sort").innerHTML=Object.entries(SORTS).filter(([k])=>S.pr||!k.startsWith("price")).map(([k,v])=>`<option value="${k}" ${(st.sort||"latest")===k?"selected":""}>${v[0]}</option>`).join("")}
+function title(){const c=cats.find(x=>x.id==st.category);document.title=(st.q?`Results for “${st.q}”`:c?c.name:SEC[sec].t==="Products"?"Shop":SEC[sec].t)+" – SOKO Smart";$("#q").value=st.q||""}
+function chips(){const S=SEC[sec],L=[],a=(k,l)=>st[k]&&L.push([k,l]);a("q","Search: "+st.q);const c=cats.find(x=>x.id==st.category),s=subs.find(x=>x.id==st.subcategory);
+ st.category&&L.push(["category",c?c.name:"Category"]);st.subcategory&&L.push(["subcategory",s?s.name:"Subcategory"]);
+ a("county",st.county);a("town","Town: "+st.town);a("neighbourhood","Area: "+st.neighbourhood);a("min","Min KSh "+Number(st.min).toLocaleString("en-KE"));a("max","Max KSh "+Number(st.max).toLocaleString("en-KE"));
+ S.sp.forEach(f=>{if(f.t==="rng"){a(f.k+"_min",f.l+" ≥ "+st[f.k+"_min"]);a(f.k+"_max",f.l+" ≤ "+st[f.k+"_max"])}else a(f.k,f.t==="bool"?f.l:f.l+": "+st[f.k])});a("ver","Verified sellers");a("feat","Featured");catFields().filter(f=>f.filter).forEach(f=>a("a_"+f.key,f.label+": "+st["a_"+f.key]));
+ $("#chips").innerHTML=L.length?L.map(([k,l])=>`<span class="fchip">${esc(l)}<b role="button" tabindex="0" data-x="${k}" aria-label="Remove ${esc(l)}">&times;</b></span>`).join("")+'<button class="clr" id="cl2">Clear All Filters</button>':"";title()}
+async function run(more){chips();save();
+ if(!sb){$("#res").innerHTML='<div class="msg">Connect Supabase (CFG in soko.js) to load listings.</div>';return}
+ const S=SEC[sec],my=++token;if(!more){pg=0;$("#res").innerHTML='<div class="sk"></div>'.repeat(4)}
+ let b=sb.from(S.tb).select("*",{count:"exact"}).eq("status","approved");
+ const t=clean(st.q);if(t)b=b.or(`${S.tc}.ilike.%${t}%,description.ilike.%${t}%`);
+ if(num(st.category)!=null)b=b.eq("category_id",+st.category);if(num(st.subcategory)!=null)b=b.eq("subcategory_id",+st.subcategory);
+ if(COUNTIES.includes(st.county))b=b.eq("county",st.county);
+ ["town","neighbourhood"].forEach(k=>{const v=clean(st[k]);if(v)b=b.ilike(k,`%${v}%`)});
+ if(S.pr){let mn=num(st.min),mx=num(st.max);if(mn!=null&&mx!=null&&mn>mx)[mn,mx]=[mx,mn];if(mn!=null)b=b.gte("price",mn);if(mx!=null)b=b.lte("price",mx)}
+ if(st.ver)b=b.eq("seller_verified",true);if(st.feat)b=b.eq("is_featured",true);
+ S.sp.forEach(f=>{const v=st[f.k];if(f.t==="sel"&&v&&f.o.includes(v))b=b.eq(f.k,v);else if(f.t==="txt"&&clean(v))b=b.ilike(f.k,`%${clean(v)}%`);else if(f.t==="bool"&&v)b=b.eq(f.k,true);
+  else if(f.t==="min"&&num(v)!=null)b=b.gte(f.k,num(v));else if(f.t==="max"&&num(v)!=null)b=b.lte(f.k,num(v));
+  else if(f.t==="rng"){if(num(st[f.k+"_min"])!=null)b=b.gte(f.k,num(st[f.k+"_min"]));if(num(st[f.k+"_max"])!=null)b=b.lte(f.k,num(st[f.k+"_max"]))}});
+ catFields().filter(f=>f.filter).forEach(f=>{const v=st["a_"+f.key];if(!v)return;const col="attributes->>"+f.key;b=f.type==="text"?b.ilike(col,`%${clean(v)}%`):b.eq(col,v)});
+ const so=SORTS[st.sort]&&(S.pr||!String(st.sort).startsWith("price"))?SORTS[st.sort]:SORTS.latest;
+ const {data,count,error}=await b.order(so[1],{ascending:!!so[2],nullsFirst:false}).order("id").range(pg*PAGE,pg*PAGE+PAGE-1);if(my!==token)return;
+ if(error){$("#res").innerHTML=`<div class="msg">Could not load listings: ${esc(error.message)}</div>`;return}
+ total=count||0;$("#cnt").textContent=`${total.toLocaleString("en-KE")} ${total===1?"result":"results"}`;
+ const h=(data||[]).map(r=>pcard(r,sec,S.tc)).join("");$("#res").innerHTML=more?$("#res").innerHTML+h:h||'<div class="msg">No listings match these filters. Remove a filter or clear all.</div>';
+ $("#more").hidden=(pg+1)*PAGE>=total}
+function apply(){const k=JSON.stringify([sec,st]);if(k===last)return;last=k;run()}
+const queue=ms=>{clearTimeout(timer);timer=setTimeout(apply,ms)};
+function tabs(){}
+async function go(s){sec=s;const keep={};SHARED.forEach(k=>{if(st[k])keep[k]=st[k]});st=keep;tabs();await loadCats();form();last="";apply()}
+function field(e){const el=e.target.closest("[data-k]");if(!el)return null;const k=el.dataset.k;st[k]=el.type==="checkbox"?(el.checked?"1":""):el.value.trim();if(!st[k])delete st[k];return k}
+$("#fb").addEventListener("input",e=>{if(e.target.type==="checkbox"||e.target.tagName==="SELECT")return;if(field(e)&&!mobile())queue(400)});
+$("#fb").addEventListener("change",async e=>{const k=field(e);if(!k)return;if(k==="category"){delete st.subcategory;dropA();await loadSubs();form()}if(!mobile())queue(0)});
+$("#sort").addEventListener("change",e=>{st.sort=e.target.value;queue(0)});
+$("#sf").addEventListener("submit",e=>{e.preventDefault();e.stopImmediatePropagation();st.q=$("#q").value.trim();if(!st.q)delete st.q;queue(0)},true);
+function clearAll(){st={};last="";form();apply()}
+document.addEventListener("click",async e=>{const x=e.target.closest("[data-x]"),s=e.target.closest("[data-s]");
+ if(x){const k=x.dataset.x;delete st[k];if(k==="category"){delete st.subcategory;dropA();await loadSubs()}form();apply()}
+ else if(s)go(s.dataset.s);else if(["cl2","fclr","fclr2"].includes(e.target.id)){clearAll();if(mobile())drawer(0)}});
+const drawer=o=>{$("#fa").classList.toggle("open",!!o);$("#ov").classList.toggle("open",!!o)};
+$("#fopen").onclick=()=>drawer(1);$("#fclose").onclick=$("#ov").onclick=()=>drawer(0);$("#fapply").onclick=()=>{drawer(0);apply()};$("#more").onclick=()=>{pg++;run(true)};
+(async()=>{load();tabs();await loadCats();
+ if(st.k){const k=st.k;delete st.k;const w=k.toLowerCase().split(" ")[0],c=cats.find(x=>x.name.toLowerCase().includes(w));if(c){st.category=c.id;await loadSubs()}else st.q=k}
+ form();apply()})();
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Product details – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="soko.js?v=19"></script>
+<style>
+.crumb{padding:16px 0 4px;font-size:14px;color:var(--mut)}.crumb a{color:var(--od);font-weight:700}
+.pd{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:36px;padding:14px 0 28px;align-items:start}
+.gal{display:grid;gap:12px}
+.big{aspect-ratio:4/5;background:transparent;border-radius:0;overflow:hidden;display:grid;place-items:center;color:var(--o);position:relative}.big img{width:100%;height:100%;object-fit:cover}
+.big .bdg{top:14px;left:14px}
+.th{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.th button{aspect-ratio:1/1;border:2px solid transparent;border-radius:12px;background:#F6F4F0;padding:0;overflow:hidden;display:grid;place-items:center;color:var(--o)}.th button.on{border-color:var(--tx)}.th img{width:100%;height:100%;object-fit:cover}
+.inf h1{font-size:clamp(22px,3vw,30px);line-height:1.08;margin:0 0 6px;text-transform:uppercase;letter-spacing:-.01em;font-weight:800;overflow-wrap:anywhere}
+.inf .sb{font-size:17px;margin:0 0 8px;color:var(--tx)}
+.sold{display:flex;gap:7px;align-items:center;margin:0;font-size:15px}.sold svg{color:var(--g);flex:none}.sold a{color:var(--od);font-weight:700}
+.rat{display:flex;gap:10px;align-items:center;font-size:15px;margin:0 0 14px}.rat .s{color:var(--o);letter-spacing:2px;font-size:17px}.rat i{width:1px;height:16px;background:var(--bd)}
+.old{font-size:17px;color:var(--mut);text-decoration:line-through;margin:0 0 -2px}
+.pr{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 12px}.pr b{font-size:clamp(26px,4vw,32px);color:var(--o);line-height:1}
+.sv{background:#DDF3E4;color:var(--g);border-radius:8px;padding:3px 10px;font-size:14px;font-weight:700}
+.inf .desc{white-space:pre-wrap;margin:0 0 18px;color:var(--tx)}
+.meta{display:grid;gap:8px;background:#F6F4F0;border-radius:12px;padding:11px 14px;margin:0 0 14px}.meta .m{margin:0!important}
+.acts{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:10px;margin:0 0 14px;align-items:center}.pill2.ic{width:46px;height:46px;padding:0}
+.sdesc{margin:0 0 12px;color:var(--mut);font-size:15px;line-height:1.45}#simSlot .rel{padding:30px 0 10px}#simSlot .rel .w{padding:0}
+.pill2{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;border:1.5px solid transparent;border-radius:999px;padding:10px 12px;font-size:14px;font-weight:700;margin:0;color:#fff;cursor:pointer;white-space:nowrap}
+.pill2.buy{background:var(--o);border-color:var(--o);font-size:15px;padding:12px}.pill2.buy:hover{background:var(--od);border-color:var(--od)}
+.pill2.g{background:#fff;border-color:var(--g);color:var(--g)}.pill2.g:hover{background:var(--g);color:#fff}
+.pill2.o{background:#fff;border-color:var(--o);color:var(--od)}.pill2.o:hover{background:var(--o);color:#fff}
+
+.dlv{text-align:center;margin:0 0 16px;font-size:15px}
+.trust{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;background:#F6F4F0;border-radius:14px;padding:16px 18px}.trust div{display:flex;gap:9px;align-items:center;font-size:14px}.trust svg{color:var(--g);flex:none}
+.svl{border:0;background:none;color:var(--tx);display:inline-flex;gap:6px;align-items:center;font-weight:700;padding:0;margin-top:14px}.svl:hover{color:var(--od)}
+.sp{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:0 0 18px;padding:14px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px}.sp dt{color:var(--mut)}.sp dd{margin:0;font-weight:700}
+.sec{padding:30px 0 6px}.sec h2{display:block;text-align:left;font-size:clamp(22px,3vw,28px);text-transform:uppercase;font-weight:800;margin:0 0 18px;letter-spacing:-.01em}
+.why{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.why>div{display:flex;gap:14px;align-items:flex-start}.why .wi{width:52px;height:52px;border-radius:50%;background:#F1EFEA;display:grid;place-items:center;color:var(--g);flex:none}.why b{display:block;font-size:19px;margin-bottom:2px}.why span{color:var(--mut);font-size:14px}
+.revs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rv{border:1px solid var(--bd);border-radius:16px;padding:16px 18px;display:grid;gap:10px;align-content:start}
+.rv .hd{display:flex;gap:10px;align-items:center}.rv .ps{width:40px;height:40px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;font-weight:800;flex:none}.rv .s{color:var(--o);letter-spacing:2px}.rv p{margin:0;font-size:17px;font-weight:600;overflow-wrap:anywhere}.rv .m{font-size:12px}.orp{background:var(--gt,#E8F3EC);border-left:4px solid var(--g);border-radius:8px;padding:8px 10px;font-size:14px;display:grid;gap:3px}.orp b{font-size:12.5px;color:var(--g)}.orp .lnk{justify-self:start;border:0;background:none;color:var(--od);font-weight:700;padding:0;text-decoration:underline;font-size:13px}
+.faq details{border-bottom:1px solid var(--bd)}.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:16px 2px;font-size:18px;font-weight:600}.faq summary::-webkit-details-marker{display:none}.faq summary svg{transition:transform .2s}.faq details[open] summary svg{transform:rotate(180deg)}.faq details p{margin:0 0 16px;color:var(--mut)}
+.rel{padding:30px 0 40px}.rel .hh{align-items:center}.arrs{display:flex;gap:8px}.arrs button{width:38px;height:38px;border-radius:50%;border:1px solid var(--bd);background:var(--bg);color:var(--tx);display:grid;place-items:center;padding:0}.arrs button:hover{background:var(--o);border-color:var(--o);color:#fff}
+.car{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;scrollbar-width:none}.car::-webkit-scrollbar{display:none}.car .card{flex:0 0 min(240px,70vw);scroll-snap-align:start}
+.stp{display:flex;gap:4px;font-size:30px;color:#d9d3ca}.stp button{border:0;background:none;padding:0;color:inherit;font-size:30px;line-height:1}.stp button.on{color:var(--o)}
+@media(max-width:860px){.pd{grid-template-columns:1fr;gap:22px}.why,.revs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main>
+ <div class="w"><div class="crumb"><a href="index.html">Home</a> / <a href="shop.html" id="bcs">Shop</a> / <span id="bc">Listing</span></div><div id="detail"><div class="msg">Loading…</div></div>
+ <div id="more"></div></div>
+ <section class="rel" id="relS" hidden style="background:var(--bg)"><div class="w"><div class="hh"><h2 style="text-transform:uppercase;font-weight:800">Similar products</h2><div class="arrs"><button id="rp" aria-label="Scroll left"></button><button id="rn" aria-label="Scroll right"></button></div></div><div class="car" id="rel"></div></div></section>
+</main>
+<div id="ft"></div>
+<script>
+shell("product.html");
+$("#rp").innerHTML=ic("left",18);$("#rn").innerHTML=ic("right",18);
+const SEC={products:["Products","products","title",1],shops:["Shops","shops","name",0],jobs:["Jobs","jobs","title",1],services:["Services","services","title",1],vehicles:["Vehicles","vehicles","title",1],realestate:["Real Estate","properties","title",1],free:["Free Things","free_listings","title",0]};
+const FIELDS={condition:"Condition",kind:"Type",make:"Make",year:"Year",mileage:"Mileage (km)",transmission:"Transmission",fuel:"Fuel",property_type:"Property type",listing_type:"Listing type",bedrooms:"Bedrooms",bathrooms:"Bathrooms",employment_type:"Employment type",work_mode:"Work mode",availability:"Availability"};
+const p=new URLSearchParams(location.search),sec=SEC[p.get("s")]?p.get("s"):"products",id=p.get("id"),[label,T,col,hasPrice]=SEC[sec];
+const ploc=r=>[r.neighbourhood,r.town,r.county].filter(Boolean).join(", ");
+const SH={products:"shop.html",shops:"shop.html?section=shops",services:"shop.html?section=services",vehicles:"shop.html?section=vehicles",realestate:"shop.html?section=realestate",jobs:"jobs.html",free:"index.html"};
+$("#bcs").textContent=label;$("#bcs").href=SH[sec]||"shop.html";
+const star=v=>"★".repeat(Math.round(v))+"☆".repeat(5-Math.round(v));
+const imgs=r=>{let a=[];const add=v=>{if(typeof v==="string"&&v)a.push(v)};add(r.cover_url);
+ for(const k of ["images","image_urls","gallery"]){let v=r[k];if(typeof v==="string"){try{v=JSON.parse(v)}catch(e){v=v.split(",")}}if(Array.isArray(v))v.forEach(x=>add(typeof x==="string"?x.trim():x&&x.url))}
+ return [...new Set(a)].slice(0,8)};
+
+async function main(){
+ if(!sb){$("#detail").innerHTML='<div class="msg">Connect Supabase (CFG in soko.js) to load this page.</div>';return}
+ if(!id){$("#detail").innerHTML='<div class="msg">No product selected.<br><br><a class="btn p" href="shop.html">Browse the shop</a></div>';return}
+ const {data:r,error}=await sb.from(T).select("*").eq("id",id).eq("status","approved").maybeSingle();
+ if(error||!r){$("#detail").innerHTML=`<div class="msg">${error?esc(error.message):"This listing is no longer available."}<br><br><a class="btn p" href="shop.html">Browse the shop</a></div>`;return}
+ const name=r[col],key=sec+":"+r.id,pics=imgs(r);RECS[key]={...r,_s:sec};document.title=name+" – SOKO Smart";$("#bc").textContent=name;
+ const old=r.old_price&&r.price&&+r.old_price>+r.price?+r.old_price:0,save=old?old-r.price:0;
+ let ax="";if(sec==="products"&&r.attributes&&typeof r.attributes==="object"){let fs=[];if(r.category_id!=null){const cf=await sb.from("categories").select("fields").eq("id",r.category_id).maybeSingle();if(cf.data&&Array.isArray(cf.data.fields))fs=cf.data.fields}
+ const seen=new Set();fs.forEach(f=>{seen.add(f.key);const v=r.attributes[f.key];if(v!=null&&v!=="")ax+=`<dt>${esc(f.label)}</dt><dd>${esc(v)}</dd>`});
+ Object.entries(r.attributes).forEach(([k,v])=>{if(!seen.has(k)&&v!=null&&v!=="")ax+=`<dt>${esc(k.replace(/_/g," "))}</dt><dd>${esc(v)}</dd>`})}
+ const rows=Object.entries(FIELDS).filter(([k])=>r[k]!=null&&r[k]!=="").map(([k,l])=>`<dt>${l}</dt><dd>${esc(r[k])}</dd>`).join("")+ax;
+ const prod=sec==="products",full=String(r.description||"").trim(),flat=full.replace(/\s+/g," "),sd=flat.length>140?flat.slice(0,140).replace(/\s+\S*$/,"")+"…":flat,showBig=!!rows||(full&&flat.length>140||full.includes("\n"));
+ $("#detail").innerHTML=`<article class="pd"><div class="gal"><div class="big" id="bg">${pics[0]?`<img alt="${esc(name)}" src="${esc(pics[0])}">`:ic("box",72)}${r.is_featured?'<span class="bdg">Featured</span>':""}</div>
+ ${pics.length>1?`<div class="th">${pics.slice(0,4).map((u,i)=>`<button class="${i?"":"on"}" data-i="${i}" aria-label="View image ${i+1}"><img alt="" src="${esc(u)}"></button>`).join("")}</div>`:""}</div>
+ <div class="inf"><h1>${esc(name)}</h1><p class="sb">${esc([label,r.condition].filter(Boolean).join(" · "))}</p>
+ <div class="rat" id="rat"></div>
+ ${hasPrice?`${old?`<div class="old">${fmt(old)}</div>`:""}<div class="pr"><b>${r.price!=null?fmt(r.price):"Contact for price"}</b>${save?`<span class="sv">Save ${fmt(save)}</span>`:""}${r.negotiable?'<span class="sv">Negotiable</span>':""}</div>`:""}
+ ${sd?`<p class="sdesc">${esc(sd)}</p>`:""}<div class="meta"><div id="sellerBox"></div>
+ <p class="m" style="margin:0 0 12px;display:flex;gap:6px;align-items:center">${ic("pin",15)} ${esc(ploc(r)||"Kenya")}</p></div>
+ 
+ <div class="acts">${prod?`<button class="pill2 g ic" id="ct" aria-label="Chat Seller" title="Chat Seller">${ic("msg",20)}</button><button class="pill2 o ic" id="add" aria-label="Add to Catalogue" title="Add to Catalogue">${ic("cart",20)}</button><button class="pill2 buy" id="buy">Checkout Now</button>`:`<button class="pill2 buy" id="ct">${sec==="shops"?"Chat with shop":"Chat with seller"}</button>`}</div>
+ 
+ <div id="payBox"></div>
+ <p class="dlv">Delivery or collection agreed with the seller</p>
+ <p class="dlv" style="margin-top:-6px"><a href="complaint.html?type=listing&ref=${encodeURIComponent(location.href)}" style="color:var(--mut);text-decoration:underline;display:inline-flex;gap:5px;align-items:center">${ic("flag",14)} Report this listing</a></p>
+ <div class="trust"><div>${ic("lock",18)} Secure chat</div><div>${ic("truck",18)} Seller delivery</div><div>${ic("shield",18)} Verified sellers</div><div>${ic("undo",18)} Inspect before you pay</div></div>
+ <button class="svl" id="sv">${ic("heart",16)} <span>Save to wishlist</span></button></div></article>
+ ${showBig?`<div class="sec"><h2>Description</h2>${full?`<p class="desc">${esc(full)}</p>`:""}${rows?`<dl class="sp">${rows}</dl>`:""}</div>`:""}<div id="simSlot"></div>
+ <div class="sec"><h2>Why buy this?</h2><div class="why"><div><span class="wi">${ic("shield",24)}</span><div><b>${r.seller_verified?"Verified seller":"Local seller"}</b><span>${r.seller_verified?"This seller has been checked by SOKO Smart.":"Chat first and inspect before you pay."}</span></div></div><div><span class="wi">${ic("msg",24)}</span><div><b>Chat before you buy</b><span>Ask questions and agree the price directly.</span></div></div><div><span class="wi">${ic("pin",24)}</span><div><b>${esc(r.county||"Across Kenya")}</b><span>${esc(r.town?"Based in "+r.town+".":"Find sellers in all 47 counties.")}</span></div></div></div></div>
+ <div class="sec" id="revS"></div>
+ <div class="sec faq"><h2>Frequently asked questions</h2>
+ ${[["Is this still available?","Tap “Chat with seller” and ask. Most sellers reply quickly."],["Is the price negotiable?",r.negotiable?"Yes, the seller marked this price as negotiable. Make your offer in chat.":"The listed price is set by the seller. You can still ask about it in chat."],["How do I pay and receive it?","Agree payment and delivery or collection directly with the seller in chat. Meet in a public place and inspect the item before you pay."],["How do I report a problem?","Message the SOKO Smart team from the chat button and we will look into it."]].map(([q,a])=>`<details><summary>${q}${ic("down",20)}</summary><p>${esc(a)}</p></details>`).join("")}</div>`;
+ document.querySelectorAll(".th button").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;$("#bg").querySelector("img").src=pics[i];document.querySelectorAll(".th button").forEach(x=>x.classList.toggle("on",x===b))});
+ const sv=$("#sv");let saved=false;const cu=await user();if(cu){const {data:fv}=await sb.from("favorites").select("listing_id").eq("listing_type",sec).eq("listing_id",r.id).maybeSingle();saved=!!fv}
+ const paintSv=()=>{sv.querySelector("span").textContent=saved?"Saved to wishlist ✓":"Save to wishlist"};paintSv();sb.rpc("increment_views",{p_section:sec,p_id:r.id}).then(()=>{});
+ const chat=async draft=>{const u=await needUser("Log in or create an account to chat with the seller.");if(!u)return;if(u.id===r.owner_id){toast("This is your own listing");return}
+  if(!window.SokoChat){toast("Chat is still loading, please try again");return}SokoChat.chatWith(r.owner_id,sec==="shops"?r.id:(r.shop_id||null),draft)};
+ const ask=sec==="shops"?"Hi, I would like to ask about your shop.":`Hi, I am interested in "${name}". Is it still available?`;
+ $("#ct").onclick=()=>chat(ask);
+ if(prod){$("#add").onclick=()=>addCart(key);$("#buy").onclick=()=>buyNow(key)}
+ sv.onclick=async()=>{const u=await needUser("Log in or create an account to save this listing.");if(!u)return;saved=!saved;paintSv();toast(saved?"Saved to wishlist":"Removed from wishlist");
+  const {error}=await(saved?sb.from("favorites").upsert({user_id:u.id,listing_type:sec,listing_id:r.id}):sb.from("favorites").delete().eq("user_id",u.id).eq("listing_type",sec).eq("listing_id",r.id));if(error)toast(error.message)};
+ (async()=>{let pm=null,sh=null;if(sec==="products"&&r.shop_id){try{const x=await sb.from("shops").select("*").eq("id",r.shop_id).maybeSingle();sh=x.data}catch(e){}}
+  const h=sec==="products"?payHTML():"";if(h&&$("#payBox"))$("#payBox").innerHTML=h;
+  /* who sells it: the shop, or "Soko Smart" with the verified badge for products posted by the admin */
+  const sb0=sec==="products"&&!sh?soldBy(r):null,nm=sec==="products"?(sh?sh.name:sb0.name):"",ver=sh?sh.seller_verified:(sb0?sb0.ver:r.seller_verified);
+  if(nm&&$("#sellerBox")){const lk=sh?"product.html?s=shops&id="+encodeURIComponent(sh.id)+"#revS":"";
+   $("#sellerBox").innerHTML=`<p class="sold">${/^soko\s*smart$/i.test(nm)?'<img class="sml" alt="" src="logo.png" style="width:24px;height:24px">':ic("home",16)} <span>Sold by ${lk?`<a href="${lk}">${esc(nm)}</a>`:`<b>${esc(nm)}</b>`}${ver?` <i class="vbd" title="Verified">${VB}</i>`:""}${lk?` · <a href="${lk}">Reviews &amp; rate this shop</a>`:""}</span></p>`}})();
+ reviews(r).then(()=>{if(location.hash==="#revS"){const e=$("#revS");if(e)e.scrollIntoView({behavior:"smooth"})}});{const rs=$("#relS"),sl=$("#simSlot");if(rs&&sl)sl.appendChild(rs)}related(r)}
+
+/* ---------- reviews (needs the "reviews" table from soko-homepage.sql) ---------- */
+async function reviews(r){const box=$("#revS"),rat=$("#rat");
+ const {data,error}=await sb.from("reviews").select("*").eq("listing_type",sec).eq("listing_id",r.id).order("created_at",{ascending:false}).limit(60);
+ if(error){box.hidden=true;if(r.rating)rat.innerHTML=`<span class="s">${star(r.rating)}</span><b>${Number(r.rating).toFixed(1)}</b>`;return}
+ const L=data||[],avg=L.length?L.reduce((a,b)=>a+b.rating,0)/L.length:0;
+ rat.innerHTML=L.length?`<span class="s">${star(avg)}</span><b>${avg.toFixed(1)}</b><i></i><span>${L.length} ${L.length===1?"review":"reviews"}</span>`:'<span class="m">No reviews yet</span>';
+ const me=await user();let canReply=!!me&&me.id===r.owner_id;if(me&&!canReply){try{const pr=await sb.from("profiles").select("role").eq("id",me.id).maybeSingle();canReply=!!pr.data&&pr.data.role==="admin"}catch(e){}}
+ const who=sec==="shops"?"the shop":"the seller";
+ box.innerHTML=`<div class="hh"><h2 style="margin:0">Customer reviews</h2><button class="btn" id="wr">Write a review</button></div>${L.length?`<div class="revs">${L.slice(0,6).map(x=>`<div class="rv"><div class="hd"><span class="ps">${esc((x.user_name||"S")[0].toUpperCase())}</span><div><span class="s">${star(x.rating)}</span> <b>${x.rating}</b><div class="m">${esc(x.user_name||"SOKO shopper")} · ${esc(new Date(x.created_at).toLocaleDateString("en-KE",{day:"numeric",month:"short",year:"numeric"}))}</div></div></div>${x.comment?`<p>${esc(x.comment)}</p>`:""}${x.owner_reply?`<div class="orp"><b>Reply from ${who}</b><div>${esc(x.owner_reply)}</div>${canReply?`<button class="lnk" data-rp="${esc(x.id)}">Edit reply</button>`:""}</div>`:canReply&&x.id!=null?`<button class="btn s" data-rp="${esc(x.id)}" style="justify-self:start">Reply</button>`:""}</div>`).join("")}</div>`:'<div class="empty" style="padding:10px 0">Be the first to review this listing.</div>'}`;
+const replyDlg=id=>{const x=L.find(z=>String(z.id)===String(id));if(!x)return;
+  openD(`<h3>Reply to ${esc(x.user_name||"this review")}</h3><form id="rpf"><label>Your reply<textarea name="t" rows="4" maxlength="500" required>${esc(x.owner_reply||"")}</textarea></label><button class="btn p">Post reply</button></form>`);
+  $("#rpf").onsubmit=async ev=>{ev.preventDefault();const t=ev.target.t.value.trim();
+   const {error}=await sb.from("reviews").update({owner_reply:t||null,owner_reply_at:t?new Date().toISOString():null}).eq("id",x.id);
+   if(error){toast(/owner_reply|policy|row-level/i.test(error.message)?"Replies are not set up yet. Run supabase-admin-reviews.sql in Supabase.":error.message,"error");return}
+   $("#dlg").close();toast("Reply posted");reviews(r)}};
+ box.onclick=e=>{const b=e.target.closest("[data-rp]");if(b)replyDlg(b.dataset.rp)};
+ $("#wr").onclick=async()=>{const u=await needUser("Log in or create an account to write a review.");if(!u)return;if(u.id===r.owner_id){toast("You cannot review your own listing");return}
+  let v=5;openD(`<h3>Rate “${esc(r[col])}”</h3><form id="rf"><div class="stp" id="stp">${[1,2,3,4,5].map(i=>`<button type="button" data-v="${i}" class="on" aria-label="${i} stars">★</button>`).join("")}</div><label>Your review<textarea name="c" rows="4" maxlength="500" placeholder="What did you like?"></textarea></label><button class="btn p">Submit review</button></form>`);
+  $("#stp").onclick=e=>{const b=e.target.closest("[data-v]");if(!b)return;v=+b.dataset.v;document.querySelectorAll("#stp button").forEach(x=>x.classList.toggle("on",+x.dataset.v<=v))};
+  $("#rf").onsubmit=async ev=>{ev.preventDefault();const {error}=await sb.from("reviews").insert({listing_type:sec,listing_id:r.id,user_id:u.id,user_name:u.user_metadata?.full_name||null,rating:v,comment:ev.target.c.value.trim()||null});
+   if(error){toast(error.code==="23505"?"You already reviewed this listing":error.message);return}$("#dlg").close();toast("Thanks for your review");reviews(r)}}}
+
+async function related(r){
+ const base=()=>sb.from(T).select("*").eq("status","approved").neq("id",r.id);let out=[];
+ if(r.category_id!=null){const a=await base().eq("category_id",r.category_id).order("views",{ascending:false,nullsFirst:false}).limit(10);out=a.data||[]}
+ if(out.length<4&&r.county){const seen=new Set(out.map(x=>x.id)),b=await base().eq("county",r.county).limit(10);out=out.concat((b.data||[]).filter(x=>!seen.has(x.id)))}
+ if(out.length<4){const seen=new Set(out.map(x=>x.id)),c=await base().order("created_at",{ascending:false}).limit(10);out=out.concat((c.data||[]).filter(x=>!seen.has(x.id)))}
+ out=out.slice(0,10);if(!out.length)return;
+ $("#rel").innerHTML=out.map(x=>pcard(x,sec,col)).join("");paintFavs();$("#relS").hidden=false;
+ $("#rp").onclick=()=>$("#rel").scrollBy({left:-480,behavior:"smooth"});$("#rn").onclick=()=>$("#rel").scrollBy({left:480,behavior:"smooth"})}
+main();
+</script>
+</body>
+</html>

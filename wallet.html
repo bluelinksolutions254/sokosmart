@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Wallet – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>window.SOKO_NO_ADS=1</script>
+<script src="soko.js?v=20"></script>
+<script src="wallet.js?v=2"></script>
+</head>
+<body>
+<div id="hd"></div>
+<main><section class="alt"><div class="w" style="max-width:1180px">
+<h2 style="margin-bottom:14px">My Wallet <a href="profile.html">My profile</a></h2>
+<div id="wl"></div>
+</div></section></main>
+<div id="ft"></div>
+<script>
+shell("");
+SokoWallet.mount(document.getElementById("wl"),{mode:"auto",layout:"app"});
+if(sb)sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_IN"||ev==="SIGNED_OUT")setTimeout(()=>SokoWallet.mount(document.getElementById("wl"),{mode:"auto",layout:"app"}),0)});
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Open a Shop – SOKO Smart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="soko.css?v=11">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="soko.js?v=21"></script>
+</head>
+<body>
+<div id="hd"></div>
+<main><section class="alt"><div class="w" style="max-width:680px">
+<h2>Open your shop</h2>
+<p class="m" style="margin-top:-8px">Set up your shop below, then choose a package and pay with M-Pesa. Your shop is approved automatically as soon as the payment is received.</p>
+<div class="fm" id="resume" hidden><h3 style="margin:0">Finish opening your shop</h3><p style="margin:0">Your shop <b id="rsn"></b> is saved but not paid for yet. Pay to have it approved and go live.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn p" id="rspay" type="button">Choose a package and pay</button><button class="btn" id="rsnew" type="button">Set up a different shop</button></div></div>
+<form class="fm" id="os">
+ <h3 style="margin:0">About you</h3>
+ <p class="m" data-h hidden style="margin:-4px 0 0">Filled in from your account.</p>
+ <label>Full name<input name="full_name" required autocomplete="name"></label>
+ <div class="two"><label>Email<input name="email" type="email" required autocomplete="email"></label>
+ <label>Phone number<input name="phone" type="tel" required autocomplete="tel" pattern="(254|0|[+]254)[17][0-9]{8}" placeholder="0712 345 678"></label></div>
+ <h3 style="margin:8px 0 0">Your shop</h3>
+ <label>Shop name<input name="shop_name" required maxlength="80"></label>
+ <h3 style="margin:8px 0 0">Location details</h3>
+ <div class="two"><label>County<select name="county" required></select></label><label>Town<input name="town" required></label></div>
+ <label>Neighbourhood<input name="neighbourhood"></label>
+ <label>Street, building, floor or landmark<textarea name="details" rows="3" required placeholder="e.g. Moi Avenue, Jubilee Building, 2nd floor, next to the bus stage"></textarea></label>
+ <button class="btn p" style="padding:12px">Continue to payment</button>
+</form>
+</div></section></main>
+<div id="ft"></div>
+<script>
+shell("openshop.html");
+const f=$("#os");f.county.innerHTML='<option value="">Choose county</option>'+COUNTIES.map(c=>`<option>${esc(c)}</option>`).join("");
+/* signed-in users: fill name, email and phone automatically (from their profile, else their account) */
+(async()=>{const u=await user();if(!u){if(sb)needLogin("Log in or create an account to open a shop.");return}
+ let p={};try{const r=await sb.from("profiles").select("full_name,phone,county").eq("id",u.id).maybeSingle();p=r.data||{}}catch(e){}
+ const nm=(p.full_name||u.user_metadata?.full_name||"").trim(),ph=(p.phone||u.user_metadata?.phone||"").trim();
+ f.email.value=u.email||"";f.email.readOnly=true;
+ if(nm){f.full_name.value=nm;f.full_name.readOnly=true}
+ else{f.full_name.value=String(u.email||"").split("@")[0].replace(/[._-]+/g," ").replace(/\b\w/g,c=>c.toUpperCase())}
+ if(ph){f.phone.value=ph}
+ if(p.county&&!f.county.value)f.county.value=p.county;
+ const hint=f.querySelector("[data-h]");if(hint)hint.hidden=!nm;
+ document.querySelectorAll("#os input[readonly]").forEach(i=>i.title="Taken from your account")})();
+/* 1) set up the shop (saved as "awaiting payment")   2) choose a package and pay with M-Pesa   3) it is approved automatically */
+async function pay(appId){const plans=await planOptions();f.hidden=true;$("#resume").hidden=true;
+ planGate({plans,application:appId,go:"shopmanager.html",back:"openshop.html"})}
+(async()=>{const u=await user();if(!u||!sb)return;
+ const r=await sb.from("shop_applications").select("id,shop_name").eq("email",u.email).eq("status","awaiting_payment").order("created_at",{ascending:false}).limit(1);
+ const a=r.data&&r.data[0];if(!a)return;
+ $("#rsn").textContent=a.shop_name||"";$("#resume").hidden=false;
+ $("#rspay").onclick=()=>pay(a.id);$("#rsnew").onclick=()=>{$("#resume").hidden=true}})();
+f.addEventListener("submit",async e=>{e.preventDefault();if(!sb){toast("Connect Supabase (CFG in soko.js) to submit");return}
+ if(!(await user())){needLogin("Log in or create an account to open a shop.");return}
+ const v=n=>f[n].value.trim(),btn=f.querySelector("button");btn.disabled=true;
+ const row={full_name:v("full_name"),email:v("email"),phone:v("phone"),shop_name:v("shop_name"),county:v("county"),town:v("town"),neighbourhood:v("neighbourhood"),details:v("details")};
+ let r=await sb.from("shop_applications").insert({...row,status:"awaiting_payment"}).select("id").single();
+ if(r.error&&/status|check constraint|enum|invalid input value/i.test(r.error.message))r=await sb.from("shop_applications").insert({...row,status:"pending"}).select("id").single();
+ btn.disabled=false;if(r.error){toast(r.error.message,"error");return}
+ scrollTo({top:0,behavior:"smooth"});pay(r.data.id)});
+</script>
+</body>
+</html>
